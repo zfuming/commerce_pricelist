@@ -1,0 +1,9 @@
+name = Commerce Pricelists Feeds
+description = Feeds for Pricelists
+core = 7.x
+package = Commerce (contrib)
+
+files[] = plugins/FeedsCommercePricelistItemProcessor.inc
+
+dependencies[] = feeds
+dependencies[] = commerce_pricelist

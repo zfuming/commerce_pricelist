@@ -1,0 +1,181 @@
+<?php
+/**
+ * @file
+ * Install for a basic entity - need to create the base table for our entity.
+ * This table can have as many columns as you need to keep track of
+ * entity-specific data that will not be added via attached fields.
+ * The minimum information for the entity to work is an id and an entity name.
+ */
+
+
+
+/**
+ * Implements hook_schema().
+ *
+ * @ingroup commerce_pricelist
+ */
+function commerce_pricelist_schema() {
+  $schema = array();
+
+  $schema['commerce_pricelist_list'] = array(
+    'description' => 'The base table for our price list entity.',
+    'fields' => array(
+      'uuid' => array(
+        'type' => 'char',
+        'length' => 36,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The Universally Unique Identifier.',
+      ),
+      'list_id' => array(
+        'description' => 'The primary identifier for a list.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'description' => 'The name of the pricelist.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp of the created date.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp of the changed date.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'status' => array(
+        'description' => 'Boolean indicating whether the price list is active.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this node; initially, this is the user that created it.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'weight' => array(
+        'description' => 'The weight of the list.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'data' => array(
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big',
+        'serialize' => TRUE,
+        'description' => 'A serialized array of additional data.',
+      ),
+    ),
+    'foreign keys' => array(
+      'pricelist_author' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
+      ),
+    ),
+    'primary key' => array('list_id'),
+  );
+
+  $schema['commerce_pricelist_item'] = array(
+    'description' => 'The base table for our price list item entity.',
+    'fields' => array(
+      'uuid' => array(
+        'type' => 'char',
+        'length' => 36,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The Universally Unique Identifier.',
+      ),
+      'item_id' => array(
+        'description' => 'The primary identifier for an item.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'sku' => array(
+        'description' => 'The unique, human-readable identifier for a product.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'valid_from' => array(
+        'description' => 'The Unix timestamp of the valid from date.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => 0,
+      ),
+      'valid_to' => array(
+        'description' => 'The Unix timestamp of the valid to date.',
+        'type' => 'int',
+        'not null' => FALSE,
+        'default' => COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE,
+      ),
+      'quantity' => array(
+        'type' => 'numeric',
+        'size' => 'normal',
+        'not null' => TRUE,
+        'default' => 0,
+        'precision' => 10,
+        'scale' => 2,
+      ),
+      'price_amount' => array(
+        'description' => 'The price in commerce standard format without decimals.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'currency_code' => array(
+        'description' => 'The currency code for the price.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+      'pricelist_uuid' => array(
+        'type' => 'char',
+        'length' => 36,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The Universally Unique Identifier.',
+      ),
+    ),
+    'primary key' => array('item_id'),
+    'indexes' => array(
+      'sku' => array('sku'),
+      'pricelist_uuid' => array('pricelist_uuid'),
+    ),
+    'foreign keys' => array(
+      'item_pricelist' => array(
+        'table' => 'commerce_pricelist',
+        'columns' => array('pricelist_uuid' => 'uuid'),
+      ),
+      'sku' => array(
+        'table' => 'commerce_product',
+        'columns' => array('sku' => 'sku'),
+      ),
+    ),
+  );
+
+  return $schema;
+}
+
+
+  /**
+ * Implements hook_uninstall().
+ *
+ * At uninstall time we'll notify field.module that the entity was deleted
+ * so that attached fields can be cleaned up.
+ *
+ * @ingroup commerce_pricelist
+ */
+function commerce_pricelist_uninstall() {
+}
