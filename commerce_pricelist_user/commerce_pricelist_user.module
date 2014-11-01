@@ -22,12 +22,12 @@ function commerce_pricelist_user_form_commerce_pricelist_list_form_alter(&$form,
 
   $entity = $form['entity']['#value'];
 
-  $form['#validate'][] = 'commerce_pricelist_users_form_validate';
+  $form['#validate'][] = 'commerce_pricelist_user_form_validate';
 
   $default = commerce_pricelist_list_filter_get($entity, 'user');
 
   // @todo: implement as user reference field or something
-  $form['commerce_pricelists'] = array(
+  $form['commerce_pricelist_user'] = array(
     '#type' => 'textarea',
     '#title' => t('User IDs'),
     '#default_value' => implode(', ', $default)
@@ -35,10 +35,10 @@ function commerce_pricelist_user_form_commerce_pricelist_list_form_alter(&$form,
 
 }
 
-function commerce_pricelist_users_form_validate($form, &$form_state) {
+function commerce_pricelist_user_form_validate($form, &$form_state) {
   if ($form_state['triggering_element']['#id'] !== 'edit-delete') {
     $entity = &$form_state['values']['entity'];
-    preg_match_all('!\d+!', $form_state['values']['commerce_pricelist_users'], $matches);
+    preg_match_all('!\d+!', $form_state['values']['commerce_pricelist_user'], $matches);
     commerce_pricelist_list_filter_set($entity, 'user', $matches[0]);
   }
 }
@@ -49,7 +49,7 @@ function commerce_pricelist_users_form_validate($form, &$form_state) {
  * @param $info
  * @param $entity
  */
-function commerce_pricelist_role_commerce_pricelists_list_info_alter(&$info, $entity) {
+function commerce_pricelist_user_commerce_pricelists_list_info_alter(&$info, $entity) {
   $filter = commerce_pricelist_list_filter_get($entity, 'user');
   $count = count($filter);
   $info['user'] = $count . ' ' . t('users') . '<br>';
