@@ -57,10 +57,11 @@ class CommercePricelistItemController
   /**
    * Create and return a new commerce_pricelist_list entity.
    */
-  public function create() {
+  public function create($pricelist_uuid = NULL) {
     $entity = new stdClass();
     $entity->type = 'commerce_pricelist_item';
     $entity->item_id = 0;
+    $entity->pricelist_uuid = $pricelist_uuid;
     $entity->valid_to = COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE; // The apocalypse
     return $entity;
   }

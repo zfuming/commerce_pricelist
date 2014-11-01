@@ -453,6 +453,7 @@ function commerce_pricelist_item_list_entities($pricelist_uuid = NULL) {
           // @todo Format currency through commerce
           'amount' => $entity->price_amount / 100,
           'currency' => check_plain($entity->currency_code),
+          'edit' => l(t('Edit'), 'admin/commerce/pricelist/commerce_pricelist_item/'. $entity->item_id .'/edit'),
         ),
       );
     }
@@ -461,7 +462,7 @@ function commerce_pricelist_item_list_entities($pricelist_uuid = NULL) {
     $content['entity_table'] = array(
       '#theme' => 'table',
       '#rows' => $rows,
-      '#header' => array(t('sku'), t('Valid from'), t('Valid to'), t('Quantity'), t('Amount'), t('Currency')),
+      '#header' => array(t('sku'), t('Valid from'), t('Valid to'), t('Quantity'), t('Amount'), t('Currency'), t('Operations')),
     );
   }
   else {
@@ -549,16 +550,37 @@ function commerce_pricelist_item_info_page() {
  */
 function commerce_pricelist_item_form($form, &$form_state, $entity) {
 
-  $form_fields = array('sku','valid_from','valid_to','quantity','price_amount','currency_code','pricelist_uuid');
+  if (isset($entity->list_id)) {
+    // This is a new list item being created from the list/add tab.
+    // Replace pricelist entity with a pricelist item entity.
+    $entity = entity_get_controller('commerce_pricelist_item')->create($entity->uuid);
+  }
+
+  $form_fields = array('sku','valid_from','valid_to','quantity','price_amount','currency_code');
 
   foreach ($form_fields as $field) {
     $form[$field] = array(
       '#type' => 'textfield',
-      '#title' => $field,
+      '#title' => ucwords(str_replace('_', ' ', $field)),
       '#required' => TRUE,
       '#default_value' => isset($entity->$field) ? $entity->$field : '',
     );
   }
+
+  foreach (array('valid_from', 'valid_to') as $date_field) {
+    $form[$date_field]['#element_validate'] = array('_commerce_pricelist_date_validate');
+    $form[$date_field]['#default_value'] = date('c', (int) $form[$date_field]['#default_value']);
+  }
+
+  $form['price_amount']['#element_validate'] = array('element_validate_integer_positive');
+  $form['price_amount']['#description'] = t('In Drupal Commerce minor currency so $1.50 = 150 and $150 = 15000');
+  $form['quantity']['#element_validate'] = array('element_validate_number');
+  $form['currency_code']['#default_value'] = variable_get('commerce_default_currency', 'USD');
+
+  $form['pricelist_uuid'] = array(
+    '#type' => 'value',
+    '#value' => $entity->pricelist_uuid,
+  );
 
   $form['entity'] = array(
     '#type' => 'value',
@@ -590,6 +612,18 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
  * We pass things straight through to the Field API to handle validation
  * of the attached fields.
  */
+function _commerce_pricelist_date_validate($element) {
+  if (!is_int(strtotime($element['#value']))) {
+    form_set_error($element['#name'], t('Unable to convert date string to timestamp'));
+  }
+}
+
+/**
+ * Validation handler for commerce_pricelist_item_add_form form.
+ *
+ * We pass things straight through to the Field API to handle validation
+ * of the attached fields.
+ */
 function commerce_pricelist_item_form_validate($form, &$form_state) {
 }
 
@@ -603,7 +637,14 @@ function commerce_pricelist_item_form_submit($form, &$form_state) {
   }
   field_attach_submit('commerce_pricelist_item', $entity, $form, $form_state);
   $entity = commerce_pricelist_item_save($entity);
-  $form_state['redirect'] = 'admin/commerce/pricelist/commerce_pricelist_item/' . $entity->item_id . '/edit';
+  if ($entity) {
+    drupal_set_message(t('Price list item saved'));
+  }
+  $pricelist = entity_uuid_load('commerce_pricelist_list', array($form_state['values']['pricelist_uuid']));
+  if (count($pricelist)) {
+    $pricelist = reset($pricelist);
+    $form_state['redirect'] = 'admin/commerce/pricelist/commerce_pricelist_list/' . $pricelist->list_id;
+  }
 }
 
 /**
@@ -613,9 +654,15 @@ function commerce_pricelist_item_form_submit($form, &$form_state) {
  */
 function commerce_pricelist_item_edit_delete($form, &$form_state) {
   $entity = $form_state['values']['entity'];
+
+  $pricelist = entity_uuid_load('commerce_pricelist_list', array($form_state['values']['pricelist_uuid']));
+  if (count($pricelist)) {
+    $pricelist = reset($pricelist);
+    $form_state['redirect'] = 'admin/commerce/pricelist/commerce_pricelist_list/' . $pricelist->list_id;
+  }
+
   commerce_pricelist_item_delete($entity);
   drupal_set_message(t('The entity %item_description (ID %id) has been deleted',
       array('%item_description' => $entity->uuid, '%id' => $entity->item_id))
   );
-  $form_state['redirect'] = 'admin/commerce/pricelist/commerce_pricelist';
 }

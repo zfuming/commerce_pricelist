@@ -347,6 +347,25 @@ function commerce_pricelist_menu() {
     'file' => 'includes/commerce_pricelist.admin.inc',
   );
 
+  // 'Edit' tab for an individual entity page.
+  $items['admin/commerce/pricelist/commerce_pricelist_item/%commerce_pricelist_item/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commerce_pricelist_item_form', 4),
+    'access arguments' => array('edit any commerce_pricelist_list entity'),
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
+  // 'Edit' tab for an individual entity page.
+  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/add'] = array(
+    'title' => 'Add',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commerce_pricelist_item_form', 4),
+    'access arguments' => array('edit any commerce_pricelist_list entity'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
   return $items;
 }
 
