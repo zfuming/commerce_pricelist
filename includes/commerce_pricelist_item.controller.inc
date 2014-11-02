@@ -57,12 +57,13 @@ class CommercePricelistItemController
   /**
    * Create and return a new commerce_pricelist_list entity.
    */
-  public function create($pricelist_uuid = NULL) {
+  public function create($pricelist_uuid = NULL, $sku = NULL) {
     $entity = new stdClass();
     $entity->type = 'commerce_pricelist_item';
     $entity->item_id = 0;
+    $entity->sku = $sku;
     $entity->pricelist_uuid = $pricelist_uuid;
-    $entity->valid_to = COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE; // The apocalypse
+    $entity->valid_to = COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE;
     return $entity;
   }
 
@@ -77,16 +78,18 @@ class CommercePricelistItemController
     }
 
     if (empty($entity->valid_to)) {
-      $entity->valid_to = COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE; // The apocalypse
+      $entity->valid_to = COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE;
     }
 
     // Invoke hook_entity_presave().
     module_invoke_all('entity_presave', $entity, 'commerce_pricelist_item');
 
-    // Check if an item already exists with these values
+    // Check if an item already exists with these values.
     $existing_id = commerce_pricelist_item_get_existing_id($entity->sku, $entity->valid_from, $entity->quantity, $entity->pricelist_uuid);
 
-    if ($existing_id) $entity->item_id = $existing_id;
+    if ($existing_id) {
+      $entity->item_id = $existing_id;
+    }
 
     $primary_keys = $entity->item_id ? 'item_id' : array();
     // Write out the entity record.

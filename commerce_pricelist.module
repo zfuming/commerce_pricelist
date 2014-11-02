@@ -317,6 +317,17 @@ function commerce_pricelist_menu() {
     'file' => 'includes/commerce_pricelist.admin.inc',
   );
 
+
+  // Add example entities.
+  $items['admin/commerce/products/%commerce_product/add_price'] = array(
+    'title' => 'Add a Price list item',
+    'page callback' => 'commerce_pricelist_item_add',
+    'page arguments' => array(3),
+    'access arguments' => array('edit any commerce_pricelist_list entity'),
+    'file' => 'includes/commerce_pricelist.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+
   // The page to view our entities - needs to follow what
   // is defined in basic_uri and will use load_basic to retrieve
   // the necessary entity info.
@@ -461,16 +472,6 @@ function commerce_pricelist_item_get_existing_id($sku, $valid_from, $quantity, $
   return $item_id;
 }
 
-/**
- * Provides a wrapper on the edit form to add a new entity.
- */
-function commerce_pricelist_item_add() {
-  // Create a basic entity structure to be used and passed to the validation
-  // and submission functions.
-  $entity = entity_get_controller('commerce_pricelist_item')->create();
-  return drupal_get_form('commerce_pricelist_item_form', $entity);
-}
-
 
 /**
  * Callback for a page title when this entity is displayed.
@@ -613,6 +614,7 @@ function commerce_pricelist_list_title($entity) {
 }
 
 /**
+ *  Add price list fieldgroup to product form.
  *  Implements hook_form_BASE_FORM_ID_alter().
  */
 function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, &$form_state, $form_id) {
@@ -637,6 +639,18 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
       '#markup' => l(t('Administer price lists'), 'admin/commerce/pricelist/commerce_pricelist_list'),
       '#weight' => 50,
     );
+
+    $product = $form['#entity'];
+    $product_id = $product->product_id;
+
+    if ($product_id) {
+      $prices['add'] = array(
+        '#type' => 'item',
+        '#markup' => l(t('Add price'), 'admin/commerce/products/' . $product_id . '/add_price',
+          array('query' => array('destination' => current_path()))),
+        '#weight' => 50,
+      );
+    }
 
     $form['commerce_pricelists'] = array(
       '#type' => 'fieldset',
