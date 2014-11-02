@@ -416,7 +416,7 @@ function commerce_pricelist_draggable_form_submit($form, &$form_state) {
  *
  * @see pager_example.module
  */
-function commerce_pricelist_item_list_entities($pricelist_uuid = NULL) {
+function commerce_pricelist_item_list_entities($pricelist_uuid = NULL, $sku = FALSE) {
   $content = array();
 
   if ($pricelist_uuid) {
@@ -424,6 +424,11 @@ function commerce_pricelist_item_list_entities($pricelist_uuid = NULL) {
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'commerce_pricelist_item')
       ->propertyCondition('pricelist_uuid', $pricelist_uuid, '=');
+
+    if ($sku) {
+      // Filter by SKU.
+      $query->propertyCondition('sku', $sku, '=');
+    }
 
     $result = $query->execute();
 

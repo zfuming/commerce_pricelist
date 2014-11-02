@@ -611,3 +611,39 @@ function commerce_pricelist_list_uri($entity) {
 function commerce_pricelist_list_title($entity) {
   return t('@item_title', array('@item_title' => $entity->title));
 }
+
+/**
+ *  Implements hook_form_BASE_FORM_ID_alter().
+ */
+function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, &$form_state, $form_id) {
+  if (user_access('view any commerce_pricelist_list entity')
+    && $sku = $form['sku']['#default_value']) {
+
+    module_load_include('inc', 'commerce_pricelist', 'includes/commerce_pricelist.admin');
+
+    $pricelists = commerce_pricelist_list_load_multiple();
+
+    $prices = array();
+    foreach ($pricelists as $pricelist) {
+      $table = commerce_pricelist_item_list_entities($pricelist->uuid, $sku);
+      if (isset($table['entity_table'])) {
+        $table['entity_table']['#prefix'] = check_plain($pricelist->title);
+      }
+      $prices[$pricelist->uuid] = $table;
+    }
+
+    $prices['administer'] = array(
+      '#type' => 'item',
+      '#markup' => l(t('Administer price lists'), 'admin/commerce/pricelist/commerce_pricelist_list'),
+      '#weight' => 50,
+    );
+
+    $form['commerce_pricelists'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Price lists'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      'prices' => $prices,
+    );
+  }
+}
