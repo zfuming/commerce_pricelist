@@ -618,8 +618,11 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
   }
 
   foreach (array('valid_from', 'valid_to') as $date_field) {
+    $default_date = isset($entity->{$date_field}) ? $entity->{$date_field} : 0;
+    $date = getdate($default_date);
+    $form[$date_field]['#type'] = 'date';
     $form[$date_field]['#element_validate'] = array('_commerce_pricelist_date_validate');
-    $form[$date_field]['#default_value'] = date('c', (int) $form[$date_field]['#default_value']);
+    $form[$date_field]['#default_value'] = array('year' => $date['year'], 'month' => $date['mon'], 'day' => $date['mday']);
   }
 
   $form['price_amount']['#element_validate'] = array('element_validate_integer_positive');
@@ -655,10 +658,16 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
  * Validation handler, parses string as date
  */
 function _commerce_pricelist_date_validate($element) {
-  if (!is_int(strtotime($element['#value']))) {
-    form_set_error($element['#name'], t('Unable to convert date string to timestamp'));
+  $input = $element['#value'];
+  $timestamp = mktime(0, 0, 0, $input['month'], $input['day'], $input['year']);
+  if (!is_int($timestamp)) {
+    form_set_error($element['#name'], t('Invalid date'));
+  }
+  elseif (!getdate($timestamp)) {
+    form_set_error($element['#name'], t('Date out of range'));
   }
 }
+
 
 /**
  * Validate that pricelist exists.
@@ -686,6 +695,13 @@ function commerce_pricelist_item_form_validate($form, &$form_state) {
  */
 function commerce_pricelist_item_form_submit($form, &$form_state) {
   $entity = $form_state['values']['entity'];
+
+  // Convert to timestamp.
+  foreach (array('valid_from', 'valid_to') as $date_field) {
+    $input = &$form_state['values'][$date_field];
+    $input = mktime(0, 0, 0, $input['month'], $input['day'], $input['year']);
+  }
+
   foreach ($form_state['values'] as $key => $value) {
     $entity->$key = $value;
   }
