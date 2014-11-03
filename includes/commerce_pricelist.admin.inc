@@ -265,6 +265,11 @@ function commerce_pricelist_draggable_form($form_state) {
           '#markup' => l(t('View'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id),
         ),
 
+        'add' => array(
+          '#markup' => l(t('Add price'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id . '/add',
+            array('query' => array('destination' => current_path()))),
+        ),
+
         'edit' => array(
           '#markup' => l(t('Edit'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id . '/edit'),
         ),
@@ -284,7 +289,7 @@ function commerce_pricelist_draggable_form($form_state) {
     // There were no entities. Tell the user.
     $content[] = array(
       '#type' => 'item',
-      '#markup' => t('No commerce_pricelist_list entities currently exist.'),
+      '#markup' => t('No price lists currently exist.'),
     );
   }
   return $content;
@@ -339,6 +344,7 @@ function theme_commerce_pricelist_draggable_form($variables) {
           drupal_render($form['pricelists'][$id]['data']),
           drupal_render($form['pricelists'][$id]['rows']),
           drupal_render($form['pricelists'][$id]['view']),
+          drupal_render($form['pricelists'][$id]['add']),
           drupal_render($form['pricelists'][$id]['edit']),
         ),
         // To support the tabledrag behaviour, we need to assign each row of the
@@ -357,7 +363,7 @@ function theme_commerce_pricelist_draggable_form($variables) {
     t('Weight'),
     t('Filters'),
     t('Rows'),
-    array('data' => t('Operations'), 'colspan' => '2'),
+    array('data' => t('Operations'), 'colspan' => '3'),
   );
   $table_id = 'pricelists-table';
 
@@ -479,7 +485,7 @@ function commerce_pricelist_item_list_entities($pricelist_uuid = NULL, $sku = FA
     // There were no entities. Tell the user.
     $content[] = array(
       '#type' => 'item',
-      '#markup' => t('No commerce_pricelist_items entities currently exist.'),
+      '#markup' => t('No price list items currently exist.'),
     );
   }
   return $content;

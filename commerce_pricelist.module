@@ -367,9 +367,9 @@ function commerce_pricelist_menu() {
     'file' => 'includes/commerce_pricelist.admin.inc',
   );
 
-  // 'Edit' tab for an individual entity page.
+  // 'Add' tab for an individual entity page.
   $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/add'] = array(
-    'title' => 'Add',
+    'title' => 'Add price',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('commerce_pricelist_item_form', 4),
     'access arguments' => array('edit any commerce_pricelist_list entity'),
@@ -656,7 +656,7 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
       '#type' => 'fieldset',
       '#title' => t('Price lists'),
       '#collapsible' => TRUE,
-      '#collapsed' => FALSE,
+      '#collapsed' => TRUE,
       'prices' => $prices,
     );
   }
