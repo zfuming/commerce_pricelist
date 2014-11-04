@@ -67,7 +67,9 @@ function commerce_pricelist_rate_rules_apply($line_item, $user = FALSE) {
     global $user;
   }
 
-  $pricelist_price = commerce_pricelist_get_user_price($user, $sku, $quantity);
+  $time = ($line_item->created == "") ? FALSE : $line_item->created;
+
+  $pricelist_price = commerce_pricelist_get_user_price($user, $sku, $quantity, $time);
 
   // If pricelist was applied, return the price array as a new variable for use in
   // subsequent actions.

@@ -84,15 +84,15 @@ function commerce_pricelist_permission() {
 }
 
 /**
- * Return an array of prices like {sku : {pricelist_uuid: {quantity : price }}}
+ * Return an array of prices like {sku : {pricelist_uuid: {quantity : price }}}.
  *
  * @todo take currency into account...
  *
  * @param $sku
- * @param int $quantity
+ * @param bool $time
  * @return array
  */
-function commerce_pricelist_get_prices($sku) {
+function commerce_pricelist_get_prices($sku, $time = FALSE) {
 
   $cache_id = 'commerce_pricelist_get_prices_' . $sku;
   $prices = &drupal_static($cache_id);
@@ -102,15 +102,18 @@ function commerce_pricelist_get_prices($sku) {
     }
     else {
 
-      $now = time();
+      if (!$time) {
+        $time = time();
+      }
+
       $prices = array();
       $pricelist_items = array();
 
       $query = new EntityFieldQuery();
       $query->entityCondition('entity_type', 'commerce_pricelist_item')
         ->propertyCondition('sku', $sku, '=')
-        ->propertyCondition('valid_from', $now, '<')
-        ->propertyCondition('valid_to', $now, '>')
+        ->propertyCondition('valid_from', $time, '<')
+        ->propertyCondition('valid_to', $time, '>')
         ->propertyOrderBy('quantity', 'DESC');
 
       $result = $query->execute();
@@ -142,7 +145,7 @@ function commerce_pricelist_get_prices($sku) {
  * @param int $quantity
  * @return int
  */
-function commerce_pricelist_get_user_price($user, $sku, $quantity = 0) {
+function commerce_pricelist_get_user_price($user, $sku, $quantity = 0, $time = FALSE) {
 
   $price = array();
 
@@ -152,7 +155,7 @@ function commerce_pricelist_get_user_price($user, $sku, $quantity = 0) {
     return $price;
   }
 
-  $prices = commerce_pricelist_get_prices($sku);
+  $prices = commerce_pricelist_get_prices($sku, $time);
   if (empty($prices)) {
     // @todo set error
     return $price;
