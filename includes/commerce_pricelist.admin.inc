@@ -619,10 +619,9 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
 
   foreach (array('valid_from', 'valid_to') as $date_field) {
     $default_date = isset($entity->{$date_field}) ? $entity->{$date_field} : 0;
-    $date = getdate($default_date);
-    $form[$date_field]['#type'] = 'date';
     $form[$date_field]['#element_validate'] = array('_commerce_pricelist_date_validate');
-    $form[$date_field]['#default_value'] = array('year' => $date['year'], 'month' => $date['mon'], 'day' => $date['mday']);
+    $form[$date_field]['#description'] = t('Format: %time. The date format is YYYY-MM-DD and %timezone is the time zone offset from UTC.', array('%time' => date('Y-m-d H:i:s O', $default_date), '%timezone' => date('O', $default_date)));
+    $form[$date_field]['#default_value'] = date('Y-m-d H:i:s O', $default_date);
   }
 
   $form['price_amount']['#element_validate'] = array('element_validate_integer_positive');
@@ -658,13 +657,8 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
  * Validation handler, parses string as date
  */
 function _commerce_pricelist_date_validate($element) {
-  $input = $element['#value'];
-  $timestamp = mktime(0, 0, 0, $input['month'], $input['day'], $input['year']);
-  if (!is_int($timestamp)) {
-    form_set_error($element['#name'], t('Invalid date'));
-  }
-  elseif (!getdate($timestamp)) {
-    form_set_error($element['#name'], t('Date out of range'));
+  if (!empty($element['#value']) && strtotime($element['#value']) === FALSE) {
+    form_set_error($element['#name'], t('You have to specify a valid date.'));
   }
 }
 
@@ -698,8 +692,7 @@ function commerce_pricelist_item_form_submit($form, &$form_state) {
 
   // Convert to timestamp.
   foreach (array('valid_from', 'valid_to') as $date_field) {
-    $input = &$form_state['values'][$date_field];
-    $input = mktime(0, 0, 0, $input['month'], $input['day'], $input['year']);
+    $form_state['values'][$date_field] = strtotime($form_state['values'][$date_field]);
   }
 
   foreach ($form_state['values'] as $key => $value) {
