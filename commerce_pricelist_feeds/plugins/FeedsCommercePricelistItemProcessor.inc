@@ -165,13 +165,11 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
       ),
     );
 
-    // Let implementers of hook_feeds_term_processor_targets() add their targets.
-    try {
-      self::loadMappers();
-      feeds_alter('feeds_processor_targets', $targets, 'commerce_pricelist_item');
-    } catch (Exception $e) {
-      // Do nothing.
-    }
+    // Let other modules expose mapping targets.
+    self::loadMappers();
+    $entity_type = $this->entityType();
+    $bundle = $this->bundle();
+    drupal_alter('feeds_processor_targets', $targets, $entity_type, $bundle);
 
     return $targets;
   }
