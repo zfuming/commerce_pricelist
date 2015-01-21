@@ -5,7 +5,7 @@
  * Implements the basic functionality required for price lists
  */
 
-define('COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE', 2147483647);
+define('COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE', 2147483646);
 
 /**
  * Implements hook_entity_info().
