@@ -13,17 +13,14 @@ function commerce_pricelist_default_rules_configuration() {
     "LABEL" : "Fetch the price list price for a line item",
     "PLUGIN" : "rule",
     "OWNER" : "rules",
-    "TAGS" : [ "Commerce Price list" ],
     "REQUIRES" : [ "commerce_pricelist", "rules" ],
     "USES VARIABLES" : {
       "commerce_line_item" : { "label" : "Line item", "type" : "commerce_line_item" },
       "commerce_pricelist_price" : {
         "label" : "Price list price",
-        "type" : "commerce_price",
+        "type" : "list\u003Ccommerce_price\u003E",
         "parameter" : false
-      },
-      "commerce_pricelist_price_amount" : { "label" : "Amount", "type" : "decimal", "parameter" : false },
-      "commerce_pricelist_price_currency_code" : { "label" : "Currency", "type" : "text", "parameter" : false }
+      }
     },
     "DO" : [
       { "commerce_pricelist_rate_apply" : {
@@ -31,28 +28,16 @@ function commerce_pricelist_default_rules_configuration() {
             "commerce_line_item" : [ "commerce_line_item" ],
             "user" : [ "commerce-line-item:order:owner" ]
           },
-          "PROVIDE" : {
-            "commerce_pricelist_price" : { "commerce_pricelist_price_fetched" : "Applied pricelist price array" },
-            "commerce_pricelist_price_amount" : { "commerce_pricelist_price_amount_fetched" : "Amount" },
-            "commerce_pricelist_price_currency_code" : { "commerce_pricelist_price_currency_code_fetched" : "Currency" }
-          }
+          "PROVIDE" : { "commerce_pricelist_price_array" : { "commerce_pricelist_price_array" : "Commerce Pricelist price" } }
         }
       },
       { "data_set" : {
-          "data" : [ "commerce-pricelist-price-amount" ],
-          "value" : [ "commerce-pricelist-price-amount-fetched" ]
-        }
-      },
-      { "data_set" : {
-          "data" : [ "commerce-pricelist-price-currency-code" ],
-          "value" : [ "commerce-pricelist-price-currency-code-fetched" ]
+          "data" : [ "commerce-pricelist-price" ],
+          "value" : [ "commerce-pricelist-price-array" ]
         }
       }
     ],
-    "PROVIDES VARIABLES" : [
-      "commerce_pricelist_price_amount",
-      "commerce_pricelist_price_currency_code"
-    ]
+    "PROVIDES VARIABLES" : [ "commerce_pricelist_price" ]
   }
 }');
   $items['rules_commerce_price_list_set_price'] = entity_import('rules_config', '{ "rules_commerce_price_list_set_price" : {
@@ -60,27 +45,38 @@ function commerce_pricelist_default_rules_configuration() {
     "PLUGIN" : "reaction rule",
     "WEIGHT" : "-10",
     "OWNER" : "rules",
-    "REQUIRES" : [ "rules", "commerce_line_item", "commerce_product_reference" ],
+    "REQUIRES" : [
+      "commerce_pricelist",
+      "commerce_line_item",
+      "commerce_product_reference"
+    ],
     "ON" : { "commerce_product_calculate_sell_price" : [] },
     "DO" : [
-      { "component_rules_commerce_price_list_fetch_price" : {
-          "USING" : { "commerce_line_item" : [ "commerce_line_item" ] },
-          "PROVIDE" : {
-            "commerce_pricelist_price_amount" : { "commerce_pricelist_price_amount" : "Amount" },
-            "commerce_pricelist_price_currency_code" : { "commerce_pricelist_price_currency_code" : "Currency" }
-          }
+      { "commerce_pricelist_rate_apply" : {
+          "USING" : {
+            "commerce_line_item" : [ "commerce_line_item" ],
+            "user" : [ "commerce_line_item:order:owner" ]
+          },
+          "PROVIDE" : { "commerce_pricelist_price_array" : { "commerce_pricelist_price_array" : "Commerce Pricelist price" } }
         }
       },
-      { "commerce_line_item_unit_price_currency_code" : {
-          "commerce_line_item" : [ "commerce_line_item" ],
-          "currency_code" : [ "commerce-pricelist-price-currency-code" ]
-        }
-      },
-      { "commerce_line_item_unit_price_amount" : {
-          "commerce_line_item" : [ "commerce_line_item" ],
-          "amount" : [ "commerce-pricelist-price-amount" ],
-          "component_name" : "base_price",
-          "round_mode" : "0"
+      { "LOOP" : {
+          "USING" : { "list" : [ "commerce-pricelist-price-array" ] },
+          "ITEM" : { "list_item" : "Current list item" },
+          "DO" : [
+            { "commerce_line_item_unit_price_currency_code" : {
+                "commerce_line_item" : [ "commerce-line-item" ],
+                "currency_code" : [ "list-item:currency-code" ]
+              }
+            },
+            { "commerce_line_item_unit_price_amount" : {
+                "commerce_line_item" : [ "commerce_line_item" ],
+                "amount" : [ "list-item:amount" ],
+                "component_name" : "base_price",
+                "round_mode" : "0"
+              }
+            }
+          ]
         }
       }
     ]

@@ -29,7 +29,8 @@ $actions = array();
       ),
     ),
     'provides' => array(
-      'commerce_pricelist_price' => array(
+      'commerce_pricelist_price_array' => array('type' => 'list<commerce_price>', 'label' => t('Commerce Pricelist price')),
+/*      'commerce_pricelist_price' => array(
         'type' => 'commerce_price',
         'label' => t('Applied pricelist price array'),
       ),
@@ -40,7 +41,7 @@ $actions = array();
       'commerce_pricelist_price_currency_code' => array(
         'type' => 'text',
         'label' => t('Currency'),
-      ),
+      ),*/
     ),
     'group' => t('Commerce pricelist'),
     'callbacks' => array(
@@ -70,19 +71,15 @@ function commerce_pricelist_rate_rules_apply($line_item, $user = FALSE) {
   $time = ($line_item->created == "") ? FALSE : $line_item->created;
 
   $pricelist_price = commerce_pricelist_get_user_price($user, $sku, $quantity, $time);
+  $commerce_pricelist_price_array = array();
 
   // If pricelist was applied, return the price array as a new variable for use in
   // subsequent actions.
   if ($pricelist_price) {
-    $currency_code = $pricelist_price['currency_code'];
-    $amount = $pricelist_price['amount'];
-    return array(
-      'commerce_pricelist_price' => $pricelist_price,
-      'commerce_pricelist_price_currency_code' => $currency_code,
-      'commerce_pricelist_price_amount' => $amount,
-    );
+    $commerce_pricelist_price_array[] = $pricelist_price;
   }
 
+  return array('commerce_pricelist_price_array' => $commerce_pricelist_price_array);
 }
 
 /**
