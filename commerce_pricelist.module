@@ -165,10 +165,11 @@ function commerce_pricelist_get_user_price($user, $sku, $quantity = 0, $time = F
   // for this product.
   foreach ($user_pricelists as $pricelist) {
     if (isset($prices[$sku][$pricelist->uuid])) {
-      foreach ($prices[$sku][$pricelist->uuid] as $quantity_limit => $price) {
+      foreach ($prices[$sku][$pricelist->uuid] as $quantity_limit => $price_item) {
         // Check if quantity arg is higher than the quantity limit for this price.
         if ($quantity >= $quantity_limit) {
           // We found our price, break out.
+          $price = $price_item;
           break 2;
         }
       }
