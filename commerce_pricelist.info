@@ -20,5 +20,3 @@ dependencies[] = commerce_product
 dependencies[] = commerce_product_pricing
 dependencies[] = entity
 dependencies[] = rules
-dependencies[] = field
-dependencies[] = uuid

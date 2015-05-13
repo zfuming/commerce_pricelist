@@ -124,7 +124,7 @@ function commerce_pricelist_get_prices($sku, $time = FALSE) {
 
       // Create price array keyed by price list.
       foreach ($pricelist_items as $item) {
-        $prices[$sku][$item->pricelist_uuid][$item->quantity] = array(
+        $prices[$sku][$item->pricelist_id][$item->quantity] = array(
           'currency_code' => $item->currency_code,
           'amount' => $item->price_amount,
         );
@@ -164,8 +164,8 @@ function commerce_pricelist_get_user_price($user, $sku, $quantity = 0, $time = F
   // Loop through all pricelists for current user and match against prices
   // for this product.
   foreach ($user_pricelists as $pricelist) {
-    if (isset($prices[$sku][$pricelist->uuid])) {
-      foreach ($prices[$sku][$pricelist->uuid] as $quantity_limit => $price_item) {
+    if (isset($prices[$sku][$pricelist->list_id])) {
+      foreach ($prices[$sku][$pricelist->list_id] as $quantity_limit => $price_item) {
         // Check if quantity arg is higher than the quantity limit for this price.
         if ($quantity >= $quantity_limit) {
           // We found our price, break out.
@@ -284,10 +284,11 @@ function commerce_pricelist_list_filter_get($entity, $filter_key) {
  * Implements hook_entity_delete().
  */
 function commerce_pricelist_entity_delete($entity, $type) {
+
   if ($type == 'commerce_pricelist_list') {
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'commerce_pricelist_item')
-      ->propertyCondition('pricelist_uuid', $entity->uuid, '=');
+      ->propertyCondition('pricelist_id', $entity->list_id, '=');
 
     $result = $query->execute();
 
@@ -467,13 +468,13 @@ function commerce_pricelist_item_delete_multiple($entities) {
  * @param $quantity
  * @return int
  */
-function commerce_pricelist_item_get_existing_id($sku, $valid_from, $quantity, $pricelist_uuid) {
+function commerce_pricelist_item_get_existing_id($sku, $valid_from, $quantity, $pricelist_id) {
   $item_id = db_query("SELECT item_id FROM {commerce_pricelist_item} " .
-    "WHERE sku = :sku AND valid_from = :valid_from AND quantity = :quantity AND pricelist_uuid = :pricelist_uuid",
+    "WHERE sku = :sku AND valid_from = :valid_from AND quantity = :quantity AND pricelist_id = :pricelist_id",
     array(':sku' => $sku,
       ':valid_from' => $valid_from,
       ':quantity' => $quantity,
-      ':pricelist_uuid' => $pricelist_uuid))
+      ':pricelist_id' => $pricelist_id))
     ->fetchField();
   return $item_id;
 }
@@ -633,11 +634,11 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
 
     $prices = array();
     foreach ($pricelists as $pricelist) {
-      $table = commerce_pricelist_item_list_entities($pricelist->uuid, $sku);
+      $table = commerce_pricelist_item_list_entities($pricelist->list_id, $sku);
       if (isset($table['entity_table'])) {
         $table['entity_table']['#prefix'] = check_plain($pricelist->title);
       }
-      $prices[$pricelist->uuid] = $table;
+      $prices[$pricelist->list_id] = $table;
     }
 
     $prices['administer'] = array(

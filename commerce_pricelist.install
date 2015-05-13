@@ -165,6 +165,15 @@ function commerce_pricelist_schema() {
     ),
   );
 
+  // Support for UUID module.
+  if (module_exists('uuid')) {
+    $field = uuid_schema_field_definition();
+    $schema['commerce_pricelist_item']['fields']['uuid'] = $field;
+    $schema['commerce_pricelist_item']['indexes']['uuid'] = array('uuid');
+    $schema['commerce_pricelist_list']['fields']['uuid'] = $field;
+    $schema['commerce_pricelist_list']['indexes']['uuid'] = array('uuid');
+  }
+
   return $schema;
 }
 
