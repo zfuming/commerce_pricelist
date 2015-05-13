@@ -64,7 +64,7 @@ function commerce_pricelist_list_view($entity, $view_mode = 'full') {
   // for us.
   entity_prepare_view($entity_type, array($entity->list_id => $entity));
 
-  $pricelist_items = commerce_pricelist_item_list_entities($entity->uuid);
+  $pricelist_items = commerce_pricelist_item_list_entities($entity->list_id);
 
   $entity->content['pricelist_items'] = $pricelist_items;
 
@@ -215,7 +215,7 @@ function commerce_pricelist_draggable_form($form_state) {
       $query = new EntityFieldQuery();
 
       $count = $query->entityCondition('entity_type', 'commerce_pricelist_item')
-        ->propertyCondition('pricelist_uuid', $item->uuid)
+        ->propertyCondition('pricelist_id', $item->list_id)
         ->count()
         ->execute();
 
@@ -422,15 +422,15 @@ function commerce_pricelist_draggable_form_submit($form, &$form_state) {
  *
  * @see pager_example.module
  */
-function commerce_pricelist_item_list_entities($pricelist_uuid = NULL, $sku = FALSE) {
+function commerce_pricelist_item_list_entities($pricelist_id = NULL, $sku = FALSE) {
   $content = array();
   $entities = array();
 
-  if ($pricelist_uuid) {
+  if ($pricelist_id) {
 
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'commerce_pricelist_item')
-      ->propertyCondition('pricelist_uuid', $pricelist_uuid, '=');
+      ->propertyCondition('pricelist_id', $pricelist_id, '=');
 
     if ($sku) {
       // Filter by SKU.
@@ -515,10 +515,10 @@ function commerce_pricelist_item_view($entity, $view_mode = 'full') {
   entity_prepare_view($entity_type, array($entity->item_id => $entity));
 
   // OK, Field API done, now we can set up some of our own data.
-  $entity->content['pricelist_uuid'] = array(
+  $entity->content['pricelist_id'] = array(
     '#type' => 'item',
-    '#title' => t('Price list UUID'),
-    '#markup' => $entity->pricelist_uuid,
+    '#title' => t('Price list ID'),
+    '#markup' => $entity->pricelist_id,
   );
 
   // Now to invoke some hooks. We need the language code for
@@ -583,21 +583,22 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
   if (isset($entity->list_id)) {
     // This is a new list item being created from the list/add tab.
     // Replace pricelist entity with a pricelist item entity.
-    $entity = entity_get_controller('commerce_pricelist_item')->create($entity->uuid);
+    $entity = entity_get_controller('commerce_pricelist_item')->create($entity->list_id);
   }
 
-  if ($entity->pricelist_uuid) {
-    $form['pricelist_uuid'] = array(
+  if ($entity->pricelist_id) {
+    $form['pricelist_id'] = array(
       '#type' => 'value',
-      '#value' => $entity->pricelist_uuid,
+      '#value' => $entity->pricelist_id,
     );
-  } else {
+  }
+  else {
     $pricelists = commerce_pricelist_list_load_multiple();
     $options = array();
     foreach ($pricelists as $pricelist) {
-      $options[$pricelist->uuid] = $pricelist->title;
+      $options[$pricelist->list_id] = $pricelist->title;
     }
-    $form['pricelist_uuid'] = array(
+    $form['pricelist_id'] = array(
       '#type' => 'select',
       '#options' => $options,
       '#required' => TRUE,
@@ -670,7 +671,7 @@ function _commerce_pricelist_date_validate($element) {
  */
 function _commerce_pricelist_validate_pricelist($element) {
   $value = $element['#value'];
-  if ($value == '' || !entity_uuid_load('commerce_pricelist_list', array($value))) {
+  if ($value == '' || !entity_load('commerce_pricelist_list', array($value))) {
     form_set_error($element['#name'], t('Invalid price list'));
   }
 }
@@ -714,6 +715,6 @@ function commerce_pricelist_item_edit_delete($form, &$form_state) {
   $entity = $form_state['values']['entity'];
   commerce_pricelist_item_delete($entity);
   drupal_set_message(t('The entity %item_description (ID %id) has been deleted',
-      array('%item_description' => $entity->uuid, '%id' => $entity->item_id))
+      array('%item_description' => $entity->item_id, '%id' => $entity->item_id))
   );
 }

@@ -145,10 +145,10 @@ class CommercePricelistListController
           // Invoke hook_entity_delete().
           module_invoke_all('entity_delete', $entity, 'commerce_pricelist_list');
           field_attach_delete('commerce_pricelist_list', $entity);
-          $entity_ids[] = $entity->uuid;
+          $entity_ids[] = $entity->list_id;
         }
         db_delete('commerce_pricelist_list')
-          ->condition('uuid', $entity_ids, 'IN')
+          ->condition('list_id', $entity_ids, 'IN')
           ->execute();
       }
       catch (Exception $e) {

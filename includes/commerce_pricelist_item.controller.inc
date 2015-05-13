@@ -57,12 +57,12 @@ class CommercePricelistItemController
   /**
    * Create and return a new commerce_pricelist_list entity.
    */
-  public function create($pricelist_uuid = NULL, $sku = NULL) {
+  public function create($pricelist_id= NULL, $sku = NULL) {
     $entity = new stdClass();
     $entity->type = 'commerce_pricelist_item';
     $entity->item_id = 0;
     $entity->sku = $sku;
-    $entity->pricelist_uuid = $pricelist_uuid;
+    $entity->pricelist_id = $pricelist_id;
     $entity->valid_to = COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE;
     return $entity;
   }
@@ -73,7 +73,7 @@ class CommercePricelistItemController
   public function save($entity) {
     // If our entity has no uuid, then we need to give it a
     // time of creation.
-    if (empty($entity->uuid)) {
+    if (empty($entity->created)) {
       $entity->created = time();
     }
 
@@ -85,7 +85,7 @@ class CommercePricelistItemController
     module_invoke_all('entity_presave', $entity, 'commerce_pricelist_item');
 
     // Check if an item already exists with these values.
-    $existing_id = commerce_pricelist_item_get_existing_id($entity->sku, $entity->valid_from, $entity->quantity, $entity->pricelist_uuid);
+    $existing_id = commerce_pricelist_item_get_existing_id($entity->sku, $entity->valid_from, $entity->quantity, $entity->pricelist_id);
 
     if ($existing_id) {
       $entity->item_id = $existing_id;
