@@ -39,7 +39,8 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
     $defaults = array(
       'pricelist_uuid' => $this->pricelist_a->uuid,
       'sku' => $this->product->sku,
-      'price_amount' => 100
+      'price_amount' => 100,
+      'currency_code' => 'USD'
     );
 
     $vars += $defaults;
@@ -117,7 +118,7 @@ class CommercePricelistTestCaseSimpleProduct extends CommercePricelistTestCase {
    */
   public function testCommercePricelistDeactivateZeroPriceProduct() {
     $this->drupalGet('node/' . $this->product_node->nid);
-    $this->assertText(t('Product not available'), t('Product was correctly disabled'));
+    $this->assertRaw(t('Product not available'), t('Product was correctly disabled'));
   }
 
   /**
@@ -134,7 +135,7 @@ class CommercePricelistTestCaseSimpleProduct extends CommercePricelistTestCase {
 
     // Go to product display page
     $this->drupalGet('node/' . $this->product_node->nid);
-    $this->assertText(t('Add to cart'), t('Product was correctly enabled.'));
+    $this->assertRaw(t('Add to cart'), t('Product was correctly enabled.'));
     $this->assertText('$1.00', t('Product price was correctly set from price list.'));
 
     // Add to product to cart.
