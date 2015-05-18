@@ -64,6 +64,8 @@ class CommercePricelistItemController
     $entity->sku = $sku;
     $entity->pricelist_uuid = $pricelist_uuid;
     $entity->valid_to = COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE;
+    $entity->valid_from = 0;
+    $entity->quantity = 0;
     return $entity;
   }
 
