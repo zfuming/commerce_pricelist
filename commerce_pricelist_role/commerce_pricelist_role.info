@@ -3,4 +3,7 @@ description = Set pricelist per role
 core = 7.x
 package = Commerce (contrib)
 
+; Tests
+files[] = tests/commerce_pricelist_role.test
+
 dependencies[] = commerce_pricelist
