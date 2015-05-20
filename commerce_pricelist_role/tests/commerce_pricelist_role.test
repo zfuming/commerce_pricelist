@@ -33,7 +33,7 @@ class CommercePricelistRoleTestCaseSimpleProduct extends CommercePricelistTestCa
     $this->createDummyPricelistItem();
     $this->createDummyPricelistItem(array(
       'price_amount' => 50,
-      'pricelist_uuid' => $this->pricelist_b->uuid
+      'pricelist_id' => $this->pricelist_b->list_id
     ));
   }
 

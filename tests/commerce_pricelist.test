@@ -80,7 +80,7 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
 
   public function createDummyPricelistItem($vars = array()) {
     $defaults = array(
-      'pricelist_uuid' => $this->pricelist_a->uuid,
+      'pricelist_id' => $this->pricelist_a->list_id,
       'sku' => $this->product->sku,
       'price_amount' => 100,
       'currency_code' => 'USD',
