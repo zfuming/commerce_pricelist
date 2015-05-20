@@ -58,7 +58,7 @@ function commerce_pricelist_schema() {
         'default' => 1,
       ),
       'uid' => array(
-        'description' => 'The {users}.uid that owns this node; initially, this is the user that created it.',
+        'description' => 'The {users}.uid that owns this item; initially, this is the user that created it.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -140,12 +140,11 @@ function commerce_pricelist_schema() {
         'length' => 32,
         'not null' => TRUE,
       ),
-      'pricelist_uuid' => array(
-        'type' => 'char',
-        'length' => 36,
+      'pricelist_id' => array(
+        'type' => 'int',
+        'default' => 0,
+        'description' => 'The List ID.',
         'not null' => TRUE,
-        'default' => '',
-        'description' => 'The Universally Unique Identifier.',
       ),
     ),
     'primary key' => array('item_id'),
@@ -156,7 +155,7 @@ function commerce_pricelist_schema() {
     'foreign keys' => array(
       'item_pricelist' => array(
         'table' => 'commerce_pricelist',
-        'columns' => array('pricelist_uuid' => 'uuid'),
+        'columns' => array('pricelist_id' => 'list_id')
       ),
       'sku' => array(
         'table' => 'commerce_product',
@@ -178,13 +177,99 @@ function commerce_pricelist_schema() {
 }
 
 
-  /**
+/**
  * Implements hook_uninstall().
- *
- * At uninstall time we'll notify field.module that the entity was deleted
- * so that attached fields can be cleaned up.
  *
  * @ingroup commerce_pricelist
  */
 function commerce_pricelist_uninstall() {
+}
+
+/**
+ * Remove uuid dependency.
+ * Add list_id field to pricelist item table.
+ * Implements hook_update_N().
+ *
+ * @param $sandbox
+ */
+function commerce_pricelist_update_7001(&$sandbox) {
+  if (!db_field_exists('commerce_pricelist_item', 'pricelist_id')) {
+    $field = array(
+      'type' => 'int',
+      'default' => 0,
+      'description' => 'The List ID.',
+      'not null' => TRUE
+    );
+    $keys = array(
+      'foreign keys' => array(
+        'item_pricelist' => array(
+          'table' => 'commerce_pricelist',
+          'columns' => array('pricelist_id' => 'list_id')
+        )
+      )
+    );
+    db_add_field('commerce_pricelist_item', 'pricelist_id', $field, $keys);
+  }
+}
+
+/**
+ * Remove uuid dependency.
+ * Migrate uuids to ids.
+ * Implements hook_update_N().
+ *
+ * @param $sandbox
+ */
+function commerce_pricelist_update_7002(&$sandbox) {
+  if (db_field_exists('commerce_pricelist_item', 'pricelist_uuid')) {
+    // If this is the first pass through this update function then set some variables.
+    if (!isset($sandbox['total'])) {
+      $query = db_select('commerce_pricelist_item', 'i');
+      $sandbox['total'] = $query->rowCount();
+      $sandbox['current'] = 0;
+    }
+
+    // How many items should be processed per pass. The higher this number is, the faster your update will
+    // complete, but the more likely your server will run out of memory or timeout.
+    $items_per_pass = 10;
+
+    // Get the items to process during this pass.
+    $query = db_select('commerce_pricelist_item', 'i')
+      ->join('commerce_pricelist_list', 'l', 'i.pricelist_uuid = l.uuid');
+    $query->fields('i', array('item_id'))
+      ->fields('l', array('list_id'));
+
+    $result = $query->range($sandbox['current'], $items_per_pass)->execute();
+
+    while ($row = $result->fetchAssoc()) {
+      db_update('commerce_pricelist_list')
+        ->fields(array('pricelist_id' => $row['list_id']))
+        ->condition('item_id', $row['item_id'], '=')
+        ->execute();
+
+      // Increment "current" by 1.
+      $sandbox['current']++;
+    }
+
+    // Set the value for finished. If current == total then finished will be 1, signifying we are done.
+    $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
+
+    if ($sandbox['#finished'] === 1) {
+      drupal_set_message(t('Added list_id value to @items pricelist items.', array('@items' => $sandbox['total'])));
+      drupal_set_message(t('It is now safe to drop unused pricelist_uuid column from commerce_pricelist_item table. To do so, uncomment commerce_pricelist_update_7003() and run database updates. Please backup your data first!'));
+    }
+  }
+}
+
+
+/**
+ * Remove uuid dependency.
+ * Drop pricelist_uuid from items table
+ * Implements hook_update_N().
+ *
+ * @param $sandbox
+ */
+function commerce_pricelist_update_7003(&$sandbox) {
+  if (db_field_exists('commerce_pricelist_item', 'pricelist_uuid')) {
+    db_drop_field('commerce_pricelist_item', 'pricelist_uuid');
+  }
 }
