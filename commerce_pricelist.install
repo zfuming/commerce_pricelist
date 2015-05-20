@@ -150,7 +150,7 @@ function commerce_pricelist_schema() {
     'primary key' => array('item_id'),
     'indexes' => array(
       'sku' => array('sku'),
-      'pricelist_uuid' => array('pricelist_uuid'),
+      'pricelist_id' => array('pricelist_id'),
     ),
     'foreign keys' => array(
       'item_pricelist' => array(
@@ -186,11 +186,7 @@ function commerce_pricelist_uninstall() {
 }
 
 /**
- * Remove uuid dependency.
  * Add list_id field to pricelist item table.
- * Implements hook_update_N().
- *
- * @param $sandbox
  */
 function commerce_pricelist_update_7001(&$sandbox) {
   if (!db_field_exists('commerce_pricelist_item', 'pricelist_id')) {
@@ -208,23 +204,22 @@ function commerce_pricelist_update_7001(&$sandbox) {
         )
       )
     );
+    db_drop_unique_key('commerce_pricelist_item', 'item_pricelist');
     db_add_field('commerce_pricelist_item', 'pricelist_id', $field, $keys);
+    db_add_index('commerce_pricelist_item', 'pricelist_id', array('pricelist_id'));
   }
 }
 
 /**
- * Remove uuid dependency.
  * Migrate uuids to ids.
- * Implements hook_update_N().
- *
- * @param $sandbox
  */
 function commerce_pricelist_update_7002(&$sandbox) {
   if (db_field_exists('commerce_pricelist_item', 'pricelist_uuid')) {
     // If this is the first pass through this update function then set some variables.
     if (!isset($sandbox['total'])) {
-      $query = db_select('commerce_pricelist_item', 'i');
-      $sandbox['total'] = $query->rowCount();
+      $query = db_select('commerce_pricelist_item', 'i')
+        ->countQuery();
+      $sandbox['total'] = $query->execute()->fetchField();
       $sandbox['current'] = 0;
     }
 
@@ -233,15 +228,15 @@ function commerce_pricelist_update_7002(&$sandbox) {
     $items_per_pass = 10;
 
     // Get the items to process during this pass.
-    $query = db_select('commerce_pricelist_item', 'i')
-      ->join('commerce_pricelist_list', 'l', 'i.pricelist_uuid = l.uuid');
+    $query = db_select('commerce_pricelist_item', 'i');
+    $query->join('commerce_pricelist_list', 'l', 'i.pricelist_uuid = l.uuid');
     $query->fields('i', array('item_id'))
       ->fields('l', array('list_id'));
 
     $result = $query->range($sandbox['current'], $items_per_pass)->execute();
 
     while ($row = $result->fetchAssoc()) {
-      db_update('commerce_pricelist_list')
+      db_update('commerce_pricelist_item')
         ->fields(array('pricelist_id' => $row['list_id']))
         ->condition('item_id', $row['item_id'], '=')
         ->execute();
@@ -260,16 +255,12 @@ function commerce_pricelist_update_7002(&$sandbox) {
   }
 }
 
-
 /**
- * Remove uuid dependency.
- * Drop pricelist_uuid from items table
- * Implements hook_update_N().
- *
- * @param $sandbox
+ * Drop pricelist_uuid from pricelist items table
  */
 function commerce_pricelist_update_7003(&$sandbox) {
   if (db_field_exists('commerce_pricelist_item', 'pricelist_uuid')) {
     db_drop_field('commerce_pricelist_item', 'pricelist_uuid');
+    db_drop_index('commerce_pricelist_item', 'pricelist_uuid');
   }
 }
