@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Functional tests for the commerce pricelist role module.
+ */
+
+/**
+ * Test price list features for a product display that only has one product attached.
+ */
+class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestCase {
+
+  /**
+   * Implementation of getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => 'Commerce Pricelist Feeds',
+      'description' => 'Test importing pricelist items through feeds',
+      'group' => 'Commerce Pricelist',
+    );
+  }
+
+  /**
+   * Implementation of setUp().
+   */
+  function setUp() {
+    parent::setUpHelper('all', array('commerce_pricelist_feeds_example'));
+    // Create a dummy product display content type.
+    $this->createDummyProductDisplayContentType();
+
+  }
+
+  /**
+   * Test if the price of a product changes when a price list is assigned a role.
+   */
+  public function testCommercePricelistImport() {
+
+    // Log in as a admin.
+    $this->drupalLogin($this->site_admin);
+
+  }
+}
