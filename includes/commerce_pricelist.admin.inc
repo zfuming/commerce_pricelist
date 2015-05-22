@@ -475,7 +475,7 @@ function commerce_pricelist_item_list_entities($pricelist_id = NULL, $sku = FALS
     $content['entity_table'] = array(
       '#theme' => 'table',
       '#rows' => $rows,
-      '#header' => array(t('sku'), t('Valid from'), t('Valid to'), t('Quantity'), t('Amount'), t('Currency'), t('Operations')),
+      '#header' => array(t('sku'), t('Valid from'), t('Valid to'), t('Quantity'), t('Price'), t('Currency'), t('Operations')),
     );
   }
   else {
