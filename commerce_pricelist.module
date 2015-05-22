@@ -668,3 +668,12 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
     );
   }
 }
+
+function _commerce_pricelist_display_date($value, $format = FALSE) {
+  if ($value < COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE
+  && $value > 0 && is_numeric($value)) {
+    return $format ? format_date($value, 'custom', $format) :
+      format_date($value, 'short');
+  }
+  return '';
+}
