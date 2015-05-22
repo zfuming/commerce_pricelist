@@ -256,11 +256,13 @@ function commerce_pricelist_update_7002(&$sandbox) {
 }
 
 /**
- * Drop pricelist_uuid from pricelist items table
+ * Drop pricelist_uuid from pricelist items table.
+ * Commented out to prevent unintentional data loss.
+ * Uncomment to clean out unused column.
  */
-function commerce_pricelist_update_7003(&$sandbox) {
+/*function commerce_pricelist_update_7003(&$sandbox) {
   if (db_field_exists('commerce_pricelist_item', 'pricelist_uuid')) {
     db_drop_field('commerce_pricelist_item', 'pricelist_uuid');
     db_drop_index('commerce_pricelist_item', 'pricelist_uuid');
   }
-}
+}*/
