@@ -453,16 +453,13 @@ function commerce_pricelist_item_list_entities($pricelist_id = NULL, $sku = FALS
     $rows = array();
 
     foreach ($entities as $entity) {
-      // Don't print out the date of the apocalypse
-      if ($entity->valid_to == COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE) {
-        $entity->valid_to = '';
-      }
+
       // Create tabular rows for our entities.
       $rows[] = array(
         'data' => array(
           'sku' => check_plain($entity->sku),
-          'valid from' => format_date($entity->valid_from, 'short'),
-          'valid to' => format_date($entity->valid_to, 'short'),
+          'valid from' => _commerce_pricelist_display_date($entity->valid_from),
+          'valid to' =>  _commerce_pricelist_display_date($entity->valid_to),
           'quantity' => $entity->quantity,
           // @todo Format currency through commerce
           'amount' => $entity->price_amount / 100,
@@ -618,11 +615,12 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
     );
   }
 
-  foreach (array('valid_from', 'valid_to') as $date_field) {
-    $default_date = isset($entity->{$date_field}) ? $entity->{$date_field} : 0;
-    $form[$date_field]['#element_validate'] = array('_commerce_pricelist_date_validate');
-    $form[$date_field]['#description'] = t('Format: %time. The date format is YYYY-MM-DD and %timezone is the time zone offset from UTC.', array('%time' => date('Y-m-d H:i:s O', $default_date), '%timezone' => date('O', $default_date)));
-    $form[$date_field]['#default_value'] = date('Y-m-d H:i:s O', $default_date);
+  foreach (array('valid_from', 'valid_to') as $date) {
+    $default_date = isset($entity->{$date}) ? $entity->{$date} : 0;
+    $form[$date]['#required'] = FALSE;
+    $form[$date]['#element_validate'] = array('_commerce_pricelist_date_validate');
+    $form[$date]['#description'] = t('Format: %time. The date format is YYYY-MM-DD and %timezone is the time zone offset from UTC.', array('%time' => date('Y-m-d H:i:s O', $default_date), '%timezone' => date('O', $default_date)));
+    $form[$date]['#default_value'] = _commerce_pricelist_display_date($default_date, 'Y-m-d H:i:s O');
   }
 
   $form['price_amount']['#element_validate'] = array('element_validate_integer_positive');
@@ -658,8 +656,13 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
  * Validation handler, parses string as date
  */
 function _commerce_pricelist_date_validate($element) {
-  if (!empty($element['#value']) && strtotime($element['#value']) === FALSE) {
-    form_set_error($element['#name'], t('You have to specify a valid date.'));
+  if (!empty($element['#value'])) {
+    if (!strtotime($element['#value'])) {
+      form_set_error($element['#name'], t('You have to specify a valid date.'));
+    }
+    if (strlen($element['#value']) < 10) {
+      form_set_error($element['#name'], t('You have to specify a valid date.'));
+    }
   }
 }
 
@@ -693,7 +696,8 @@ function commerce_pricelist_item_form_submit($form, &$form_state) {
 
   // Convert to timestamp.
   foreach (array('valid_from', 'valid_to') as $date_field) {
-    $form_state['values'][$date_field] = strtotime($form_state['values'][$date_field]);
+    $timestamp = strtotime($form_state['values'][$date_field]);
+    $form_state['values'][$date_field] = $timestamp !== FALSE ? $timestamp : '';
   }
 
   foreach ($form_state['values'] as $key => $value) {
