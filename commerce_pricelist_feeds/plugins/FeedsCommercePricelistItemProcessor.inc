@@ -30,9 +30,9 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
    * Creates a new pricelist_item and returns it.
    */
   protected function newEntity(FeedsSource $source) {
-    $list_uuid = $source->config['FeedsCommercePricelistItemProcessor']['list_uuid'];
+    $list_id = $source->config['FeedsCommercePricelistItemProcessor']['list_id'];
     $pricelist_item = entity_get_controller('commerce_pricelist_item')->create();
-    $pricelist_item->pricelist_uuid = $list_uuid;
+    $pricelist_item->pricelist_id = $list_id;
     $pricelist_item->log = 'Created by FeedsCommercePricelistItemProcessor';
     return $pricelist_item;
   }
@@ -41,8 +41,8 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
    * Loads an existing pricelist_item.
    */
   protected function entityLoad(FeedsSource $source, $pricelist_item_id) {
+    $pricelist_item = commerce_pricelist_item_load($pricelist_item_id);
     if ($this->config['update_existing'] == FEEDS_UPDATE_EXISTING) {
-      $pricelist_item = commerce_pricelist_item_load($pricelist_item_id);
       $pricelist_item->log = 'Updated by FeedsCommercePricelistItemProcessor';
     }
     else {
@@ -72,19 +72,19 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
     return array(
       'is_active' => TRUE,
       'is_attached' => TRUE,
-      'list_uuid' => NULL,
+      'list_id' => NULL,
       'convert_price' => FALSE,
       'convert_dates' => FALSE,
     ) + parent::configDefaults();
   }
 
   public function sourceForm($source_config) {
-    return array('list_uuid' => NULL);
+    return array('list_id' => NULL);
   }
 
   public function sourceDefaults() {
     return array(
-      'list_uuid' => NULL,
+      'list_id' => NULL,
     );
   }
 
@@ -159,11 +159,26 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
         'name' => t('Quantity'),
         'description' => t('Lower quantity limit for this unit price'),
       ),
-      'pricelist_uuid' => array(
-        'name' => t('Price list uuid'),
-        'description' => t('Generated Unique ID'),
+      'pricelist_id' => array(
+        'name' => t('Price list id'),
+        'description' => t('Price list ID'),
+      ),
+      'pricelist_title' => array(
+        'name' => t('Price list title'),
+        'description' => t('Name of the price list, first match'),
+        'callback' => 'commerce_pricelist_feeds_set_target',
       ),
     );
+
+    // UUID module support plus support for mappings set up before beta version.
+    if (module_exists('uuid')) {
+      $targets += array(
+        'pricelist_uuid' => array(
+          'name' => t('Price list uuid'),
+          'description' => t('Generated Unique ID'),
+          'callback' => 'commerce_pricelist_feeds_set_target',
+        ));
+    }
 
     // Let other modules expose mapping targets.
     self::loadMappers();
@@ -182,7 +197,12 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
       return $pricelist_item_id;
     }
 
-    $item_id = commerce_pricelist_item_get_existing_id($result->current_item['sku'], $result->current_item['valid_from'], $result->current_item['quantity'], $result->current_item['pricelist_uuid']);
+    $item_id = commerce_pricelist_item_get_existing_id(
+      $result->current_item['sku'],
+      $result->current_item['valid_from'],
+      $result->current_item['quantity'],
+      $result->current_item['pricelist_id']
+    );
 
     if ($item_id) {
       // Return with the first sku found.

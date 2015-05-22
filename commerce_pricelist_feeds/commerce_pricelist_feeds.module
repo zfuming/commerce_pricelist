@@ -54,26 +54,21 @@ function commerce_pricelist_feeds_feeds_plugins() {
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function commerce_pricelist_feeds_form_commerce_pricelist_list_form_alter(&$form, $form_state) {
-
   $importer_id = commerce_pricelist_feeds_get_importer_id();
 
   if ($importer_id) {
-    $form['#validate'][] = 'commerce_pricelist_feeds_form_validate';
+    module_load_include('inc', 'feeds', 'feeds.pages');
+
     $entity = $form['entity']['#value'];
+    $fake_nid = _commerce_pricelist_feeds_fake_nid($entity);
+    $feeds_form = array('nid' => array('#value' => $fake_nid));
+    $feeds_form = feeds_import_form($feeds_form, $form_state, $importer_id);
 
-    // Enable uploads.
-    $form['#attributes']['enctype'] = 'multipart/form-data';
+    $form += $feeds_form;
 
-    // Build form.
-    $source = feeds_source($importer_id, $entity->list_id);
-    $form['feeds'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Feed'),
-      '#tree' => TRUE,
-      '#weight' => 40,
-    );
-    $form['feeds'] += $source->configForm($form_state);
-    $form['#feed_id'] = $importer_id;
+    $form['feeds']['#weight'] = 100;
+    $form['#validate'][] = 'commerce_pricelist_feeds_form_validate';
+
   }
 }
 
@@ -87,17 +82,20 @@ function commerce_pricelist_feeds_form_validate($form, &$form_state) {
     // Check if we have a file
     $has_file = !empty($_FILES['files']['name']['feeds']);
     if ($has_file) {
-      $importer_id = $form['#feed_id'];
+      $importer_id = $form['#importer_id'];
       $last_feeds = &drupal_static('commerce_pricelist_feeds_commerce_pricelist_list_last_feeds');
-      $entity = $form['entity']['#value'];
-      $source = feeds_source($importer_id, $entity->list_id);
+      //$entity = $form['entity']['#value'];
+      $source = feeds_source($importer_id);
 
       // entity module magically moved $form['feeds'] to $entity->feeds :P.
       // configFormValidate may modify $last_feed, smuggle it to update/insert stage
       // through a static variable.
-      $last_feeds = $form['feeds'];
+      $last_feeds = $form_state['values']['feeds'];
 
+      //$source->configFormValidate($last_feeds);
       $source->configFormValidate($last_feeds);
+
+      //feeds_import_form_validate($form, $form_state);
     }
   }
 }
@@ -127,7 +125,6 @@ function commerce_pricelist_feeds_entity_insert($entity, $type) {
       commerce_pricelist_feeds_entity_update($entity, $type);
     }
   }
-
 }
 
 /**
@@ -139,17 +136,7 @@ function commerce_pricelist_feeds_entity_update($entity, $type) {
     if (isset($entity->feeds) && $importer_id = commerce_pricelist_feeds_get_importer_id()) {
       $fake_nid = _commerce_pricelist_feeds_fake_nid($entity);
       $source = feeds_source($importer_id, $fake_nid);
-
-      $config = array(
-        'FeedsCommercePricelistItemProcessor' => array('list_uuid' => $entity->uuid),
-        'FeedsFileFetcher' => array(
-          'fid' => $entity->feeds['FeedsFileFetcher']['file']->fid,
-          'source' => $entity->feeds['FeedsFileFetcher']['source']
-        ),
-        //'FeedsExcelParser' => array('list_uuid' => $entity->uuid),
-      );
-
-      $source->addConfig($config);
+      $source->addConfig($entity->feeds);
       $source->save();
 
       // Start import if requested.
@@ -204,8 +191,39 @@ function commerce_pricelist_feeds_get_importer_id() {
  * @param $entity
  * @return int
  */
-function _commerce_pricelist_feeds_fake_nid ($entity) {
+function _commerce_pricelist_feeds_fake_nid($entity) {
   // Feeds have support for attaching to nodes but not generic entities,
   // we fake a nid and hope we don't get into trouble...
   return 100000 + $entity->list_id;
+}
+
+/**
+ * Callback for mapping. Here is where the actual mapping happens.
+ */
+function commerce_pricelist_feeds_set_target($source, $entity, $target, $search_value, $mapping = array()) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'commerce_pricelist_list')
+    ->range(0, 1);
+
+  switch ($target) {
+    // Lookup by name.
+    case 'pricelist_title':
+      $name_query = clone $query;
+      $result = $name_query->propertyCondition('title', $search_value)->execute();
+      break;
+
+    // Lookup by UUID.
+    case 'pricelist_uuid':
+      $uuid_query = clone $query;
+      $result = $uuid_query->propertyCondition('uuid', $search_value)->execute();
+      break;
+  }
+
+  $list_id = FALSE;
+
+  if (isset($result['commerce_pricelist_list'])) {
+    $list_id = reset($result['commerce_pricelist_list'])->list_id;
+  }
+
+  $entity->pricelist_id = $list_id;
 }
