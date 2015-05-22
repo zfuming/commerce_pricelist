@@ -13,7 +13,7 @@ function commerce_pricelist_on_users_install() {
     'foreign keys' => array(
       'commerce_pricelist_list' => array(
         'columns' => array(
-          'target_id' => 'uuid',
+          'entity_id' => 'list_id',
         ),
         'table' => 'commerce_pricelist_list',
       ),
@@ -87,4 +87,19 @@ function commerce_pricelist_on_users_install() {
  */
 function commerce_pricelist_on_users_enable() {
   cache_clear_all('hook_info', 'cache_bootstrap');
+}
+
+function commerce_pricelist_on_users_update_7001(&$sandbox) {
+  $field = array(
+    'field_name' => 'user_commerce_pricelists',
+    'foreign keys' => array(
+      'commerce_pricelist_list' => array(
+        'columns' => array(
+          'entity_id' => 'list_id',
+        )
+      )
+    )
+  );
+
+  field_update_field($field);
 }

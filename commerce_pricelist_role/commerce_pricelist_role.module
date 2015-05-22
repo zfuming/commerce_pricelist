@@ -58,3 +58,18 @@ function commerce_pricelist_role_commerce_pricelists_list_info_alter(&$info, $en
   }
   $info['role'] = $roles . ' ' . t('roles') . '<br>';
 }
+
+/**
+ * Implements hook_user_update().
+ *
+ * @param $edit
+ * @param $account
+ * @param $category
+ */
+function commerce_pricelist_role_user_update(&$edit, $account, $category) {
+  // Clear pricelist cache for this user
+  $cache_id = 'commerce_pricelist_get_user_pricelists_' . $account->uid;
+  if (cache_get($cache_id)) {
+    cache_clear_all($cache_id);
+  }
+}
