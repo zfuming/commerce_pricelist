@@ -1,7 +1,14 @@
 <?php
 /**
  * @file
- * Code for the commerce_pricelist_feeds_example feature.
+ * Code for the commerce_pricelist_feeds_example.
  */
 
-include_once 'commerce_pricelist_feeds_example.features.inc';
+/**
+ * Implements hook_ctools_plugin_api().
+ */
+function commerce_pricelist_feeds_example_ctools_plugin_api($module = NULL, $api = NULL) {
+  if ($module == "feeds" && $api == "feeds_importer_default") {
+    return array("version" => "1");
+  }
+}
