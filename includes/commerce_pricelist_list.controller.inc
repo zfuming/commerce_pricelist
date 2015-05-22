@@ -153,7 +153,7 @@ class CommercePricelistListController
       }
       catch (Exception $e) {
         $transaction->rollback();
-        watchdog_exception('commerce_pricelist', $e);
+        watchdog_exception('commerce pricelist', $e);
         throw $e;
       }
     }

@@ -1,10 +1,10 @@
 <?php
 /**
-* @file
-* Summary
-*
-* Description
-*/
+ * @file
+ * Summary
+ *
+ * Description
+ */
 
 
 
@@ -73,8 +73,14 @@ class CommercePricelistItemController
    * Saves the custom fields using drupal_write_record().
    */
   public function save($entity) {
-    // If our entity has no uuid, then we need to give it a
-    // time of creation.
+    // Make sure we are saving into an existing pricelist.
+    $pricelist = entity_load('commerce_pricelist_list', array($entity->pricelist_id));
+    if (empty($pricelist)) {
+      watchdog('commerce pricelist', t('Attepted to save a pricelist item into a non-existent pricelist.'));
+      return FALSE;
+    }
+
+    // Set default values.
     if (empty($entity->created)) {
       $entity->created = time();
     }
@@ -145,7 +151,7 @@ class CommercePricelistItemController
       }
       catch (Exception $e) {
         $transaction->rollback();
-        watchdog_exception('commerce_pricelist', $e);
+        watchdog_exception('commerce pricelist', $e);
         throw $e;
       }
     }
