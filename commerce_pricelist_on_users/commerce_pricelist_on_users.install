@@ -89,6 +89,9 @@ function commerce_pricelist_on_users_enable() {
   cache_clear_all('hook_info', 'cache_bootstrap');
 }
 
+/**
+ * Remove uuid reference in user pricelist field definition.
+ */
 function commerce_pricelist_on_users_update_7001(&$sandbox) {
   $field = array(
     'field_name' => 'user_commerce_pricelists',
