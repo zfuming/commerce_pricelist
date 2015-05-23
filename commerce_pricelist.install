@@ -211,28 +211,29 @@ function commerce_pricelist_update_7001(&$sandbox) {
 }
 
 /**
- * Migrate uuids to ids.
+ * Migrate pricelist uuids to ids. Depending on how many items there are this
+ * may take a while.
  */
 function commerce_pricelist_update_7002(&$sandbox) {
   if (db_field_exists('commerce_pricelist_item', 'pricelist_uuid')) {
-    // If this is the first pass through this update function then set some variables.
-    if (!isset($sandbox['total'])) {
-      $query = db_select('commerce_pricelist_item', 'i')
-        ->countQuery();
-      $sandbox['total'] = $query->execute()->fetchField();
-      $sandbox['current'] = 0;
-    }
-
-    // How many items should be processed per pass. The higher this number is, the faster your update will
-    // complete, but the more likely your server will run out of memory or timeout.
-    $items_per_pass = 10;
-
-    // Get the items to process during this pass.
+    // Prepare query
     $query = db_select('commerce_pricelist_item', 'i');
     $query->join('commerce_pricelist_list', 'l', 'i.pricelist_uuid = l.uuid');
     $query->fields('i', array('item_id'))
       ->fields('l', array('list_id'));
 
+    // If this is the first pass through this update function then set some variables.
+    if (!isset($sandbox['total'])) {
+      $count_query = $query->countQuery();
+      $sandbox['total'] = $count_query->execute()->fetchField();
+      $sandbox['current'] = 0;
+    }
+
+    // How many items should be processed per pass. The higher this number is, the faster your update will
+    // complete, but the more likely your server will run out of memory or timeout.
+    $items_per_pass = 20;
+
+    // Get the items to process during this pass.
     $result = $query->range($sandbox['current'], $items_per_pass)->execute();
 
     while ($row = $result->fetchAssoc()) {
@@ -256,13 +257,24 @@ function commerce_pricelist_update_7002(&$sandbox) {
 }
 
 /**
- * Drop pricelist_uuid from pricelist items table.
+ * Drop pricelist_uuid from pricelist items table and delete items that does
+ * not belong to any list.
  * Commented out to prevent unintentional data loss.
  * Uncomment to clean out unused column.
  */
-/*function commerce_pricelist_update_7003(&$sandbox) {
+/*
+function commerce_pricelist_update_7003(&$sandbox) {
+  // Drop orphan items.
+  $num_deleted = db_delete('commerce_pricelist_item')
+    ->condition('pricelist_id', 0)
+    ->execute();
+  drupal_set_message(t('Deleted @count pricelist items that did not belong to any pricelist.',
+    array('@count' => $num_deleted)));
+
+  // Drop uuid column.
   if (db_field_exists('commerce_pricelist_item', 'pricelist_uuid')) {
     db_drop_field('commerce_pricelist_item', 'pricelist_uuid');
     db_drop_index('commerce_pricelist_item', 'pricelist_uuid');
   }
-}*/
+}
+*/
