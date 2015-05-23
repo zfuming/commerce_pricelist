@@ -68,6 +68,13 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
     ));
   }
 
+  /**
+   * Create a pricelist for testing.
+   *
+   * @param string $title
+   * @param int $weight
+   * @return mixed
+   */
   public function createDummyPricelist($title = '', $weight = 0) {
     $new_pricelist = entity_get_controller('commerce_pricelist_list')->create();
     $new_pricelist->title = empty($title) ? $this->randomName(10) : $title;
@@ -78,6 +85,12 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
     return $new_pricelist;
   }
 
+  /**
+   * Create a pricelist item for testing.
+   *
+   * @param array $vars
+   * @return mixed
+   */
   public function createDummyPricelistItem($vars = array()) {
     $defaults = array(
       'pricelist_id' => $this->pricelist_a->list_id,
