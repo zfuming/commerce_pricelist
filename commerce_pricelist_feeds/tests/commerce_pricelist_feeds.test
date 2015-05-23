@@ -10,6 +10,8 @@
  */
 class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestCase {
 
+  protected $my_pricelist;
+
   /**
    * Implementation of getInfo().
    */
@@ -28,11 +30,11 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
     parent::setUpHelper('all', array('commerce_pricelist_feeds_example'));
     // Create a dummy product display content type.
     $this->createDummyProductDisplayContentType();
-
+    $this->my_pricelist = $this->createDummyPricelist('My pricelist', 1);
   }
 
   /**
-   * Test if the price of a product changes when a price list is assigned a role.
+   * Test if importing pricelists through feeds works.
    */
   public function testCommercePricelistImport() {
     // Log in as a admin.
@@ -49,12 +51,21 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
     $pricelist_path = 'admin/commerce/pricelist/commerce_pricelist_list/' .
       $this->pricelist_a->list_id;
 
-    // Submit pricelist form
+    // Submit attached pricelist form
     $this->drupalPost($pricelist_path . '/edit', $edit, t('Save'));
-
     $this->assertText('Created 2 pricelist items.', t('Sucessfully imported pricelist items through csv file'));
 
     $this->drupalGet($pricelist_path);
+    $this->assertNoText('No items.', t('Pricelist items were imported into the correct list.'));
 
+    // Test import with pricelist name in import file
+    $this->drupalPost('/import/commerce_pricelist_csv_example', $edit, t('Save'));
+    $this->assertText('Created 2 pricelist items.', t('Sucessfully imported pricelist items through csv file into named pricelist'));
+
+    $pricelist_path = 'admin/commerce/pricelist/commerce_pricelist_list/' .
+      $this->my_pricelist->list_id;
+
+    $this->drupalGet($pricelist_path);
+    $this->assertNoText('No items.', t('Pricelist items were imported into the correct list.'));
   }
 }
