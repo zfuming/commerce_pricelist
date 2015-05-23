@@ -26,8 +26,6 @@ class CommercePricelistRoleTestCaseSimpleProduct extends CommercePricelistTestCa
    */
   function setUp() {
     parent::setUpHelper('all', array('commerce_pricelist_role'));
-    // Create a dummy product display content type.
-    $this->createDummyProductDisplayContentType();
 
     // Add pricelist item.
     $this->createDummyPricelistItem();

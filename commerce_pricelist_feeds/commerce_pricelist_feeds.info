@@ -4,6 +4,7 @@ core = 7.x
 package = Commerce (contrib)
 
 files[] = plugins/FeedsCommercePricelistItemProcessor.inc
+files[] = tests/commerce_pricelist_feeds.test
 
 dependencies[] = feeds
 dependencies[] = commerce_pricelist

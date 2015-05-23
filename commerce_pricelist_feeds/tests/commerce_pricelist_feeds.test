@@ -35,9 +35,26 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
    * Test if the price of a product changes when a price list is assigned a role.
    */
   public function testCommercePricelistImport() {
-
     // Log in as a admin.
     $this->drupalLogin($this->site_admin);
+
+    $edit = array();
+
+    // Upload csv file
+    $rpath = drupal_get_path('module', 'commerce_pricelist_feeds_example');
+    $rpath = realpath($rpath . '/sample_import_data.csv');
+
+    $edit['feeds[file]'] = $rpath;
+
+    $pricelist_path = 'admin/commerce/pricelist/commerce_pricelist_list/' .
+      $this->pricelist_a->list_id;
+
+    // Submit pricelist form
+    $this->drupalPost($pricelist_path . '/edit', $edit, t('Save'));
+
+    $this->assertText('Created 2 pricelist items.', t('Sucessfully imported pricelist items through csv file'));
+
+    $this->drupalGet($pricelist_path);
 
   }
 }
