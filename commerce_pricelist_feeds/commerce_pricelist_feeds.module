@@ -135,8 +135,14 @@ function commerce_pricelist_feeds_entity_update($entity, $type) {
   if ($type == 'commerce_pricelist_list') {
     if (isset($entity->feeds) && $importer_id = commerce_pricelist_feeds_get_importer_id()) {
       $fake_nid = _commerce_pricelist_feeds_fake_nid($entity);
+      $config = array(
+        'FeedsCommercePricelistItemProcessor' => array(
+          'list_id' => $entity->list_id
+        )
+      );
       $source = feeds_source($importer_id, $fake_nid);
       $source->addConfig($entity->feeds);
+      $source->addConfig($config);
       $source->save();
 
       // Start import if requested.
