@@ -53,14 +53,14 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
 
     // Submit attached pricelist form
     $this->drupalPost($pricelist_path . '/edit', $edit, t('Save'));
-    $this->assertText('Created 2 pricelist items.', t('Sucessfully imported pricelist items through csv file'));
+    $this->assertText('Created 2 commerce pricelist_items.', t('Sucessfully imported pricelist items through csv file'));
 
     $this->drupalGet($pricelist_path);
-    $this->assertNoText('No items.', t('Pricelist items were imported into the correct list.'));
+    $this->assertNoText('No price list items currently exist.', t('Pricelist items were imported into the correct list.'));
 
     // Test import with pricelist name in import file
     $this->drupalPost('/import/commerce_pricelist_csv_example', $edit, t('Save'));
-    $this->assertText('Created 2 pricelist items.', t('Sucessfully imported pricelist items through csv file into named pricelist'));
+    $this->assertText('Created 2 commerce pricelist_items.', t('Sucessfully imported pricelist items through csv file into named pricelist'));
 
     $pricelist_path = 'admin/commerce/pricelist/commerce_pricelist_list/' .
       $this->my_pricelist->list_id;
