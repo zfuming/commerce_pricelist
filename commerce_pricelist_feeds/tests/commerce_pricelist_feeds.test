@@ -46,7 +46,7 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
     $rpath = drupal_get_path('module', 'commerce_pricelist_feeds_example');
     $rpath = realpath($rpath . '/sample_import_data.csv');
 
-    $edit['feeds[file]'] = $rpath;
+    $edit['files[feeds]'] = $rpath;
 
     $pricelist_path = 'admin/commerce/pricelist/commerce_pricelist_list/' .
       $this->pricelist_a->list_id;
@@ -59,13 +59,13 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
     $this->assertNoText('No price list items currently exist.', t('Pricelist items were imported into the correct list.'));
 
     // Test import with pricelist name in import file
-    $this->drupalPost('/import/commerce_pricelist_csv_example', $edit, t('Save'));
+    $this->drupalPost('/import/commerce_pricelist_csv_example', $edit, t('Import'));
     $this->assertText('Created 2 commerce pricelist_items.', t('Sucessfully imported pricelist items through csv file into named pricelist'));
 
     $pricelist_path = 'admin/commerce/pricelist/commerce_pricelist_list/' .
       $this->my_pricelist->list_id;
 
     $this->drupalGet($pricelist_path);
-    $this->assertNoText('No items.', t('Pricelist items were imported into the correct list.'));
+    $this->assertNoText('No price list items currently exist.', t('Pricelist items were imported into the correct list.'));
   }
 }
