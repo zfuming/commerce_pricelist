@@ -29,19 +29,10 @@ $actions = array();
       ),
     ),
     'provides' => array(
-      'commerce_pricelist_price_array' => array('type' => 'list<commerce_price>', 'label' => t('Commerce Pricelist price')),
-/*      'commerce_pricelist_price' => array(
-        'type' => 'commerce_price',
-        'label' => t('Applied pricelist price array'),
+      'commerce_pricelist_price_array' => array(
+        'type' => 'list<commerce_price>',
+        'label' => t('Commerce Pricelist price')
       ),
-      'commerce_pricelist_price_amount' => array(
-        'type' => 'decimal',
-        'label' => t('Amount'),
-      ),
-      'commerce_pricelist_price_currency_code' => array(
-        'type' => 'text',
-        'label' => t('Currency'),
-      ),*/
     ),
     'group' => t('Commerce pricelist'),
     'callbacks' => array(
