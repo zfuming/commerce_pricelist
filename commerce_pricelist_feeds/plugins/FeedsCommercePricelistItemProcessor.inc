@@ -196,7 +196,7 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
     if ($pricelist_item_id = parent::existingEntityId($source, $result)) {
       return $pricelist_item_id;
     }
-debug($result->current_item);
+
     $item_id = commerce_pricelist_item_get_existing_id(
       $result->current_item['sku'],
       $result->current_item['valid_from'],
