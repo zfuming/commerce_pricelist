@@ -190,29 +190,6 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
   }
 
   /**
-   * Get id of an existing feed item term if available.
-   */
-  protected function existingEntityId(FeedsSource $source, FeedsParserResult $result) {
-    if ($pricelist_item_id = parent::existingEntityId($source, $result)) {
-      return $pricelist_item_id;
-    }
-
-    $item_id = commerce_pricelist_item_get_existing_id(
-      $result->current_item['sku'],
-      $result->current_item['valid_from'],
-      $result->current_item['quantity'],
-      $result->current_item['pricelist_id']
-    );
-
-    if ($item_id) {
-      // Return with the first sku found.
-      return $item_id;
-    }
-
-    return 0;
-  }
-
-  /**
    * @param FeedsSource $source
    * @param FeedsParserResult $result
    * @param null $target_item
