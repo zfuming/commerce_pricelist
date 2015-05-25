@@ -93,10 +93,15 @@ class CommercePricelistItemController
     module_invoke_all('entity_presave', $entity, 'commerce_pricelist_item');
 
     // Check if an item already exists with these values.
-    $existing_id = commerce_pricelist_item_get_existing_id($entity->sku, $entity->valid_from, $entity->quantity, $entity->pricelist_id);
+    $existing_id = commerce_pricelist_item_get_existing_id(
+      $entity->sku,
+      $entity->valid_from,
+      $entity->quantity,
+      $entity->pricelist_id);
 
     if ($existing_id) {
       $entity->item_id = $existing_id;
+      drupal_set_message(t('Found and replaced a duplicate pricelist item in this list.'));
     }
 
     $primary_keys = $entity->item_id ? 'item_id' : array();
