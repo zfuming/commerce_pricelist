@@ -36,11 +36,10 @@ install:
 
 before_script:
   - echo 'sendmail_path = /bin/true' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  - drush --yes make tests/includes/search_api_elasticsearch.make build
+  - drush  --yes core-quick-drupal --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist_test
   - mkdir -p $MODULE_PATH
   - git archive $(git rev-parse --abbrev-ref HEAD) | tar -x -C $MODULE_PATH
   - cd build
-  - drush --yes site-install minimal --db-url="mysql://$DB_USERNAME@127.0.0.1/$DATABASE"
   - drush --yes en commerce_pricelist
   - drush --yes en commerce_pricelist_feeds
   - drush --yes en commerce_pricelist_role
