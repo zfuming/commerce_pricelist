@@ -62,6 +62,10 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
     $this->drupalPost('/import/commerce_pricelist_csv_example', $edit, t('Import'));
     $this->assertText('Created 2 commerce pricelist_items.', t('Sucessfully imported pricelist items through csv file into named pricelist'));
 
+    // Post again to make sure we don't get duplicates
+    $this->drupalPost('/import/commerce_pricelist_csv_example', $edit, t('Import'));
+    $this->assertText('Found and replaced a duplicate pricelist item in this list.', t("Made sure we don't get duplicates"));
+
     $pricelist_path = 'admin/commerce/pricelist/commerce_pricelist_list/' .
       $this->my_pricelist->list_id;
 
