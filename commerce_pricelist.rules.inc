@@ -47,27 +47,28 @@ $actions = array();
  * Rules action: loads and applies a pricelist rate to the given line item.
  */
 function commerce_pricelist_rate_rules_apply($line_item, $user = FALSE) {
-
-  $quantity = $line_item->quantity;
+  $commerce_pricelist_price_array = array();
   // @todo commerce_product is maybe just one of many possible product types?
   $product_id = $line_item->commerce_product['und'][0]['product_id'];
-  $product = commerce_product_load($product_id);
-  $sku = $product->sku;
+  if ($product_id) {
+    // We have a regular commerce product.
+    $quantity = $line_item->quantity;
+    $product = commerce_product_load($product_id);
+    $sku = $product->sku;
 
-  // Default to current user
-  if (!$user) {
-    global $user;
-  }
+    // Default to current user
+    if (!$user) {
+      global $user;
+    }
 
-  $time = ($line_item->created == "") ? FALSE : $line_item->created;
+    $time = ($line_item->created == "") ? FALSE : $line_item->created;
+    $pricelist_price = commerce_pricelist_get_user_price($user, $sku, $quantity, $time);
 
-  $pricelist_price = commerce_pricelist_get_user_price($user, $sku, $quantity, $time);
-  $commerce_pricelist_price_array = array();
-
-  // If pricelist was applied, return the price array as a new variable for use in
-  // subsequent actions.
-  if ($pricelist_price) {
-    $commerce_pricelist_price_array[] = $pricelist_price;
+    // If pricelist was applied, return the price array as a new variable for use in
+    // subsequent actions.
+    if ($pricelist_price) {
+      $commerce_pricelist_price_array[] = $pricelist_price;
+    }
   }
 
   return array('commerce_pricelist_price_array' => $commerce_pricelist_price_array);
