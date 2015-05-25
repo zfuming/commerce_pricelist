@@ -246,6 +246,10 @@ function commerce_pricelist_update_7002(&$sandbox) {
       $sandbox['current']++;
     }
 
+    // Lets tell the site admin what we are doing.
+    drupal_set_message(t('Processing pricelist items, now at @current out of @total',
+      array('@current' => $sandbox['current'], '@total' => $sandbox['total'])));
+
     // Set the value for finished. If current == total then finished will be 1, signifying we are done.
     $sandbox['#finished'] = ($sandbox['current'] / $sandbox['total']);
 
