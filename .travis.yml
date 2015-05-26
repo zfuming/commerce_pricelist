@@ -5,7 +5,7 @@ php:
   - 5.4
   - 5.5
 #  - 5.6
-  - hhvm
+#  - hhvm
 
 matrix:
   fast_finish: true
@@ -13,7 +13,7 @@ matrix:
     - php: hhvm
   env:
     global:
-      - MODULE_PATH='build/sites/all/modules'
+      - MODULE_PATH='sites/all/modules/custom'
 
 mysql:
   database: commerce_pricelist_test
@@ -35,10 +35,11 @@ install:
   - composer global require drush/drush:6.*
 
 before_script:
+  - mkdir drupal && cd drupal
   - echo 'sendmail_path = /bin/true' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  - drush  --yes core-quick-drupal --root=$(readlink -e $(cd -))/build --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist_test
-  - mkdir -p $MODULE_PATH
-  - git archive $(git rev-parse --abbrev-ref HEAD) | tar -x -C $MODULE_PATH
+  - drush  --yes core-quick-drupal --root=$(pwd)/sites/all/modules/custom --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist_test
+  - mkdir -p sites/all/modules/custom
+  - git archive $(git rev-parse --abbrev-ref HEAD) | tar -x -C $(pwd)/sites/all/modules/custom
   - cd build
   - drush --yes en commerce_pricelist
   - drush --yes en commerce_pricelist_feeds
