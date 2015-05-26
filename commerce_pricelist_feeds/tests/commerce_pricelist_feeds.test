@@ -26,10 +26,12 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
   /**
    * Implementation of setUp().
    */
-  function setUp() {
-    parent::setUpHelper('all', array('commerce_pricelist_feeds_example'));
-    // Create a dummy product display content type.
-    $this->createDummyProductDisplayContentType();
+  function setUp($other_modules = array()) {
+    parent::setUp(array(
+      'commerce_pricelist_feeds',
+      'commerce_pricelist_feeds_example',
+      'feeds'));
+
     $this->my_pricelist = $this->createDummyPricelist('My pricelist', 1);
   }
 

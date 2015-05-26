@@ -41,9 +41,9 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
    * Helper function to  perform the common test tasks for price list testing.
    * @see CommerceBaseTestCase::setUpHelper()
    */
-  protected function setUpHelper($set = 'all', array $other_modules = array()) {
+  protected function setUp($other_modules = array()) {
     $other_modules[] = 'commerce_pricelist';
-    $modules = parent::setUpHelper($set, $other_modules);
+    $modules = parent::setUpHelper('all', $other_modules);
     parent::setUp($modules);
 
     // Create a dummy product display content type.
@@ -146,19 +146,11 @@ class CommercePricelistTestCaseSimpleProduct extends CommercePricelistTestCase {
   }
 
   /**
-   * Implementation of setUp().
-   */
-  function setUp() {
-    parent::setUpHelper('all');
-
-    // Log in as a normal user to test price list process.
-    $this->drupalLogin($this->store_customer);
-  }
-
-  /**
    * Test that product with price zero are deactivated.
    */
   public function testCommercePricelistDeactivateZeroPriceProduct() {
+    // Log in as a normal user to test price list process.
+    $this->drupalLogin($this->store_customer);
     $this->drupalGet('node/' . $this->product_node->nid);
     $this->assertRaw(t('Product not available'), t('Product was correctly disabled'));
   }
@@ -167,6 +159,8 @@ class CommercePricelistTestCaseSimpleProduct extends CommercePricelistTestCase {
    * Test if the price of a product changes when a price list item is added.
    */
   public function testCommercePricelistItemAdd() {
+    // Log in as a normal user to test price list process.
+    $this->drupalLogin($this->store_customer);
 
     // Add pricelist item.
     $item_a = $this->createDummyPricelistItem();

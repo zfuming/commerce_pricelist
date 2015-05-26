@@ -24,8 +24,8 @@ class CommercePricelistRoleTestCaseSimpleProduct extends CommercePricelistTestCa
   /**
    * Implementation of setUp().
    */
-  function setUp() {
-    parent::setUpHelper('all', array('commerce_pricelist_role'));
+  function setUp($other_modules = array()) {
+    parent::setUp(array('commerce_pricelist_role'));
 
     // Add pricelist item.
     $this->createDummyPricelistItem();
@@ -56,7 +56,6 @@ class CommercePricelistRoleTestCaseSimpleProduct extends CommercePricelistTestCa
     $this->drupalPost($edit_path, $edit, t('Save'));
     $this->assertText(t('Price list saved'), t('Saved pricelist B'));
 
-    debug($this->pricelist_b);
     // Go to product display page
     $this->drupalGet('node/' . $this->product_node->nid);
     $this->assertText('$0.50', t('Product price was correctly set from price list.'));
