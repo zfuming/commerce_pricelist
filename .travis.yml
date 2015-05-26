@@ -45,6 +45,7 @@ before_script:
   - drush --yes en commerce_pricelist_feeds
   - drush --yes en commerce_pricelist_role
   - drush --yes en simpletest
+  - drush --yes cc all
 
   # start a web server on port 8080, run in the background; wait for initialization
   - drush runserver 127.0.0.1:8080 &
