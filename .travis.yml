@@ -37,7 +37,7 @@ install:
 before_script:
   - mkdir drupal
   - echo 'sendmail_path = /bin/true' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  - drush  --yes core-quick-drupal --root=$(pwd)/drupal/sites/all/modules/custom --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist_test
+  - drush  --yes core-quick-drupal --root=$(pwd)/drupal --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist_test
   - mkdir -p drupal/sites/all/modules/custom
   - git archive $(git rev-parse --abbrev-ref HEAD) | tar -x -C drupal/sites/all/modules/custom
   - cd drupal
