@@ -543,7 +543,7 @@ function commerce_pricelist_item_uri($entity) {
  *   A pricelist list object with all default fields initialized.
  */
 function commerce_pricelist_list_new() {
-  return entity_get_controller('commerce_product')->create();
+  return entity_create('commerce_pricelist_list', array());
 }
 
 
