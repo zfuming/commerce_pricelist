@@ -76,7 +76,7 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
    * @return mixed
    */
   public function createDummyPricelist($title = '', $weight = 0) {
-    $new_pricelist = entity_get_controller('commerce_pricelist_list')->create();
+    $new_pricelist = commerce_pricelist_list_new();
     $new_pricelist->title = empty($title) ? $this->randomName(10) : $title;
     $new_pricelist->weight = $weight;
 
