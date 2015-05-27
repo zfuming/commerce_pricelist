@@ -24,7 +24,7 @@ interface CommercePricelistItemControllerInterface
   /**
    * Create an entity.
    */
-  public function create();
+  public function create($values);
 
   /**
    * Save an entity.
@@ -37,10 +37,10 @@ interface CommercePricelistItemControllerInterface
   /**
    * Delete an entity.
    *
-   * @param object $entity
+   * @param int $id
    *   The entity to delete.
    */
-  public function delete($entity);
+  public function delete($id);
 
 }
 
@@ -52,17 +52,22 @@ interface CommercePricelistItemControllerInterface
  */
 class CommercePricelistItemController
   extends DrupalDefaultEntityController
-  implements CommercePricelistListControllerInterface {
+  implements CommercePricelistItemControllerInterface {
 
   /**
    * Create and return a new commerce_pricelist_list entity.
    */
-  public function create($pricelist_id= NULL, $sku = NULL) {
+  public function create($values = array()) {
+    $defaults = array(
+      'pricelist_id' => NULL,
+      'sku' => NULL
+    );
+    $values += $defaults;
     $entity = new stdClass();
     $entity->type = 'commerce_pricelist_item';
     $entity->item_id = 0;
-    $entity->sku = $sku;
-    $entity->pricelist_id = $pricelist_id;
+    $entity->sku = $values['sku'];
+    $entity->pricelist_id = $values['pricelist_id'];
     $entity->valid_to = COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE;
     $entity->valid_from = 0;
     $entity->quantity = 0;
@@ -126,8 +131,8 @@ class CommercePricelistItemController
    *
    * Really a convenience function for deleteMultiple().
    */
-  public function delete($entity) {
-    $this->deleteMultiple(array($entity));
+  public function delete($id) {
+    $this->deleteMultiple(array($id));
   }
 
   /**
@@ -139,26 +144,23 @@ class CommercePricelistItemController
    * @param array $entities
    *   An array of entity IDs or a single numeric ID.
    */
-  public function deleteMultiple($entities) {
-    $entity_ids = array();
-    if (!empty($entities)) {
-      $transaction = db_transaction();
-      try {
-        foreach ($entities as $entity) {
-          // Invoke hook_entity_delete().
-          module_invoke_all('entity_delete', $entity, 'commerce_pricelist_item');
-          field_attach_delete('commerce_pricelist_item', $entity);
-          $entity_ids[] = $entity->item_id;
-        }
-        db_delete('commerce_pricelist_item')
-          ->condition('item_id', $entity_ids, 'IN')
-          ->execute();
+  public function deleteMultiple($ids) {
+    $entities = $ids ? $this->load($ids) : FALSE;
+
+    $transaction = db_transaction();
+    try {
+      foreach ($entities as $entity) {
+        // Invoke hook_entity_delete().
+        module_invoke_all('entity_delete', $entity, 'commerce_pricelist_item');
       }
-      catch (Exception $e) {
-        $transaction->rollback();
-        watchdog_exception('commerce pricelist', $e);
-        throw $e;
-      }
+      db_delete('commerce_pricelist_item')
+        ->condition('item_id', $ids, 'IN')
+        ->execute();
+    }
+    catch (Exception $e) {
+      $transaction->rollback();
+      watchdog_exception('commerce pricelist', $e);
+      throw $e;
     }
   }
 }

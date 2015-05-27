@@ -36,7 +36,7 @@ interface CommercePricelistListControllerInterface
   /**
    * Delete an entity.
    *
-   * @param object $entity
+   * @param int $entity
    *   The entity to delete.
    */
   public function delete($entity);
@@ -51,7 +51,8 @@ interface CommercePricelistListControllerInterface
  */
 class CommercePricelistListController
   extends DrupalDefaultEntityController
-  implements CommercePricelistListControllerInterface {
+  implements CommercePricelistListControllerInterface,
+EntityAPIControllerInterface {
 
   /**
    * Create and return a new commerce_pricelist_list entity.
@@ -123,8 +124,8 @@ class CommercePricelistListController
    *
    * Really a convenience function for deleteMultiple().
    */
-  public function delete($entity) {
-    $this->deleteMultiple(array($entity));
+  public function delete($id) {
+    $this->deleteMultiple(array($id));
   }
 
   /**
@@ -133,29 +134,26 @@ class CommercePricelistListController
    * Deletion is unfortunately not supported in the base
    * DrupalDefaultEntityController class.
    *
-   * @param array $entities
-   *   An array of entity IDs or a single numeric ID.
+   * @param array $ids
+   *   An array of entity IDs.
    */
-  public function deleteMultiple($entities) {
-    $entity_ids = array();
-    if (!empty($entities)) {
-      $transaction = db_transaction();
-      try {
-        foreach ($entities as $entity) {
-          // Invoke hook_entity_delete().
-          module_invoke_all('entity_delete', $entity, 'commerce_pricelist_list');
-          field_attach_delete('commerce_pricelist_list', $entity);
-          $entity_ids[] = $entity->list_id;
-        }
-        db_delete('commerce_pricelist_list')
-          ->condition('list_id', $entity_ids, 'IN')
-          ->execute();
+  public function deleteMultiple($ids) {
+    $entities = $ids ? $this->load($ids) : FALSE;
+
+    $transaction = db_transaction();
+    try {
+      foreach ($entities as $entity) {
+        // Invoke hook_entity_delete().
+        module_invoke_all('entity_delete', $entity, 'commerce_pricelist_list');
       }
-      catch (Exception $e) {
-        $transaction->rollback();
-        watchdog_exception('commerce pricelist', $e);
-        throw $e;
-      }
+      db_delete('commerce_pricelist_list')
+        ->condition('list_id', $ids, 'IN')
+        ->execute();
+    }
+    catch (Exception $e) {
+      $transaction->rollback();
+      watchdog_exception('commerce pricelist', $e);
+      throw $e;
     }
   }
 }

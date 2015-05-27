@@ -158,8 +158,8 @@ function commerce_pricelist_list_form_submit($form, &$form_state) {
   $entity->weight = $form_state['values']['weight'];
   $entity->status = $form_state['values']['active'];
   field_attach_submit('commerce_pricelist_list', $entity, $form, $form_state);
-  $entity = commerce_pricelist_list_save($entity);
-  if ($entity) {
+  $result = commerce_pricelist_list_save($entity);
+  if ($result != FALSE) {
     drupal_set_message(t('Price list saved'));
   }
   $form_state['redirect'] = 'admin/commerce/pricelist/commerce_pricelist_list/' . $entity->list_id . '/edit';
@@ -172,7 +172,7 @@ function commerce_pricelist_list_form_submit($form, &$form_state) {
  */
 function commerce_pricelist_list_edit_delete($form, &$form_state) {
   $entity = $form_state['values']['entity'];
-  commerce_pricelist_list_delete($entity);
+  commerce_pricelist_list_delete($entity->list_id);
   drupal_set_message(t('The entity %item_title (ID %id) has been deleted',
       array('%item_title' => $entity->title, '%id' => $entity->list_id))
   );
@@ -531,20 +531,6 @@ function commerce_pricelist_item_view($entity, $view_mode = 'full') {
 
   // And finally return the content.
   return $entity->content;
-}
-
-/**
- * Provides a wrapper on the edit form to add a new entity.
- */
-function commerce_pricelist_item_add($product = NULL) {
-  // Create a basic entity structure to be used and passed to the validation
-  // and submission functions.
-  $sku = NULL;
-  if ($product != NULL) {
-    $sku = $product->sku;
-  }
-  $entity = entity_get_controller('commerce_pricelist_item')->create(NULL, $sku);
-  return drupal_get_form('commerce_pricelist_item_form', $entity);
 }
 
 /**
