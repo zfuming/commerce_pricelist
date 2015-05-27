@@ -52,7 +52,7 @@ interface CommercePricelistItemControllerInterface
  */
 class CommercePricelistItemController
   extends DrupalDefaultEntityController
-  implements CommercePricelistListControllerInterface {
+  implements CommercePricelistItemControllerInterface {
 
   /**
    * Create and return a new commerce_pricelist_list entity.
