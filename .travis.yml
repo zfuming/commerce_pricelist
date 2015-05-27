@@ -32,7 +32,7 @@ install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
 
   # install drush globally
-  - composer global require drush/drush:7.*
+  - composer global require drush/drush:6.*
 
 before_script:
   - mkdir drupal
@@ -41,6 +41,7 @@ before_script:
   - mkdir -p drupal/sites/all/modules/commerce_pricelist
   - git archive $(git rev-parse --abbrev-ref HEAD) | tar -x -C drupal/sites/all/modules/commerce_pricelist
   - cd drupal
+  - drush --yes en commerce
   - drush --yes en commerce_pricelist
   - drush --yes en commerce_pricelist_feeds
   - drush --yes en commerce_pricelist_role
