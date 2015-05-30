@@ -25,23 +25,6 @@ function commerce_pricelist_list_info_page() {
   return $content;
 }
 
-
-/**
- * Returns a render array with all commerce_pricelist_list entities.
- *
- * In this basic example we know that there won't be many entities,
- * so we'll just load them all for display. See pager_example.module
- * to implement a pager. Most implementations would probably do this
- * with the contrib Entity API module, or a view using views module,
- * but we avoid using non-core features in the Examples project.
- *
- * @see pager_example.module
- */
-function commerce_pricelist_list_list_entities() {
-
-}
-
-
 /**
  * Menu callback to display an entity.
  *
@@ -181,7 +164,7 @@ function commerce_pricelist_list_edit_delete($form, &$form_state) {
 
 
 /**
- * Build the tabledrag_draggable_example_form form.
+ * Build the draggable form containing all the pricelists.
  *
  * @return array
  *   A form array set for theming by theme_commerce_pricelist_draggable_form()
@@ -561,18 +544,22 @@ function commerce_pricelist_item_info_page() {
  * - Call on the Field API to pull in the form elements
  *   for fields attached to the entity.
  */
-function commerce_pricelist_item_form($form, &$form_state, $entity) {
+function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pricelist = NULL) {
 
-  if (isset($entity->list_id)) {
-    // This is a new list item being created from the list/add tab.
-    // Replace pricelist entity with a pricelist item entity.
-    $entity = entity_get_controller('commerce_pricelist_item')->create($entity->list_id);
+  if (!$pricelist_item) {
+    // This is a new list item being created.
+    $pricelist_item = commerce_pricelist_item_new($pricelist->list_id);
   }
 
-  if ($entity->pricelist_id) {
+  if ($pricelist) {
+    // This item is being created from the pricelist > add price tab.
+    $pricelist_item->pricelist_id = $pricelist->list_id;
+  }
+
+  if ($pricelist_item->pricelist_id) {
     $form['pricelist_id'] = array(
       '#type' => 'value',
-      '#value' => $entity->pricelist_id,
+      '#value' => $pricelist_item->pricelist_id,
     );
   }
   else {
@@ -597,12 +584,12 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
       '#type' => 'textfield',
       '#title' => ucwords(str_replace('_', ' ', $field)),
       '#required' => TRUE,
-      '#default_value' => isset($entity->$field) ? $entity->$field : '',
+      '#default_value' => isset($pricelist_item->$field) ? $pricelist_item->$field : '',
     );
   }
 
   foreach (array('valid_from', 'valid_to') as $date) {
-    $default_date = isset($entity->{$date}) ? $entity->{$date} : 0;
+    $default_date = isset($pricelist_item->{$date}) ? $pricelist_item->{$date} : 0;
     $form[$date]['#required'] = FALSE;
     $form[$date]['#element_validate'] = array('_commerce_pricelist_date_validate');
     $form[$date]['#description'] = t('Format: %time. The date format is YYYY-MM-DD and %timezone is the time zone offset from UTC.', array('%time' => date('Y-m-d H:i:s O', $default_date), '%timezone' => date('O', $default_date)));
@@ -616,7 +603,7 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
 
   $form['entity'] = array(
     '#type' => 'value',
-    '#value' => $entity,
+    '#value' => $pricelist_item,
   );
 
   $form['submit'] = array(
@@ -626,7 +613,7 @@ function commerce_pricelist_item_form($form, &$form_state, $entity) {
   );
 
   // Check if this is an existing item, add delete button
-  if ($entity->item_id) {
+  if ($pricelist_item->item_id) {
     $form['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete'),
@@ -703,7 +690,7 @@ function commerce_pricelist_item_form_submit($form, &$form_state) {
  */
 function commerce_pricelist_item_edit_delete($form, &$form_state) {
   $entity = $form_state['values']['entity'];
-  commerce_pricelist_item_delete($entity);
+  commerce_pricelist_item_delete($entity->item_id);
   drupal_set_message(t('The entity %item_description (ID %id) has been deleted',
       array('%item_description' => $entity->item_id, '%id' => $entity->item_id))
   );
