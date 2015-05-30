@@ -11,7 +11,7 @@ mysql:
 before_script:
   # navigate out of module directory to prevent blown stack by recursive module
   # lookup
-  - cd
+  - cd ../..
 
   # install drush
   - pear channel-discover pear.drush.org
@@ -28,8 +28,8 @@ before_script:
   - php -d sendmail_path=`which true` `pear config-get php_dir`/drush/drush.php --yes core-quick-drupal --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist --enable=simpletest commerce_pricelist
 
   # reference and enable commerce_pricelist in build site
-  - ln -s $(readlink -e $(cd -)) ~/drupal/sites/all/modules/commerce_pricelist
-  - cd ~/drupal
+  - ln -s $(readlink -e $(cd -)) commerce_pricelist/drupal/sites/all/modules/commerce_pricelist
+  - cd commerce_pricelist/drupal
   - drush --yes en commerce
   - drush --yes en commerce_pricelist
   - drush --yes en commerce_pricelist_feeds
