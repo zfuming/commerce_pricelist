@@ -2,55 +2,43 @@ language: php
 
 php:
   - 5.3
-#  - 5.4
-#  - 5.5
-#  - 5.6
-#  - hhvm
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - php: hhvm
-  env:
-    global:
-      - MODULE_PATH='sites/all/modules/custom'
 
 mysql:
-  database: commerce_pricelist_test
+  database: commerce_pricelist
   username: root
   encoding: utf8
 
-before_install:
-  - sudo apt-get update > /dev/null
+before_script:
+  # navigate out of module directory to prevent blown stack by recursive module
+  # lookup
+  - cd
 
-install:
+  # install drush
+  - pear channel-discover pear.drush.org
+  - pear install drush/drush-5.8.0
+  - phpenv rehash
+
   # install php packages required for running a web server from drush on php 5.3
+  - sudo apt-get update > /dev/null
   - sudo apt-get install -y --force-yes php5-cgi php5-mysql
 
-  # add composer's global bin directory to the path
-  # see: https://github.com/drush-ops/drush#install---composer
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  # create new site, stubbing sendmail path with true to prevent delivery errors
+  # and manually resolving drush path
+  - mysql -e 'create database commerce_pricelist'
+  - php -d sendmail_path=`which true` `pear config-get php_dir`/drush/drush.php --yes core-quick-drupal --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist --enable=simpletest commerce_pricelist
 
-  # install drush globally
-  - composer global require drush/drush:6.*
-
-before_script:
-  - mkdir drupal
-  - echo 'sendmail_path = /bin/true' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
-  - drush  --yes core-quick-drupal --root=$(pwd)/drupal --profile=standard --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist_test
-  - mkdir -p drupal/sites/all/modules/commerce_pricelist
-  - git archive $(git rev-parse --abbrev-ref HEAD) | tar -x -C drupal/sites/all/modules/commerce_pricelist
-  - cd drupal
+  # reference and enable commerce_pricelist in build site
+  - ln -s $(readlink -e $(cd -)) ~/drupal/sites/all/modules/commerce_pricelist
+  - cd /drupal
   - drush --yes en commerce
   - drush --yes en commerce_pricelist
   - drush --yes en commerce_pricelist_feeds
   - drush --yes en commerce_pricelist_role
   - drush --yes en simpletest
-  - drush --yes cc all
 
-  # start a web server on port 8080, run in the background; wait for initialization
+  # start a web server on port 8080, run in the background; wait for
+  # initialization
   - drush runserver 127.0.0.1:8080 &
   - until netstat -an 2>/dev/null | grep '8080.*LISTEN'; do true; done
-  - curl --silent 127.0.0.1:8080 > /dev/null
 
 script: drush test-run 'Commerce Pricelist' --uri=http://127.0.0.1:8080
