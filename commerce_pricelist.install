@@ -1,10 +1,7 @@
 <?php
 /**
  * @file
- * Install for a basic entity - need to create the base table for our entity.
- * This table can have as many columns as you need to keep track of
- * entity-specific data that will not be added via attached fields.
- * The minimum information for the entity to work is an id and an entity name.
+ * Install for a Commerce Pricelist - create the base tables for our entities.
  */
 
 

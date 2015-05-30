@@ -188,7 +188,7 @@ class CommercePricelistTestCaseSimpleProduct extends CommercePricelistTestCase {
     $this->assertText('$0.75', t('Product price was correctly set from price list for different quantities.'));
 
     // Clean up.
-    commerce_pricelist_item_delete($item_a);
-    commerce_pricelist_item_delete($item_b);
+    commerce_pricelist_item_delete($item_a->item_id);
+    commerce_pricelist_item_delete($item_b->item_id);
   }
 }

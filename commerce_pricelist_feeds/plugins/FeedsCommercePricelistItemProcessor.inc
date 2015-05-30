@@ -31,8 +31,7 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
    */
   protected function newEntity(FeedsSource $source) {
     $list_id = $source->config['FeedsCommercePricelistItemProcessor']['list_id'];
-    $pricelist_item = entity_get_controller('commerce_pricelist_item')->create();
-    $pricelist_item->pricelist_id = $list_id;
+    $pricelist_item = commerce_pricelist_item_new($list_id);
     $pricelist_item->log = 'Created by FeedsCommercePricelistItemProcessor';
     return $pricelist_item;
   }
