@@ -27,7 +27,8 @@ before_script:
   # create new site, stubbing sendmail path with true to prevent delivery errors
   # and manually resolving drush path
   - mysql -e 'create database commerce_pricelist'
-  - php -d sendmail_path=`which true` `pear config-get php_dir`/drush/drush.php --yes core-quick-drupal --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist --enable=simpletest commerce_pricelist
+  - echo 'sendmail_path = /bin/true' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - drush  --yes core-quick-drupal --profile=testing --no-server --db-url=mysql://root:@127.0.0.1/commerce_pricelist --enable=simpletest commerce_pricelist
 
   # reference and enable commerce_pricelist in build site
   - ln -s $(readlink -e $(cd -)) commerce_pricelist/drupal/sites/all/modules/commerce_pricelist
