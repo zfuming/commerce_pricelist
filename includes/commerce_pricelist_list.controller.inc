@@ -1,22 +1,20 @@
 <?php
 /**
 * @file
-* Summary
+* Contains CommercePricelistListController.
 *
-* Description
+* Handles CRUD for Pricelists.
 */
 
 
 /**
- * CommercePricelistListController extends DrupalDefaultEntityController.
- *
- * Our subclass of DrupalDefaultEntityController lets us add a few
- * important create, update, and delete methods.
+ * Handles CRUD for Pricelists.
+ * {@inheritdoc}
  */
 class CommercePricelistListController extends EntityAPIController {
 
   /**
-   * Create and return a new commerce_pricelist_list entity.
+   * {@inheritdoc}
    */
   public function create(array $values = array()) {
     $values += array(
@@ -29,20 +27,7 @@ class CommercePricelistListController extends EntityAPIController {
   }
 
   /**
-   * Unserializes the data property of loaded lists.
-   */
-  public function attachLoad(&$queried_lists, $revision_id = FALSE) {
-    foreach ($queried_lists as $list_id => &$list) {
-      $list->data = unserialize($list->data);
-    }
-
-    // Call the default attachLoad() method. This will add fields and call
-    // hook_commerce_list_load().
-    parent::attachLoad($queried_lists, $revision_id);
-  }
-
-  /**
-   * Saves the entity.
+   * {@inheritdoc}
    */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
     // If our entity has no id, then we need to give it a
@@ -56,13 +41,7 @@ class CommercePricelistListController extends EntityAPIController {
 
 
   /**
-   * Delete one or more commerce_pricelist_list entities.
-   *
-   * Deletion is unfortunately not supported in the base
-   * DrupalDefaultEntityController class.
-   *
-   * @param array $ids
-   *   An array of entity IDs.
+   * {@inheritdoc}
    */
   public function delete($ids, DatabaseTransaction $transaction = NULL) {
     parent::delete($ids, $transaction);

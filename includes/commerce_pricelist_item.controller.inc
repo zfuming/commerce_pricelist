@@ -6,15 +6,13 @@
 
 
 /**
- * CommercePricelistListController extends EntityAPIController.
- *
- * Our subclass of EntityAPIController lets us add a few
- * important create, update, and delete methods.
+ * Handles CRUD for Pricelist item.
+ * {@inheritdoc}
  */
 class CommercePricelistItemController extends EntityAPIController {
 
   /**
-   * Create and return a new commerce_pricelist_item entity.
+   * {@inheritdoc}
    */
   public function create(array $values = array()) {
     $values += array(
@@ -29,7 +27,7 @@ class CommercePricelistItemController extends EntityAPIController {
   }
 
   /**
-   * Saves the custom fields using drupal_write_record().
+   * {@inheritdoc}
    */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
 
@@ -50,14 +48,11 @@ class CommercePricelistItemController extends EntityAPIController {
     }
 
     // Check if an item already exists with these values.
-    $existing_id = commerce_pricelist_item_get_existing_id(
-      $entity->sku,
-      $entity->valid_from,
-      $entity->quantity,
-      $entity->pricelist_id);
+    $existing_id = commerce_pricelist_item_get_existing_id($entity);
 
     if ($existing_id) {
       $entity->item_id = $existing_id;
+      $entity->is_new = FALSE;
       drupal_set_message(t('Found and replaced a duplicate pricelist item in this list.'));
     }
 
