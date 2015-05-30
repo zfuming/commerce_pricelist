@@ -43,7 +43,7 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
    */
   protected function setUp($other_modules = array()) {
     $other_modules[] = 'commerce_pricelist';
-    $modules = parent::setUpHelper('api', $other_modules);
+    $modules = parent::setUpHelper('all', $other_modules);
     parent::setUp($modules);
 
     // Create a dummy product display content type.
