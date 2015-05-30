@@ -53,4 +53,4 @@ before_script:
   - until netstat -an 2>/dev/null | grep '8080.*LISTEN'; do true; done
   - curl --silent 127.0.0.1:8080 > /dev/null
 
-script: drush test-run 'Commerce Pricelist' --uri=http://127.0.0.1:8080
+script: php scripts/run-tests.sh --php $(which php) --url http://127.0.0.1:8080 --concurrency 6 'Commerce Pricelist'
