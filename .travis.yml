@@ -29,7 +29,7 @@ before_script:
 
   # reference and enable commerce_pricelist in build site
   - ln -s $(readlink -e $(cd -)) ~/drupal/sites/all/modules/commerce_pricelist
-  - cd /drupal
+  - cd ~/drupal
   - drush --yes en commerce
   - drush --yes en commerce_pricelist
   - drush --yes en commerce_pricelist_feeds
