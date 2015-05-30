@@ -43,9 +43,11 @@ class CommercePricelistRoleTestCaseSimpleProduct extends CommercePricelistTestCa
     // Log in as a admin.
     $this->drupalLogin($this->site_admin);
 
+    $admin_role = key($this->site_admin->roles);
+
     $edit = array();
     // Enable pricelist for admin.
-    $edit['commerce_pricelist_role[3]'] = TRUE;
+    $edit["commerce_pricelist_role[$admin_role]"] = TRUE;
     // Disable for anonymous.
     $edit['commerce_pricelist_role[1]'] = FALSE;
 
