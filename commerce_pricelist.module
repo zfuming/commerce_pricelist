@@ -378,7 +378,7 @@ function commerce_pricelist_menu() {
   $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/add'] = array(
     'title' => 'Add price',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('commerce_pricelist_item_form', 4),
+    'page arguments' => array('commerce_pricelist_item_form', NULL, 4),
     'access arguments' => array('edit any commerce_pricelist_list entity'),
     'type' => MENU_LOCAL_TASK,
     'file' => 'includes/commerce_pricelist.admin.inc',
@@ -489,18 +489,18 @@ function commerce_pricelist_item_add($product = NULL) {
  * Get the id of an existing pricelist item with these values.
  * We do not want more than one item with these values.
  *
- * @param $sku
- * @param $valid_from
- * @param $quantity
+ * @param $entity
  * @return int
  */
-function commerce_pricelist_item_get_existing_id($sku, $valid_from, $quantity, $pricelist_id) {
+function commerce_pricelist_item_get_existing_id($pricelist_item) {
   $item_id = db_query("SELECT item_id FROM {commerce_pricelist_item} " .
-    "WHERE sku = :sku AND valid_from = :valid_from AND quantity = :quantity AND pricelist_id = :pricelist_id",
-    array(':sku' => $sku,
-      ':valid_from' => $valid_from,
-      ':quantity' => $quantity,
-      ':pricelist_id' => $pricelist_id))
+    "WHERE sku = :sku AND valid_to = :valid_to AND valid_from = :valid_from " .
+    "AND quantity = :quantity AND pricelist_id = :pricelist_id",
+    array(':sku' => $pricelist_item->sku,
+      ':valid_from' => $pricelist_item->valid_from,
+      ':valid_to' => $pricelist_item->valid_to,
+      ':quantity' => $pricelist_item->quantity,
+      ':pricelist_id' => $pricelist_item->pricelist_id))
     ->fetchField();
   return $item_id;
 }
