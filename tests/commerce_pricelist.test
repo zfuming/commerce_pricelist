@@ -60,12 +60,7 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
 
     $this->store_admin = $this->createStoreAdmin();
     $this->store_customer = $this->createStoreCustomer();
-    $this->site_admin = $this->createAdminUser(array(
-      'administer commerce_pricelist_list entities',
-      'view any commerce_pricelist_list entity',
-      'edit any commerce_pricelist_list entity',
-      'create commerce_pricelist_list entities'
-    ));
+    $this->site_admin = $this->createAdminUser();
   }
 
   /**
@@ -116,6 +111,12 @@ abstract class CommercePricelistTestCase extends CommerceBaseTestCase {
    * @return user object
    */
   public function createAdminUser(array $permissions = array()) {
+    $permissions += array(
+      'administer commerce_pricelist_list entities',
+      'view any commerce_pricelist_list entity',
+      'edit any commerce_pricelist_list entity',
+      'create commerce_pricelist_list entities',
+    );
     $permissions += $this->permissionBuilder(array('store admin', 'site admin'));
     return $this->drupalCreateUser($permissions);
   }

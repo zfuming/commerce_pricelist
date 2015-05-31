@@ -12,6 +12,8 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
 
   protected $my_pricelist;
 
+  protected $feeds_admin;
+
   /**
    * Implementation of getInfo().
    */
@@ -32,6 +34,9 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
       'commerce_pricelist_feeds_example',
       'feeds'));
 
+    $this->feeds_admin = $this->createAdminUser(array(
+      'administer feeds'
+    ));
     $this->my_pricelist = $this->createDummyPricelist('My pricelist', 1);
   }
 
@@ -40,7 +45,7 @@ class CommercePricelistFeedsTestCaseSimpleProduct extends CommercePricelistTestC
    */
   public function testCommercePricelistImport() {
     // Log in as a admin.
-    $this->drupalLogin($this->site_admin);
+    $this->drupalLogin($this->feeds_admin);
 
     $edit = array();
 
