@@ -597,13 +597,20 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
       $table = commerce_pricelist_item_list_entities($pricelist->list_id, $sku);
       if (isset($table['entity_table'])) {
         $table['entity_table']['#prefix'] = check_plain($pricelist->title);
+        $prices[$pricelist->list_id] = $table;
       }
-      $prices[$pricelist->list_id] = $table;
     }
 
-    $prices['administer'] = array(
+    $prices['actions'] = array(
+      '#prefix' => '<br><div class="clearfix container-inline">',
+      '#suffix' => '</div>',
+      '#tree' => TRUE
+    );
+    $options = array('attributes' => array('class' => array('button')));
+
+    $prices['actions']['administer'] = array(
       '#type' => 'item',
-      '#markup' => l(t('Administer price lists'), 'admin/commerce/pricelist/commerce_pricelist_list'),
+      '#markup' => l(t('Administer price lists'), 'admin/commerce/pricelist/commerce_pricelist_list', $options),
       '#weight' => 50,
     );
 
@@ -611,11 +618,11 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
     $product_id = $product->product_id;
 
     if ($product_id) {
-      $prices['add'] = array(
+      $prices['actions']['add'] = array(
         '#type' => 'item',
         '#markup' => l(t('Add price'), 'admin/commerce/products/' . $product_id . '/add_price',
-          array('query' => array('destination' => current_path()))),
-        '#weight' => 50,
+          $options + array('query' => array('destination' => current_path()))),
+        '#weight' => 49,
       );
     }
 
