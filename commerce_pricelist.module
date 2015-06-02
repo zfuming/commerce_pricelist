@@ -554,6 +554,8 @@ function commerce_pricelist_theme() {
 function commerce_pricelist_entity_access($op, $entity, $account, $entity_type) {
   global $user;
   $account = isset($account) ? $account : $user;
+  // There are no separate permissions for pricelist items so handle as list.
+  $entity_type = 'commerce_pricelist_list';
 
   if ($op == 'view') {
     return user_access('view any ' . $entity_type . ' entity', $account);
@@ -564,6 +566,14 @@ function commerce_pricelist_entity_access($op, $entity, $account, $entity_type) 
   }
 
   if ($op == 'edit') {
+    return user_access('edit any ' . $entity_type . ' entity', $account);
+  }
+
+  if ($op == 'update') {
+    return user_access('edit any ' . $entity_type . ' entity', $account);
+  }
+
+  if ($op == 'delete') {
     return user_access('edit any ' . $entity_type . ' entity', $account);
   }
 
