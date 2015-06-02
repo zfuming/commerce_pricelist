@@ -7,6 +7,98 @@
 
 define('COMMERCE_PRICELIST_UNIX_TIME_APOCALYPSE', 2147390000);
 
+// Include CRUD methods for our entites.
+include_once 'includes/commerce_pricelist_item.inc';
+include_once 'includes/commerce_pricelist_list.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function commerce_pricelist_menu() {
+
+  // This provides a place for Field API to hang its own
+  // interface and has to be the same as what was defined
+  // in entity_info() above.
+  $items['admin/commerce/pricelist/commerce_pricelist_list'] = array(
+    'title' => 'Price lists',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commerce_pricelist_draggable_form'),
+    'access arguments' => array('administer commerce_pricelist_list entities'),
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
+  // Add example entities.
+  $items['admin/commerce/pricelist/commerce_pricelist_list/add'] = array(
+    'title' => 'Add a Price list',
+    'page callback' => 'commerce_pricelist_list_add',
+    'access arguments' => array('create commerce_pricelist_list entities'),
+    'type' => MENU_LOCAL_ACTION,
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
+
+  // Add example entities.
+  $items['admin/commerce/products/%commerce_product/add_price'] = array(
+    'title' => 'Add a Price list item',
+    'page callback' => 'commerce_pricelist_item_add',
+    'page arguments' => array(3),
+    'access arguments' => array('edit any commerce_pricelist_list entity'),
+    'file' => 'includes/commerce_pricelist.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+
+  // The page to view our entities - needs to follow what
+  // is defined in basic_uri and will use load_basic to retrieve
+  // the necessary entity info.
+  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list'] = array(
+    'title callback' => 'commerce_pricelist_list_title',
+    'title arguments' => array(4),
+    'page callback' => 'commerce_pricelist_list_view',
+    'page arguments' => array(4),
+    'access arguments' => array('view any commerce_pricelist_list entity'),
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
+  // 'View' tab for an individual entity page.
+  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/view'] = array(
+    'title' => 'View',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
+  // 'Edit' tab for an individual entity page.
+  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commerce_pricelist_list_form', 4),
+    'access arguments' => array('edit any commerce_pricelist_list entity'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
+  // 'Edit' tab for an individual entity page.
+  $items['admin/commerce/pricelist/commerce_pricelist_item/%commerce_pricelist_item/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commerce_pricelist_item_form', 4),
+    'access arguments' => array('edit any commerce_pricelist_list entity'),
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
+  // 'Add' tab for an individual entity page.
+  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/add'] = array(
+    'title' => 'Add price',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('commerce_pricelist_item_form', NULL, 4),
+    'access arguments' => array('edit any commerce_pricelist_list entity'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'includes/commerce_pricelist.admin.inc',
+  );
+
+  return $items;
+}
+
 /**
  * Implements hook_entity_info().
  *
@@ -43,6 +135,7 @@ function commerce_pricelist_entity_info() {
     'controller class' => 'CommercePricelistItemController',
     'base table' => 'commerce_pricelist_item',
     'uri callback' => 'commerce_pricelist_item_uri',
+    'access callback' => 'commerce_pricelist_entity_access',
     'fieldable' => FALSE,
     'uuid' => TRUE,
     'entity keys' => array(
@@ -61,6 +154,138 @@ function commerce_pricelist_entity_info() {
   return $info;
 }
 
+/**
+ * Implements hook_entity_property_info().
+ *
+ * @return array
+ */
+function commerce_pricelist_entity_property_info() {
+  $info = array();
+
+  // Add meta-data about the commerce_pricelist_list properties.
+  $properties = array();
+
+  $properties['list_id'] = array(
+    'label' => t('List ID'),
+    'description' => t('The internal numeric ID of the pricelist.'),
+    'type' => 'integer',
+    'schema field' => 'list_id',
+  );
+  $properties['title'] = array(
+    'label' => t('Title'),
+    'description' => t('The title of the list.'),
+    'type' => 'text',
+    'setter callback' => 'entity_property_verbatim_get',
+    'required' => TRUE,
+    'schema field' => 'title',
+  );
+  $properties['uid'] = array(
+    'label' => t('User ID'),
+    'type' => 'integer',
+    'setter callback' => 'entity_property_verbatim_get',
+    'description' => t("The unique ID of the user the pricelist belongs to."),
+    'clear' => array('user'),
+    'schema field' => 'uid',
+  );
+  $properties['weight'] = array(
+    'label' => t('Weight'),
+    'type' => 'integer',
+    'setter callback' => 'entity_property_verbatim_get',
+    'description' => t("The weight of the list."),
+    'required' => TRUE,
+    'schema field' => 'weight',
+  );
+  $properties['status'] = array(
+    'label' => t('Status'),
+    'description' => t('Whether or not the pricelist is active.'),
+    'type' => 'boolean',
+    'setter callback' => 'entity_property_verbatim_get',
+    'schema field' => 'status',
+  );
+  $properties['created'] = array(
+    'label' => t('Date created'),
+    'description' => t('The date the pricelist was created.'),
+    'type' => 'date',
+    'setter callback' => 'entity_property_verbatim_get',
+    'schema field' => 'created',
+  );
+  $properties['changed'] = array(
+    'label' => t('Date updated'),
+    'description' => t('The date the pricelist was last updated.'),
+    'type' => 'date',
+    'setter callback' => 'entity_property_verbatim_get',
+    'schema field' => 'changed',
+  );
+  // @todo: Info about 'data' property.
+  
+  $info['commerce_pricelist_list']['properties'] = $properties;
+  
+  
+  // Add meta-data about the commerce_pricelist_list properties.
+  $properties = array();
+
+  $properties['item_id'] = array(
+    'label' => t('List ID'),
+    'description' => t('The internal numeric ID of the pricelist the item belongs to.'),
+    'type' => 'integer',
+    'schema field' => 'item_id',
+  );
+  $properties['sku'] = array(
+    'label' => t('SKU'),
+    'description' => t('The human readable product SKU.'),
+    'type' => 'text',
+    'setter callback' => 'entity_property_verbatim_get',
+    'required' => TRUE,
+    'schema field' => 'sku',
+  );
+  $properties['pricelist'] = array(
+    'label' => t('List ID'),
+    'description' => t('The internal numeric ID of the pricelist the item belongs to.'),
+    'type' => 'commerce_pricelist_list',
+    'setter callback' => 'entity_property_verbatim_get',
+    'schema field' => 'pricelist_id',
+  );
+  $properties['valid_from'] = array(
+    'label' => t('Valid from date'),
+    'description' => t('The date item will be active from.'),
+    'type' => 'date',
+    'setter callback' => 'entity_property_verbatim_get',
+    'schema field' => 'valid_from',
+  );
+  $properties['valid_to'] = array(
+    'label' => t('Valid to date'),
+    'description' => t('The date item will be active to.'),
+    'type' => 'date',
+    'setter callback' => 'entity_property_verbatim_get',
+    'schema field' => 'valid_to',
+  );
+  $properties['quantity'] = array(
+    'label' => t('Quantity'),
+    'description' => t('Quantity associated with this pricelist item'),
+    'type' => 'decimal',
+    'setter callback' => 'entity_property_verbatim_get',
+    'required' => TRUE,
+    'schema field' => 'quantity',
+  );
+  $properties['price_amount'] = array(
+    'label' => t('Amount'),
+    'description' => t('The amount for this pricelist item.'),
+    'type' => 'decimal',
+    'setter callback' => 'entity_property_verbatim_get',
+    'schema field' => 'price_amount',
+  );
+  $properties['currency_code'] = array(
+    'label' => t('Currency Code'),
+    'description' => t('The currency code for this pricelist item.'),
+    'type' => 'text',
+    'setter callback' => 'entity_property_verbatim_get',
+    'schema field' => 'currency_code',
+  );
+
+  $info['commerce_pricelist_item']['properties'] = $properties;
+  
+  return $info;
+}
 
 /**
  * Implements hook_permission().
@@ -298,95 +523,6 @@ function commerce_pricelist_entity_delete($entity, $type) {
   }
 }
 
-
-/**
- * Implements hook_menu().
- */
-function commerce_pricelist_menu() {
-
-  // This provides a place for Field API to hang its own
-  // interface and has to be the same as what was defined
-  // in entity_info() above.
-  $items['admin/commerce/pricelist/commerce_pricelist_list'] = array(
-    'title' => 'Price lists',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('commerce_pricelist_draggable_form'),
-    'access arguments' => array('administer commerce_pricelist_list entities'),
-    'file' => 'includes/commerce_pricelist.admin.inc',
-  );
-
-  // Add example entities.
-  $items['admin/commerce/pricelist/commerce_pricelist_list/add'] = array(
-    'title' => 'Add a Price list',
-    'page callback' => 'commerce_pricelist_list_add',
-    'access arguments' => array('create commerce_pricelist_list entities'),
-    'type' => MENU_LOCAL_ACTION,
-    'file' => 'includes/commerce_pricelist.admin.inc',
-  );
-
-
-  // Add example entities.
-  $items['admin/commerce/products/%commerce_product/add_price'] = array(
-    'title' => 'Add a Price list item',
-    'page callback' => 'commerce_pricelist_item_add',
-    'page arguments' => array(3),
-    'access arguments' => array('edit any commerce_pricelist_list entity'),
-    'file' => 'includes/commerce_pricelist.admin.inc',
-    'type' => MENU_CALLBACK,
-  );
-
-  // The page to view our entities - needs to follow what
-  // is defined in basic_uri and will use load_basic to retrieve
-  // the necessary entity info.
-  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list'] = array(
-    'title callback' => 'commerce_pricelist_list_title',
-    'title arguments' => array(4),
-    'page callback' => 'commerce_pricelist_list_view',
-    'page arguments' => array(4),
-    'access arguments' => array('view any commerce_pricelist_list entity'),
-    'file' => 'includes/commerce_pricelist.admin.inc',
-  );
-
-  // 'View' tab for an individual entity page.
-  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/view'] = array(
-    'title' => 'View',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => -10,
-    'file' => 'includes/commerce_pricelist.admin.inc',
-  );
-
-  // 'Edit' tab for an individual entity page.
-  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/edit'] = array(
-    'title' => 'Edit',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('commerce_pricelist_list_form', 4),
-    'access arguments' => array('edit any commerce_pricelist_list entity'),
-    'type' => MENU_LOCAL_TASK,
-    'file' => 'includes/commerce_pricelist.admin.inc',
-  );
-
-  // 'Edit' tab for an individual entity page.
-  $items['admin/commerce/pricelist/commerce_pricelist_item/%commerce_pricelist_item/edit'] = array(
-    'title' => 'Edit',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('commerce_pricelist_item_form', 4),
-    'access arguments' => array('edit any commerce_pricelist_list entity'),
-    'file' => 'includes/commerce_pricelist.admin.inc',
-  );
-
-  // 'Add' tab for an individual entity page.
-  $items['admin/commerce/pricelist/commerce_pricelist_list/%commerce_pricelist_list/add'] = array(
-    'title' => 'Add price',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('commerce_pricelist_item_form', NULL, 4),
-    'access arguments' => array('edit any commerce_pricelist_list entity'),
-    'type' => MENU_LOCAL_TASK,
-    'file' => 'includes/commerce_pricelist.admin.inc',
-  );
-
-  return $items;
-}
-
 /**
  * Implements hook_theme().
  *
@@ -432,228 +568,6 @@ function commerce_pricelist_entity_access($op, $entity, $account, $entity_type) 
   }
 
   return FALSE;
-}
-
-
-/**
- * Returns an initialized pricelist item object.
- *
- * @return
- *   A pricelist item object with all default fields initialized.
- */
-function commerce_pricelist_item_new($pricelist_id = NULL, $sku = NULL) {
-  return entity_create('commerce_pricelist_item', array('pricelist_id' => $pricelist_id, 'sku' => $sku));
-}
-
-
-/**
- * We save the entity by calling the controller.
- */
-function commerce_pricelist_item_save(&$entity) {
-  $result = entity_save('commerce_pricelist_item', $entity);
-  cache_clear_all('commerce_pricelist', 'cache', TRUE);
-  return $result;
-}
-
-/**
- * Use the controller to delete the entity.
- */
-function commerce_pricelist_item_delete($id) {
-  return commerce_pricelist_item_delete_multiple(array($id));
-}
-
-/**
- * Use the controller to delete the entity.
- */
-function commerce_pricelist_item_delete_multiple($ids) {
-  $result = entity_delete_multiple('commerce_pricelist_item', $ids);
-  cache_clear_all('commerce_pricelist', 'cache', TRUE);
-  return $result;
-}
-
-/**
- * Provides a wrapper on the edit form to add a new entity.
- */
-function commerce_pricelist_item_add($product = NULL) {
-  // Create a basic entity structure to be used and passed to the validation
-  // and submission functions.
-  $sku = NULL;
-  if ($product != NULL) {
-    $sku = $product->sku;
-  }
-  $entity = commerce_pricelist_item_new(NULL, $sku);
-  return drupal_get_form('commerce_pricelist_item_form', $entity);
-}
-
-/**
- * Get the id of an existing pricelist item with these values.
- * We do not want more than one item with these values.
- *
- * @param $entity
- * @return int
- */
-function commerce_pricelist_item_get_existing_id($pricelist_item) {
-  $item_id = db_query("SELECT item_id FROM {commerce_pricelist_item} " .
-    "WHERE sku = :sku AND valid_to = :valid_to AND valid_from = :valid_from " .
-    "AND quantity = :quantity AND pricelist_id = :pricelist_id",
-    array(':sku' => $pricelist_item->sku,
-      ':valid_from' => $pricelist_item->valid_from,
-      ':valid_to' => $pricelist_item->valid_to,
-      ':quantity' => $pricelist_item->quantity,
-      ':pricelist_id' => $pricelist_item->pricelist_id))
-    ->fetchField();
-  return $item_id;
-}
-
-
-/**
- * Callback for a page title when this entity is displayed.
- */
-function commerce_pricelist_item_title($entity) {
-  return t('Pricelist item');
-}
-
-
-/**
- * Fetch a basic object.
- *
- * This function ends up being a shim between the menu system and
- * commerce_pricelist_item_load_multiple().
- *
- * This function gets its name from the menu system's wildcard
- * naming conventions. For example, /path/%wildcard would end
- * up calling wildcard_load(%wildcard value). In our case defining
- * the path: admin/commerce/pricelist/commerce_pricelist/basic/%commerce_pricelist_item in
- * hook_menu() tells Drupal to call commerce_pricelist_item_load().
- *
- * @param int $entity_id
- *   Integer specifying the basic entity id.
- * @param bool $reset
- *   A boolean indicating that the internal cache should be reset.
- *
- * @return object
- *   A fully-loaded $entity object or FALSE if it cannot be loaded.
- *
- * @see commerce_pricelist_item_load_multiple()
- * @see commerce_pricelist_menu()
- */
-function commerce_pricelist_item_load($entity_id = NULL, $reset = FALSE) {
-  $entity_ids = (isset($entity_id) ? array($entity_id) : array());
-  $entity = commerce_pricelist_item_load_multiple($entity_ids, array(), $reset);
-  return $entity ? reset($entity) : FALSE;
-}
-
-/**
- * Loads multiple basic entities.
- *
- * We only need to pass this request along to entity_load(), which
- * will in turn call the load() method of our entity controller class.
- */
-function commerce_pricelist_item_load_multiple($entity_ids = FALSE, $conditions = array(), $reset = FALSE) {
-  return entity_load('commerce_pricelist_item', $entity_ids, $conditions, $reset);
-}
-
-/**
- * Implements the uri callback.
- */
-function commerce_pricelist_item_uri($entity) {
-  return array(
-    'path' => 'admin/commerce/pricelist/commerce_pricelist/item/' . $entity->item_id,
-  );
-}
-
-/**
- * Returns an initialized pricelist list object.
- *
- * @return
- *   A pricelist list object with all default fields initialized.
- */
-function commerce_pricelist_list_new() {
-  return entity_create('commerce_pricelist_list', array());
-}
-
-
-/**
- * We save the entity by calling the controller.
- */
-function commerce_pricelist_list_save(&$entity) {
-  $result = entity_save('commerce_pricelist_list', $entity);
-  cache_clear_all('commerce_pricelist', 'cache', TRUE);
-  return $result;
-}
-
-/**
- * Use the controller to delete the entity.
- */
-function commerce_pricelist_list_delete($id) {
-  $result = entity_delete('commerce_pricelist_list', $id);
-  cache_clear_all('commerce_pricelist', 'cache', TRUE);
-  return $result;
-}
-
-
-/**
- * Provides a wrapper on the edit form to add a new entity.
- */
-function commerce_pricelist_list_add() {
-  $entity = commerce_pricelist_list_new();
-  return drupal_get_form('commerce_pricelist_list_form', $entity);
-}
-
-
-/**¶
- * Fetch a basic object.
- *
- * This function ends up being a shim between the menu system and
- * commerce_pricelist_list_load_multiple().
- *
- * This function gets its name from the menu system's wildcard
- * naming conventions. For example, /path/%wildcard would end
- * up calling wildcard_load(%wildcard value). In our case defining
- * the path: admin/commerce/pricelist/commerce_pricelist/basic/%commerce_pricelist_list in
- * hook_menu() tells Drupal to call commerce_pricelist_list_load().
- *
- * @param int $entity_id
- *   Integer specifying the basic entity id.
- * @param bool $reset
- *   A boolean indicating that the internal cache should be reset.
- *
- * @return object
- *   A fully-loaded $entity object or FALSE if it cannot be loaded.
- *
- * @see commerce_pricelist_list_load_multiple()
- * @see commerce_pricelist_menu()
- */
-function commerce_pricelist_list_load($list_id = NULL, $reset = FALSE) {
-  $list_id = (isset($list_id) ? array($list_id) : array());
-  $entity = commerce_pricelist_list_load_multiple($list_id, array(), $reset);
-  return $entity ? reset($entity) : FALSE;
-}
-
-/**
- * Loads multiple basic entities.
- *
- * We only need to pass this request along to entity_load(), which
- * will in turn call the load() method of our entity controller class.
- */
-function commerce_pricelist_list_load_multiple($list_id = FALSE, $conditions = array(), $reset = FALSE) {
-  return entity_load('commerce_pricelist_list', $list_id, $conditions, $reset);
-}
-
-/**
- * Implements the uri callback.
- */
-function commerce_pricelist_list_uri($entity) {
-  return array(
-    'path' => 'admin/commerce/pricelist/commerce_pricelist_list/' . $entity->list_id,
-  );
-}
-
-/**
- * Callback for a page title when this entity is displayed.
- */
-function commerce_pricelist_list_title($entity) {
-  return t('@item_title', array('@item_title' => $entity->title));
 }
 
 /**

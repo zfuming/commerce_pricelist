@@ -121,6 +121,13 @@ function commerce_pricelist_list_form($form, &$form_state, $entity) {
   return $form;
 }
 
+/**
+ * Provides a wrapper on the edit form to add a new entity.
+ */
+function commerce_pricelist_list_add() {
+  $entity = commerce_pricelist_list_new();
+  return drupal_get_form('commerce_pricelist_list_form', $entity);
+}
 
 /**
  * Validation handler for commerce_pricelist_list_add_form form.
@@ -650,6 +657,20 @@ function _commerce_pricelist_validate_pricelist($element) {
   if ($value == '' || !entity_load('commerce_pricelist_list', array($value))) {
     form_set_error($element['#name'], t('Invalid price list'));
   }
+}
+
+/**
+ * Provides a wrapper on the edit form to add a new entity.
+ */
+function commerce_pricelist_item_add($product = NULL) {
+  // Create a basic entity structure to be used and passed to the validation
+  // and submission functions.
+  $sku = NULL;
+  if ($product != NULL) {
+    $sku = $product->sku;
+  }
+  $entity = commerce_pricelist_item_new(NULL, $sku);
+  return drupal_get_form('commerce_pricelist_item_form', $entity);
 }
 
 /**
