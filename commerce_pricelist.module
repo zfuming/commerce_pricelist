@@ -110,6 +110,7 @@ function commerce_pricelist_menu() {
 function commerce_pricelist_entity_info() {
   $info['commerce_pricelist_list'] = array(
     'label' => t('Commerce Price List list'),
+    'entity class' => 'CommercePricelistList',
     'controller class' => 'CommercePricelistListController',
     'base table' => 'commerce_pricelist_list',
     'uri callback' => 'commerce_pricelist_list_uri',
@@ -132,6 +133,7 @@ function commerce_pricelist_entity_info() {
 
   $info['commerce_pricelist_item'] = array(
     'label' => t('Commerce Price List item'),
+    'entity class' => 'CommercePricelistItem',
     'controller class' => 'CommercePricelistItemController',
     'base table' => 'commerce_pricelist_item',
     'uri callback' => 'commerce_pricelist_item_uri',
@@ -175,22 +177,22 @@ function commerce_pricelist_entity_property_info() {
     'label' => t('Title'),
     'description' => t('The title of the list.'),
     'type' => 'text',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'required' => TRUE,
     'schema field' => 'title',
   );
   $properties['uid'] = array(
-    'label' => t('User ID'),
-    'type' => 'integer',
-    'setter callback' => 'entity_property_verbatim_get',
-    'description' => t("The unique ID of the user the pricelist belongs to."),
-    'clear' => array('user'),
+    'label' => t("Author"),
+    'type' => 'user',
+    'description' => t("The author of the pricelist."),
+    'setter callback' => 'entity_property_verbatim_set',
+    'required' => TRUE,
     'schema field' => 'uid',
   );
   $properties['weight'] = array(
     'label' => t('Weight'),
     'type' => 'integer',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'description' => t("The weight of the list."),
     'required' => TRUE,
     'schema field' => 'weight',
@@ -199,21 +201,21 @@ function commerce_pricelist_entity_property_info() {
     'label' => t('Status'),
     'description' => t('Whether or not the pricelist is active.'),
     'type' => 'boolean',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'status',
   );
   $properties['created'] = array(
     'label' => t('Date created'),
     'description' => t('The date the pricelist was created.'),
     'type' => 'date',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'created',
   );
   $properties['changed'] = array(
     'label' => t('Date updated'),
     'description' => t('The date the pricelist was last updated.'),
     'type' => 'date',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'changed',
   );
   // @todo: Info about 'data' property.
@@ -234,7 +236,7 @@ function commerce_pricelist_entity_property_info() {
     'label' => t('SKU'),
     'description' => t('The human readable product SKU.'),
     'type' => 'text',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'required' => TRUE,
     'schema field' => 'sku',
   );
@@ -242,28 +244,28 @@ function commerce_pricelist_entity_property_info() {
     'label' => t('List ID'),
     'description' => t('The internal numeric ID of the pricelist the item belongs to.'),
     'type' => 'integer',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'pricelist_id',
   );
   $properties['valid_from'] = array(
     'label' => t('Valid from date'),
     'description' => t('The date item will be active from.'),
     'type' => 'date',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'valid_from',
   );
   $properties['valid_to'] = array(
     'label' => t('Valid to date'),
     'description' => t('The date item will be active to.'),
     'type' => 'date',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'valid_to',
   );
   $properties['quantity'] = array(
     'label' => t('Quantity'),
     'description' => t('Quantity associated with this pricelist item'),
     'type' => 'decimal',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'required' => TRUE,
     'schema field' => 'quantity',
   );
@@ -271,14 +273,14 @@ function commerce_pricelist_entity_property_info() {
     'label' => t('Amount'),
     'description' => t('The amount for this pricelist item.'),
     'type' => 'decimal',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'price_amount',
   );
   $properties['currency_code'] = array(
     'label' => t('Currency Code'),
     'description' => t('The currency code for this pricelist item.'),
     'type' => 'text',
-    'setter callback' => 'entity_property_verbatim_get',
+    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'currency_code',
   );
 

@@ -4,6 +4,13 @@
  * Contains functions for fetching and manipulating pricelist entities.
  */
 
+/**
+ * Pricelist list class.
+ */
+class CommercePricelistList extends Entity {
+
+}
+
 
 /**
  * Returns an initialized pricelist list object.
