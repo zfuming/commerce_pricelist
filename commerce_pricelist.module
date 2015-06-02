@@ -238,10 +238,10 @@ function commerce_pricelist_entity_property_info() {
     'required' => TRUE,
     'schema field' => 'sku',
   );
-  $properties['pricelist'] = array(
+  $properties['pricelist_id'] = array(
     'label' => t('List ID'),
     'description' => t('The internal numeric ID of the pricelist the item belongs to.'),
-    'type' => 'commerce_pricelist_list',
+    'type' => 'integer',
     'setter callback' => 'entity_property_verbatim_get',
     'schema field' => 'pricelist_id',
   );
