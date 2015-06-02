@@ -571,20 +571,20 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
   }
   else {
     $pricelists = commerce_pricelist_list_load_multiple();
-    $options = array();
+    $currencies = array();
     foreach ($pricelists as $pricelist) {
-      $options[$pricelist->list_id] = $pricelist->title;
+      $currencies[$pricelist->list_id] = $pricelist->title;
     }
     $form['pricelist_id'] = array(
       '#type' => 'select',
-      '#options' => $options,
+      '#options' => $currencies,
       '#required' => TRUE,
       '#title' => t('Price list'),
       '#element_validate' => array('_commerce_pricelist_validate_pricelist'),
     );
   }
 
-  $form_fields = array('sku','valid_from','valid_to','quantity','price_amount','currency_code');
+  $form_fields = array('sku','valid_from','valid_to','quantity','price_amount');
 
   foreach ($form_fields as $field) {
     $form[$field] = array(
@@ -594,6 +594,13 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
       '#default_value' => isset($pricelist_item->$field) ? $pricelist_item->$field : '',
     );
   }
+
+  $form['currency_code'] = array(
+    '#type' => 'select',
+    '#title' => t('Currency code'),
+    '#options' => array_filter(variable_get('commerce_enabled_currencies', array('USD' => 'USD'))),
+    '#default_value' => isset($pricelist_item->$field) ? $pricelist_item->$field : commerce_default_currency(),
+  );
 
   foreach (array('valid_from', 'valid_to') as $date) {
     $default_date = isset($pricelist_item->{$date}) ? $pricelist_item->{$date} : 0;
