@@ -56,9 +56,10 @@ function commerce_pricelist_item_delete_multiple($ids) {
  */
 function commerce_pricelist_item_get_existing_id($pricelist_item) {
   $item_id = db_query("SELECT item_id FROM {commerce_pricelist_item} " .
-    "WHERE sku = :sku AND valid_to = :valid_to AND valid_from = :valid_from " .
+    "WHERE item_id != :item_id AND sku = :sku AND valid_to = :valid_to AND valid_from = :valid_from " .
     "AND quantity = :quantity AND pricelist_id = :pricelist_id",
-    array(':sku' => $pricelist_item->sku,
+    array(':item_id' => $pricelist_item->item_id,
+      ':sku' => $pricelist_item->sku,
       ':valid_from' => $pricelist_item->valid_from,
       ':valid_to' => $pricelist_item->valid_to,
       ':quantity' => $pricelist_item->quantity,
