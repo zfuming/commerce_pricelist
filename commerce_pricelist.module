@@ -115,6 +115,7 @@ function commerce_pricelist_entity_info() {
     'base table' => 'commerce_pricelist_list',
     'uri callback' => 'commerce_pricelist_list_uri',
     'access callback' => 'commerce_pricelist_entity_access',
+    'metadata controller class' => FALSE,
     'fieldable' => FALSE,
     'uuid' => TRUE,
     'entity keys' => array(
@@ -122,6 +123,10 @@ function commerce_pricelist_entity_info() {
       'uuid' => 'uuid',
       'label' => 'title',
     ),
+    'bundle keys' => array(
+      'bundle' => 'list_id',
+    ),
+    'bundles' => array(),
     'static cache' => TRUE,
     'view modes' => array(
       'full' => array(
@@ -138,8 +143,13 @@ function commerce_pricelist_entity_info() {
     'base table' => 'commerce_pricelist_item',
     'uri callback' => 'commerce_pricelist_item_uri',
     'access callback' => 'commerce_pricelist_entity_access',
+    'metadata controller class' => FALSE,
     'fieldable' => FALSE,
     'uuid' => TRUE,
+    'bundle keys' => array(
+      'bundle' => 'item_id',
+    ),
+    'bundles' => array(),
     'entity keys' => array(
       'id' => 'item_id',
       'uuid' => 'uuid',
@@ -215,15 +225,14 @@ function commerce_pricelist_entity_property_info() {
     'label' => t('Date updated'),
     'description' => t('The date the pricelist was last updated.'),
     'type' => 'date',
-    'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'changed',
   );
   // @todo: Info about 'data' property.
   
-  $info['commerce_pricelist_list']['properties'] = $properties;
+  //$info['commerce_pricelist_list']['properties'] = $properties;
   
   
-  // Add meta-data about the commerce_pricelist_list properties.
+  // Add meta-data about the commerce_pricelist_item properties.
   $properties = array();
 
   $properties['item_id'] = array(
@@ -243,7 +252,7 @@ function commerce_pricelist_entity_property_info() {
   $properties['pricelist_id'] = array(
     'label' => t('List ID'),
     'description' => t('The internal numeric ID of the pricelist the item belongs to.'),
-    'type' => 'integer',
+    'type' => 'commerce_pricelist_list',
     'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'pricelist_id',
   );
@@ -272,7 +281,7 @@ function commerce_pricelist_entity_property_info() {
   $properties['price_amount'] = array(
     'label' => t('Amount'),
     'description' => t('The amount for this pricelist item.'),
-    'type' => 'decimal',
+    'type' => 'integer',
     'setter callback' => 'entity_property_verbatim_set',
     'schema field' => 'price_amount',
   );
@@ -606,8 +615,9 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
     $prices['actions'] = array(
       '#prefix' => '<br><div class="clearfix container-inline">',
       '#suffix' => '</div>',
-      '#tree' => TRUE
+      '#tree' => TRUE,
     );
+
     $options = array('attributes' => array('class' => array('button')));
 
     $prices['actions']['administer'] = array(
