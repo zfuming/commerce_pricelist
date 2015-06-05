@@ -584,7 +584,7 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
     );
   }
 
-  $form_fields = array('sku','valid_from','valid_to','quantity','price_amount');
+  $form_fields = array('sku','valid_from','valid_to','quantity');
 
   foreach ($form_fields as $field) {
     $form[$field] = array(
@@ -595,9 +595,40 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
     );
   }
 
-  $form['currency_code'] = array(
+  $form['price'] = array(
+    '#prefix' => '<div class="clearfix container-inline">',
+    '#suffix' => '</div><br>',
+    '#tree' => TRUE,
+    '#type' => 'item',
+    '#element_validate' => array('commerce_price_field_widget_validate')
+  );
+
+  // If a price has already been set for this item prepare default values.
+  if (isset($pricelist_item->price_amount)) {
+    $currency = commerce_currency_load($pricelist_item->currency_code);
+
+    // Convert the price amount to a user friendly decimal value.
+    $default_amount = commerce_currency_amount_to_decimal($pricelist_item->price_amount, $currency['code']);
+
+    // Run it through number_format() to ensure it has the proper number of
+    // decimal places.
+    $default_amount = number_format($default_amount, $currency['decimals'], '.', '');
+  }
+  else {
+    $default_amount = NULL;
+  }
+
+  $form['price']['amount'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Price'),
+    '#required' => TRUE,
+    '#size' => 10,
+    '#default_value' => $default_amount
+  );
+
+  $form['price']['currency_code'] = array(
     '#type' => 'select',
-    '#title' => t('Currency code'),
+    '#title' => '',
     '#options' => array_filter(variable_get('commerce_enabled_currencies', array('USD' => 'USD'))),
     '#default_value' => isset($pricelist_item->$field) ? $pricelist_item->$field : commerce_default_currency(),
   );
@@ -610,10 +641,7 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
     $form[$date]['#default_value'] = _commerce_pricelist_display_date($default_date, 'Y-m-d H:i:s O');
   }
 
-  $form['price_amount']['#element_validate'] = array('element_validate_integer_positive');
-  $form['price_amount']['#description'] = t('In Drupal Commerce minor currency so $1.50 = 150 and $150 = 15000');
   $form['quantity']['#element_validate'] = array('element_validate_number');
-  $form['currency_code']['#default_value'] = variable_get('commerce_default_currency', 'USD');
 
   $form['entity'] = array(
     '#type' => 'value',
@@ -700,6 +728,13 @@ function commerce_pricelist_item_form_submit($form, &$form_state) {
     $timestamp = strtotime($form_state['values'][$date_field]);
     $form_state['values'][$date_field] = $timestamp !== FALSE ? $timestamp : '';
   }
+
+  // Need to shuffle values around because we wrap them and use
+  // commerce_price_field_widget_validate().
+  $price = $form_state['values']['price'];
+  unset($form_state['values']['price']);
+  $form_state['values']['price_amount'] = $price['amount'];
+  $form_state['values']['currency_code'] = $price['currency_code'];
 
   foreach ($form_state['values'] as $key => $value) {
     $entity->$key = $value;
