@@ -613,9 +613,9 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
     }
 
     $prices['actions'] = array(
-      '#prefix' => '<br><div class="clearfix container-inline">',
-      '#suffix' => '</div>',
-      '#tree' => TRUE,
+      '#type' => 'container',
+      '#attributes' => array('class' => array('form-actions', 'container-inline')),
+      '#weight' => 100,
     );
 
     $options = array('attributes' => array('class' => array('button')));
@@ -643,6 +643,7 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
       '#title' => t('Price lists'),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
+      '#weight' => 100,
       'prices' => $prices,
     );
   }

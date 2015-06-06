@@ -596,8 +596,7 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
   }
 
   $form['price'] = array(
-    '#prefix' => '<div class="clearfix container-inline">',
-    '#suffix' => '</div><br>',
+    '#title' => t('Price'),
     '#tree' => TRUE,
     '#type' => 'item',
     '#element_validate' => array('commerce_price_field_widget_validate')
@@ -620,10 +619,10 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
 
   $form['price']['amount'] = array(
     '#type' => 'textfield',
-    '#title' => t('Price'),
     '#required' => TRUE,
     '#size' => 10,
-    '#default_value' => $default_amount
+    '#default_value' => $default_amount,
+    '#prefix' => '<div class="container-inline">'
   );
 
   $form['price']['currency_code'] = array(
@@ -631,6 +630,7 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
     '#title' => '',
     '#options' => array_filter(variable_get('commerce_enabled_currencies', array('USD' => 'USD'))),
     '#default_value' => isset($pricelist_item->$field) ? $pricelist_item->$field : commerce_default_currency(),
+    '#suffix' => '</div>'
   );
 
   foreach (array('valid_from', 'valid_to') as $date) {
@@ -648,15 +648,20 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
     '#value' => $pricelist_item,
   );
 
-  $form['submit'] = array(
+  $form['actions'] = array(
+    '#type' => 'container',
+    '#attributes' => array('class' => array('form-actions', 'container-inline')),
+    '#weight' => 100,
+  );
+
+  $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
-    '#weight' => 100,
   );
 
   // Check if this is an existing item, add delete button
   if ($pricelist_item->item_id) {
-    $form['delete'] = array(
+    $form['actions']['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete'),
       '#submit' => array('commerce_pricelist_item_edit_delete'),
