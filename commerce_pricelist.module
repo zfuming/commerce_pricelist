@@ -573,7 +573,7 @@ function commerce_pricelist_entity_access($op, $entity, $account, $entity_type) 
   }
 
   if ($op == 'create') {
-    return user_access('create any ' . $entity_type . ' entity', $account);
+    return user_access('create ' . $entity_type . ' entities', $account);
   }
 
   if ($op == 'edit') {
