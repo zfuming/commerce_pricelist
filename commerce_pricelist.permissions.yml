@@ -1,0 +1,8 @@
+'administer commerce_pricelist_list entities':
+  title: 'Administer commerce_pricelist_list entities'
+'view any commerce_pricelist_list entity':
+  title: 'View any Price list entity'
+'edit any commerce_pricelist_list entity':
+  title: 'Edit any Price list entity'
+'create commerce_pricelist_list entities':
+  title: 'Create Price list Entities'

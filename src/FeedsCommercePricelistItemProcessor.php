@@ -1,9 +1,5 @@
 <?php
-
-/**
- * @file
- * FeedsUserProcessor class.
- */
+namespace Drupal\commerce_pricelist;
 
 /**
  * Feeds processor plugin. Create users from feed items.

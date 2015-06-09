@@ -1,0 +1,5 @@
+commerce_pricelist.list_add:
+  route_name: commerce_pricelist.list_add
+  title: 'Add a Price list'
+  appears_on:
+    - commerce_pricelist.list_add

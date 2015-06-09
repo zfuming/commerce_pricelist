@@ -1,0 +1,13 @@
+commerce_pricelist.list_view:
+  route_name: commerce_pricelist.list_view
+  title: View
+  weight: -10
+  base_route: commerce_pricelist.list_view
+commerce_pricelist.list_form:
+  route_name: commerce_pricelist.list_form
+  title: Edit
+  base_route: commerce_pricelist.list_view
+commerce_pricelist.item_form:
+  route_name: commerce_pricelist.item_form
+  title: 'Add price'
+  base_route: commerce_pricelist.list_view

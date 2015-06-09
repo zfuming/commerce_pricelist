@@ -1,0 +1,45 @@
+commerce_pricelist.draggable_form:
+  path: /admin/commerce/pricelist/commerce_pricelist_list
+  defaults:
+    _title: 'Price lists'
+    _form: \Drupal\commerce_pricelist\Form\CommercePricelistDraggableForm
+  requirements:
+    _permission: 'administer commerce_pricelist_list entities'
+commerce_pricelist.list_add:
+  path: /admin/commerce/pricelist/commerce_pricelist_list/add
+  defaults:
+    _title: 'Add a Price list'
+    _content: '\Drupal\commerce_pricelist\Controller\DefaultController::commerce_pricelist_list_add'
+  requirements:
+    _permission: 'create commerce_pricelist_list entities'
+commerce_pricelist.item_add:
+  path: '/admin/commerce/products/{product}/add_price'
+  defaults:
+    product: null
+    _title: 'Add a Price list item'
+    _content: '\Drupal\commerce_pricelist\Controller\DefaultController::commerce_pricelist_item_add'
+  requirements:
+    _permission: 'edit any commerce_pricelist_list entity'
+commerce_pricelist.list_view:
+  path: '/admin/commerce/pricelist/commerce_pricelist_list/{entity}'
+  defaults:
+    _title_callback: '\Drupal\commerce_pricelist\Controller\DefaultController::commerce_pricelist_list_title'
+    _content: '\Drupal\commerce_pricelist\Controller\DefaultController::commerce_pricelist_list_view'
+  requirements:
+    _permission: 'view any commerce_pricelist_list entity'
+commerce_pricelist.list_form:
+  path: '/admin/commerce/pricelist/commerce_pricelist_list/{entity}/edit'
+  defaults:
+    _title: Edit
+    _form: \Drupal\commerce_pricelist\Form\CommercePricelistListForm
+  requirements:
+    _permission: 'edit any commerce_pricelist_list entity'
+commerce_pricelist.item_form:
+  path: '/admin/commerce/pricelist/commerce_pricelist_list/{pricelist}/add'
+  defaults:
+    pricelist_item: null
+    pricelist: null
+    _title: 'Add price'
+    _form: \Drupal\commerce_pricelist\Form\CommercePricelistItemForm
+  requirements:
+    _permission: 'edit any commerce_pricelist_list entity'
