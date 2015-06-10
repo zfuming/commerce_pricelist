@@ -20,7 +20,7 @@ class CommercePricelistItemForm extends FormBase {
     return 'commerce_pricelist_item_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface &$form_state, $pricelist_item = NULL, $pricelist = NULL) {
+  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state, $pricelist_item = NULL, $pricelist = NULL) {
 
     if (!$pricelist_item) {
       // This is a new list item being created.
@@ -160,10 +160,10 @@ class CommercePricelistItemForm extends FormBase {
     return $form;
   }
 
-  public function validateForm(array &$form, \Drupal\Core\Form\FormStateInterface &$form_state) {
+  public function validateForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
   }
 
-  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface &$form_state) {
+  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $entity = $form_state->getValue(['entity']);
 
     // Convert to timestamp.
@@ -182,7 +182,6 @@ class CommercePricelistItemForm extends FormBase {
     foreach ($form_state->getValues() as $key => $value) {
       $entity->$key = $value;
     }
-    field_attach_submit('commerce_pricelist_item', $entity, $form, $form_state);
     $entity = commerce_pricelist_item_save($entity);
     if ($entity) {
       drupal_set_message(t('Price list item saved'));

@@ -20,7 +20,7 @@ class CommercePricelistListForm extends FormBase {
     return 'commerce_pricelist_list_form';
   }
 
-  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface &$form_state, $entity = NULL) {
+  public function buildForm(array $form, \Drupal\Core\Form\FormStateInterface $form_state, $entity = NULL) {
     $form['title'] = [
       '#type' => 'textfield',
       '#title' => t('Title'),
@@ -67,10 +67,10 @@ class CommercePricelistListForm extends FormBase {
     return $form;
   }
 
-  public function validateForm(array &$form, \Drupal\Core\Form\FormStateInterface &$form_state) {
+  public function validateForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
   }
 
-  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface &$form_state) {
+  public function submitForm(array &$form, \Drupal\Core\Form\FormStateInterface $form_state) {
     $entity = $form_state->getValue(['entity']);
     $entity->title = check_plain($form_state->getValue(['title']));
     $entity->weight = $form_state->getValue(['weight']);

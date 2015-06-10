@@ -5,7 +5,7 @@
 
 namespace Drupal\commerce_pricelist\Entity;
 
-use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\Entity;
 
 /**
  * @EntityType(
@@ -21,7 +21,7 @@ use Drupal\Core\Entity\ContentEntityBase;
  *  }
  * )
  */
-class CommercePricelistList extends ContentEntityBase {
+class CommercePricelistList extends Entity {
 
   /**
    * @FIXME

@@ -1,8 +1,0 @@
-name = Commerce Pricelists on user form
-description = Set pricelist per user on the user edit form
-core = 7.x
-package = Commerce (contrib)
-
-dependencies[] = commerce_pricelist
-dependencies[] = entityreference
-dependencies[] = field
