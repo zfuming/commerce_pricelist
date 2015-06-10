@@ -32,9 +32,9 @@ class CommercePricelistItemController extends EntityAPIController {
   public function save($entity, DatabaseTransaction $transaction = NULL) {
 
     // Make sure we are saving into an existing pricelist.
-    $pricelist = \Drupal::entityManager()->getStorage('commerce_pricelist_list', array($entity->pricelist_id));
+    $pricelist = entity_load('commerce_pricelist_list', array($entity->pricelist_id));
     if (empty($pricelist)) {
-      \Drupal::logger('commerce pricelist')->notice(t('Attepted to save a pricelist item into a non-existent pricelist.'), []);
+      watchdog('commerce pricelist', t('Attepted to save a pricelist item into a non-existent pricelist.'));
       return FALSE;
     }
 

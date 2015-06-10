@@ -19,7 +19,7 @@ class CommercePricelistList extends Entity {
  *   A pricelist list object with all default fields initialized.
  */
 function commerce_pricelist_list_new() {
-  return \Drupal::entityManager()->getStorage('commerce_pricelist_list')->create(array());
+  return entity_create('commerce_pricelist_list', array());
 }
 
 
@@ -27,7 +27,7 @@ function commerce_pricelist_list_new() {
  * We save the entity by calling the controller.
  */
 function commerce_pricelist_list_save(&$entity) {
-  $result = $entity->save();
+  $result = entity_save('commerce_pricelist_list', $entity);
   cache_clear_all('commerce_pricelist', 'cache', TRUE);
   return $result;
 }
@@ -36,7 +36,7 @@ function commerce_pricelist_list_save(&$entity) {
  * Use the controller to delete the entity.
  */
 function commerce_pricelist_list_delete($id) {
-  $result = $id->delete();
+  $result = entity_delete('commerce_pricelist_list', $id);
   cache_clear_all('commerce_pricelist', 'cache', TRUE);
   return $result;
 }
@@ -77,7 +77,7 @@ function commerce_pricelist_list_load($list_id = NULL, $reset = FALSE) {
  * will in turn call the load() method of our entity controller class.
  */
 function commerce_pricelist_list_load_multiple($list_id = FALSE, $conditions = array(), $reset = FALSE) {
-  return \Drupal::entityManager()->getStorage('commerce_pricelist_list')->loadByProperties($conditions);
+  return entity_load('commerce_pricelist_list', $list_id, $conditions, $reset);
 }
 
 /**

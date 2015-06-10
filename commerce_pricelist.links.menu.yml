@@ -1,9 +1,0 @@
-commerce_pricelist.draggable_form:
-  route_name: commerce_pricelist.draggable_form
-  title: 'Price lists'
-commerce_pricelist.list_view:
-  route_name: commerce_pricelist.list_view
-  parent: commerce_pricelist.draggable_form
-commerce_pricelist.item_form:
-  route_name: commerce_pricelist.item_form
-  title: Edit

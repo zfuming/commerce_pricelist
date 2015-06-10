@@ -162,7 +162,7 @@ function commerce_pricelist_schema() {
   );
 
   // Support for UUID module.
-  if (\Drupal::moduleHandler()->moduleExists('uuid')) {
+  if (module_exists('uuid')) {
     $field = uuid_schema_field_definition();
     $schema['commerce_pricelist_item']['fields']['uuid'] = $field;
     $schema['commerce_pricelist_item']['indexes']['uuid'] = array('uuid');
@@ -177,7 +177,7 @@ function commerce_pricelist_schema() {
  * Implements hook_uninstall().
  */
 function commerce_pricelist_enable() {
-  \Drupal::entityManager()->clearCachedDefinitions();
+  entity_info_cache_clear();
 }
 
 /**

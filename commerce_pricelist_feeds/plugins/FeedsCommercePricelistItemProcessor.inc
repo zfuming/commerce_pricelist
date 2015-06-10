@@ -170,7 +170,7 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
     );
 
     // UUID module support plus support for mappings set up before beta version.
-    if (\Drupal::moduleHandler()->moduleExists('uuid')) {
+    if (module_exists('uuid')) {
       $targets += array(
         'pricelist_uuid' => array(
           'name' => t('Price list uuid'),
@@ -183,7 +183,7 @@ class FeedsCommercePricelistItemProcessor extends FeedsProcessor {
     self::loadMappers();
     $entity_type = $this->entityType();
     $bundle = $this->bundle();
-    \Drupal::moduleHandler()->alter('feeds_processor_targets', $targets, $entity_type, $bundle);
+    drupal_alter('feeds_processor_targets', $targets, $entity_type, $bundle);
 
     return $targets;
   }

@@ -15,13 +15,10 @@ function commerce_pricelist_list_info_page() {
     '#type' => 'item',
     '#markup' => t('The entity example provides a simple example entity.'),
   );
-  if (\Drupal::currentUser()->hasPermission('administer commerce_pricelist_list entities')) {
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $content['preface']['#markup'] = t('You can administer these and add fields and change the view !link.',
-//       array('!link' => l(t('here'), 'admin/commerce/pricelist/commerce_pricelist_list/manage'))
-//     );
-
+  if (user_access('administer commerce_pricelist_list entities')) {
+    $content['preface']['#markup'] = t('You can administer these and add fields and change the view !link.',
+      array('!link' => l(t('here'), 'admin/commerce/pricelist/commerce_pricelist_list/manage'))
+    );
   }
   $content['table'] = commerce_pricelist_list_list_entities();
 
@@ -57,12 +54,13 @@ function commerce_pricelist_list_view($entity, $view_mode = 'full') {
 
   // Now to invoke some hooks. We need the language code for
   // hook_entity_view(), so let's get that.
-  $language = \Drupal::languageManager()->getCurrentLanguage();
+  global $language;
   $langcode = $language->language;
   // And now invoke hook_entity_view().
-  \Drupal::moduleHandler()->invokeAll('entity_view', [$entity, $entity_type, $view_mode, $langcode]);
+  module_invoke_all('entity_view', $entity, $entity_type, $view_mode,
+    $langcode);
   // Now invoke hook_entity_view_alter().
-  \Drupal::moduleHandler()->alter(array('commerce_pricelist_list_view', 'entity_view'),
+  drupal_alter(array('commerce_pricelist_list_view', 'entity_view'),
     $entity->content, $entity_type);
 
   // And finally return the content.
@@ -128,7 +126,7 @@ function commerce_pricelist_list_form($form, &$form_state, $entity) {
  */
 function commerce_pricelist_list_add() {
   $entity = commerce_pricelist_list_new();
-  return \Drupal::formBuilder()->getForm('commerce_pricelist_list_form', $entity);
+  return drupal_get_form('commerce_pricelist_list_form', $entity);
 }
 
 /**
@@ -215,60 +213,57 @@ function commerce_pricelist_draggable_form($form_state) {
       // modify list item.
 
       $info = array();
-      \Drupal::moduleHandler()->alter('commerce_pricelists_list_info', $info, $item);
+      drupal_alter('commerce_pricelists_list_info', $info, $item);
 
       // Create a form entry for this item.
       //
       // Each entry will be an array using the the unique id for that item as
       // the array key, and an array of table row data as the value.
-      // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $form['pricelists'][$item->list_id] = array(
-// 
-//         // We'll use a form element of type '#markup' to display the item name.
-//         'title' => array(
-//           '#markup' => check_plain($item->title),
-//         ),
-// 
-//         'status' => array(
-//           '#type' => 'checkbox',
-//           '#title' => t('Active'),
-//           '#default_value' => $item->status,
-//         ),
-// 
-//         // The 'weight' field will be manipulated as we move the items around in
-//         // the table using the tabledrag activity.  We use the 'weight' element
-//         // defined in Drupal's Form API.
-//         'weight' => array(
-//           '#type' => 'weight',
-//           '#title' => t('Weight'),
-//           '#default_value' => $item->weight,
-//           '#delta' => 10,
-//           '#title_display' => 'invisible',
-//         ),
-// 
-//         'data' => array(
-//           '#markup' => implode(' ', $info),
-//         ),
-// 
-//         'rows' => array(
-//           '#markup' => $count,
-//         ),
-// 
-//         'view' => array(
-//           '#markup' => l(t('View'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id),
-//         ),
-// 
-//         'add' => array(
-//           '#markup' => l(t('Add price'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id . '/add',
-//             array('query' => array('destination' => current_path()))),
-//         ),
-// 
-//         'edit' => array(
-//           '#markup' => l(t('Edit'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id . '/edit'),
-//         ),
-//       );
+      $form['pricelists'][$item->list_id] = array(
 
+        // We'll use a form element of type '#markup' to display the item name.
+        'title' => array(
+          '#markup' => check_plain($item->title),
+        ),
+
+        'status' => array(
+          '#type' => 'checkbox',
+          '#title' => t('Active'),
+          '#default_value' => $item->status,
+        ),
+
+        // The 'weight' field will be manipulated as we move the items around in
+        // the table using the tabledrag activity.  We use the 'weight' element
+        // defined in Drupal's Form API.
+        'weight' => array(
+          '#type' => 'weight',
+          '#title' => t('Weight'),
+          '#default_value' => $item->weight,
+          '#delta' => 10,
+          '#title_display' => 'invisible',
+        ),
+
+        'data' => array(
+          '#markup' => implode(' ', $info),
+        ),
+
+        'rows' => array(
+          '#markup' => $count,
+        ),
+
+        'view' => array(
+          '#markup' => l(t('View'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id),
+        ),
+
+        'add' => array(
+          '#markup' => l(t('Add price'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id . '/add',
+            array('query' => array('destination' => current_path()))),
+        ),
+
+        'edit' => array(
+          '#markup' => l(t('Edit'), 'admin/commerce/pricelist/commerce_pricelist_list/' . $item->list_id . '/edit'),
+        ),
+      );
     }
 
     // Now we add our submit button, for submitting the form results.
@@ -313,7 +308,7 @@ function theme_commerce_pricelist_draggable_form($variables) {
   if (isset($form['pricelists'])) {
 
     // Iterate over each element in our $form['pricelists'] array.
-    foreach (\Drupal\Core\Render\Element::children($form['pricelists']) as $id) {
+    foreach (element_children($form['pricelists']) as $id) {
 
       // Before we add our 'weight' column to the row, we need to give the
       // element a custom class so that it can be identified in the
@@ -363,7 +358,7 @@ function theme_commerce_pricelist_draggable_form($variables) {
   $table_id = 'pricelists-table';
 
   // We can render our tabledrag table for output.
-  $output = _theme('table', array(
+  $output = theme('table', array(
     'header' => $header,
     'rows' => $rows,
     'attributes' => array('id' => $table_id),
@@ -380,14 +375,7 @@ function theme_commerce_pricelist_draggable_form($variables) {
   // - the $action to be performed on our form items ('order'),
   // - a string describing where $action should be applied ('siblings'),
   // - and the class of the element containing our 'weight' element.
-  // @FIXME
-// TableDrag is now attached with the #tabledrag property of certain render
-// arrays. drupal_add_tabledrag() is now internal and should never be called directly.
-// 
-// 
-// @see https://www.drupal.org/node/2160571
-// drupal_add_tabledrag($table_id, 'order', 'sibling', 'pricelist-weight');
-
+  drupal_add_tabledrag($table_id, 'order', 'sibling', 'pricelist-weight');
 
   return $output;
 }
@@ -457,23 +445,20 @@ function commerce_pricelist_item_list_entities($pricelist_id = NULL, $sku = FALS
     foreach ($entities as $entity) {
 
       // Create tabular rows for our entities.
-      // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $rows[] = array(
-//         'data' => array(
-//           'sku' => check_plain($entity->sku),
-//           'valid from' => _commerce_pricelist_display_date($entity->valid_from),
-//           'valid to' =>  _commerce_pricelist_display_date($entity->valid_to),
-//           'quantity' => $entity->quantity,
-//           // @todo Format currency through commerce
-//           'amount' => $entity->price_amount / 100,
-//           'currency' => check_plain($entity->currency_code),
-//           'edit' => l(t('Edit'),
-//             'admin/commerce/pricelist/commerce_pricelist_item/'. $entity->item_id .'/edit',
-//             array('query' => array('destination' => current_path()))),
-//         ),
-//       );
-
+      $rows[] = array(
+        'data' => array(
+          'sku' => check_plain($entity->sku),
+          'valid from' => _commerce_pricelist_display_date($entity->valid_from),
+          'valid to' =>  _commerce_pricelist_display_date($entity->valid_to),
+          'quantity' => $entity->quantity,
+          // @todo Format currency through commerce
+          'amount' => $entity->price_amount / 100,
+          'currency' => check_plain($entity->currency_code),
+          'edit' => l(t('Edit'),
+            'admin/commerce/pricelist/commerce_pricelist_item/'. $entity->item_id .'/edit',
+            array('query' => array('destination' => current_path()))),
+        ),
+      );
     }
 
     // Put our entities into a themed table. See theme_table() for details.
@@ -525,12 +510,13 @@ function commerce_pricelist_item_view($entity, $view_mode = 'full') {
 
   // Now to invoke some hooks. We need the language code for
   // hook_entity_view(), so let's get that.
-  $language = \Drupal::languageManager()->getCurrentLanguage();
+  global $language;
   $langcode = $language->language;
   // And now invoke hook_entity_view().
-  \Drupal::moduleHandler()->invokeAll('entity_view', [$entity, $entity_type, $view_mode, $langcode]);
+  module_invoke_all('entity_view', $entity, $entity_type, $view_mode,
+    $langcode);
   // Now invoke hook_entity_view_alter().
-  \Drupal::moduleHandler()->alter(array('commerce_pricelist_item_view', 'entity_view'),
+  drupal_alter(array('commerce_pricelist_item_view', 'entity_view'),
     $entity->content, $entity_type);
 
   // And finally return the content.
@@ -545,13 +531,10 @@ function commerce_pricelist_item_info_page() {
     '#type' => 'item',
     '#markup' => t('The entity example provides a simple example entity.'),
   );
-  if (\Drupal::currentUser()->hasPermission('administer commerce_pricelist_list entities')) {
-    // @FIXME
-// l() expects a Url object, created from a route name or external URI.
-// $content['preface']['#markup'] = t('You can administer these and add fields and change the view !link.',
-//       array('!link' => l(t('here'), 'admin/commerce/pricelist/commerce_pricelist_item/manage'))
-//     );
-
+  if (user_access('administer commerce_pricelist_list entities')) {
+    $content['preface']['#markup'] = t('You can administer these and add fields and change the view !link.',
+      array('!link' => l(t('here'), 'admin/commerce/pricelist/commerce_pricelist_item/manage'))
+    );
   }
   $content['table'] = commerce_pricelist_item_list_entities();
 
@@ -642,18 +625,13 @@ function commerce_pricelist_item_form($form, &$form_state, $pricelist_item, $pri
     '#prefix' => '<div class="container-inline">'
   );
 
-  // @FIXME
-// // @FIXME
-// // This looks like another module's variable. You'll need to rewrite this call
-// // to ensure that it uses the correct configuration object.
-// $form['price']['currency_code'] = array(
-//     '#type' => 'select',
-//     '#title' => '',
-//     '#options' => array_filter(variable_get('commerce_enabled_currencies', array('USD' => 'USD'))),
-//     '#default_value' => isset($pricelist_item->$field) ? $pricelist_item->$field : commerce_default_currency(),
-//     '#suffix' => '</div>'
-//   );
-
+  $form['price']['currency_code'] = array(
+    '#type' => 'select',
+    '#title' => '',
+    '#options' => array_filter(variable_get('commerce_enabled_currencies', array('USD' => 'USD'))),
+    '#default_value' => isset($pricelist_item->$field) ? $pricelist_item->$field : commerce_default_currency(),
+    '#suffix' => '</div>'
+  );
 
   foreach (array('valid_from', 'valid_to') as $date) {
     $default_date = isset($pricelist_item->{$date}) ? $pricelist_item->{$date} : 0;
@@ -716,7 +694,7 @@ function _commerce_pricelist_date_validate($element) {
  */
 function _commerce_pricelist_validate_pricelist($element) {
   $value = $element['#value'];
-  if ($value == '' || !\Drupal::entityManager()->getStorage('commerce_pricelist_list', array($value))) {
+  if ($value == '' || !entity_load('commerce_pricelist_list', array($value))) {
     form_set_error($element['#name'], t('Invalid price list'));
   }
 }
@@ -732,7 +710,7 @@ function commerce_pricelist_item_add($product = NULL) {
     $sku = $product->sku;
   }
   $entity = commerce_pricelist_item_new(NULL, $sku);
-  return \Drupal::formBuilder()->getForm('commerce_pricelist_item_form', $entity);
+  return drupal_get_form('commerce_pricelist_item_form', $entity);
 }
 
 /**

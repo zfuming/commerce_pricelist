@@ -18,7 +18,7 @@ class CommercePricelistItem extends Entity {
  *   A pricelist item object with all default fields initialized.
  */
 function commerce_pricelist_item_new($pricelist_id = NULL, $sku = NULL) {
-  return \Drupal::entityManager()->getStorage('commerce_pricelist_item')->create(array('pricelist_id' => $pricelist_id, 'sku' => $sku));
+  return entity_create('commerce_pricelist_item', array('pricelist_id' => $pricelist_id, 'sku' => $sku));
 }
 
 
@@ -26,7 +26,7 @@ function commerce_pricelist_item_new($pricelist_id = NULL, $sku = NULL) {
  * We save the entity by calling the controller.
  */
 function commerce_pricelist_item_save(&$entity) {
-  $result = $entity->save();
+  $result = entity_save('commerce_pricelist_item', $entity);
   cache_clear_all('commerce_pricelist', 'cache', TRUE);
   return $result;
 }
@@ -113,7 +113,7 @@ function commerce_pricelist_item_load($entity_id = NULL, $reset = FALSE) {
  * will in turn call the load() method of our entity controller class.
  */
 function commerce_pricelist_item_load_multiple($entity_ids = FALSE, $conditions = array(), $reset = FALSE) {
-  return \Drupal::entityManager()->getStorage('commerce_pricelist_item')->loadByProperties($conditions);
+  return entity_load('commerce_pricelist_item', $entity_ids, $conditions, $reset);
 }
 
 /**
