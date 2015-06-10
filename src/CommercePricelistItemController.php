@@ -1,15 +1,11 @@
 <?php
-/**
- * @file
- * Contains CommercePricelistItemController
- */
-
+namespace Drupal\commerce_pricelist;
 
 /**
  * Handles CRUD for Pricelist item.
  * {@inheritdoc}
  */
-class CommercePricelistItemController extends EntityAPIController {
+class CommercePricelistItemController extends Drupal\Core\Entity\Sql\SqlContentEntityStorage {
 
   /**
    * {@inheritdoc}

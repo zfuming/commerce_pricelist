@@ -58,7 +58,7 @@ function commerce_pricelist_rate_rules_apply($line_item, $user = FALSE) {
 
     // Default to current user
     if (!$user) {
-      global $user;
+      $user = \Drupal::currentUser();
     }
 
     $time = ($line_item->created == "") ? FALSE : $line_item->created;

@@ -333,7 +333,7 @@ function commerce_pricelist_get_prices($sku, $time = FALSE) {
   $cache_id = 'commerce_pricelist_get_prices_' . $sku;
   $prices = &drupal_static($cache_id);
   if (!isset($prices)) {
-    if ($cache = cache_get($cache_id)) {
+    if ($cache = \Drupal::cache()->get($cache_id)) {
       $prices = $cache->data;
     }
     else {
@@ -366,7 +366,7 @@ function commerce_pricelist_get_prices($sku, $time = FALSE) {
         );
       }
 
-      cache_set($cache_id, $prices, 'cache', time() + 300);
+      \Drupal::cache('cache')->set($cache_id, $prices, time() + 300);
       // 5min
     }
   }
@@ -425,7 +425,7 @@ function commerce_pricelist_get_user_pricelists($user) {
   $cache_id = 'commerce_pricelist_get_user_pricelists_'  . $user->uid;
   $pricelists = &drupal_static($cache_id);
   if (!isset($pricelists)) {
-    if ($cache = cache_get($cache_id)) {
+    if ($cache = \Drupal::cache()->get($cache_id)) {
       $pricelists = $cache->data;
     }
     else {
@@ -443,7 +443,7 @@ function commerce_pricelist_get_user_pricelists($user) {
       }
 
       // Let modules implementing hook_commerce_pricelists_alter() modify list.
-      drupal_alter('commerce_pricelists', $pricelists, $user);
+      \Drupal::moduleHandler()->alter('commerce_pricelists', $pricelists, $user);
 
       foreach ($pricelists as $id => $pricelist) {
         if (isset($pricelist->score) && $pricelist->score < 0) {
@@ -451,7 +451,7 @@ function commerce_pricelist_get_user_pricelists($user) {
         }
       }
 
-      cache_set($cache_id, $pricelists, 'cache', time() + 3600);
+      \Drupal::cache('cache')->set($cache_id, $pricelists, time() + 3600);
     }
   }
 
@@ -563,29 +563,29 @@ function commerce_pricelist_theme() {
  * @return bool
  */
 function commerce_pricelist_entity_access($op, $entity, $account, $entity_type) {
-  global $user;
+  $user = \Drupal::currentUser();
   $account = isset($account) ? $account : $user;
   // There are no separate permissions for pricelist items so handle as list.
   $entity_type = 'commerce_pricelist_list';
 
   if ($op == 'view') {
-    return user_access('view any ' . $entity_type . ' entity', $account);
+    return $account->hasPermission('view any ' . $entity_type . ' entity');
   }
 
   if ($op == 'create') {
-    return user_access('create ' . $entity_type . ' entities', $account);
+    return $account->hasPermission('create ' . $entity_type . ' entities');
   }
 
   if ($op == 'edit') {
-    return user_access('edit any ' . $entity_type . ' entity', $account);
+    return $account->hasPermission('edit any ' . $entity_type . ' entity');
   }
 
   if ($op == 'update') {
-    return user_access('edit any ' . $entity_type . ' entity', $account);
+    return $account->hasPermission('edit any ' . $entity_type . ' entity');
   }
 
   if ($op == 'delete') {
-    return user_access('edit any ' . $entity_type . ' entity', $account);
+    return $account->hasPermission('edit any ' . $entity_type . ' entity');
   }
 
   return FALSE;
@@ -596,7 +596,7 @@ function commerce_pricelist_entity_access($op, $entity, $account, $entity_type) 
  *  Implements hook_form_BASE_FORM_ID_alter().
  */
 function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, &$form_state, $form_id) {
-  if (user_access('view any commerce_pricelist_list entity')
+  if (\Drupal::currentUser()->hasPermission('view any commerce_pricelist_list entity')
     && $sku = $form['sku']['#default_value']) {
 
     module_load_include('inc', 'commerce_pricelist', 'includes/commerce_pricelist.admin');
@@ -620,22 +620,28 @@ function commerce_pricelist_form_commerce_product_ui_product_form_alter(&$form, 
 
     $options = array('attributes' => array('class' => array('button')));
 
-    $prices['actions']['administer'] = array(
-      '#type' => 'item',
-      '#markup' => l(t('Administer price lists'), 'admin/commerce/pricelist/commerce_pricelist_list', $options),
-      '#weight' => 50,
-    );
+    // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $prices['actions']['administer'] = array(
+//       '#type' => 'item',
+//       '#markup' => l(t('Administer price lists'), 'admin/commerce/pricelist/commerce_pricelist_list', $options),
+//       '#weight' => 50,
+//     );
+
 
     $product = $form['#entity'];
     $product_id = $product->product_id;
 
     if ($product_id) {
-      $prices['actions']['add'] = array(
-        '#type' => 'item',
-        '#markup' => l(t('Add price'), 'admin/commerce/products/' . $product_id . '/add_price',
-          $options + array('query' => array('destination' => current_path()))),
-        '#weight' => 49,
-      );
+      // @FIXME
+// l() expects a Url object, created from a route name or external URI.
+// $prices['actions']['add'] = array(
+//         '#type' => 'item',
+//         '#markup' => l(t('Add price'), 'admin/commerce/products/' . $product_id . '/add_price',
+//           $options + array('query' => array('destination' => current_path()))),
+//         '#weight' => 49,
+//       );
+
     }
 
     $form['commerce_pricelists'] = array(
