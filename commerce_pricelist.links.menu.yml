@@ -8,7 +8,7 @@ entity.price_list.collection:
 
 # Price list type menu items definition
 entity.price_list_type.collection:
-  title: 'Price list type'
+  title: 'Price list types'
   route_name: entity.price_list_type.collection
   description: 'Price list types'
   parent: commerce.configuration
