@@ -1,0 +1,12 @@
+commerce_pricelist.price_list_type.*:
+  type: config_entity
+  label: 'Price list type config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    uuid:
+      type: string

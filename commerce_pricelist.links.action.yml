@@ -1,5 +1,11 @@
-commerce_pricelist.list_add:
-  route_name: commerce_pricelist.list_add
-  title: 'Add a Price list'
+entity.price_list.add_form:
+  route_name: 'price_list.add_page'
+  title: 'Add Price list'
   appears_on:
-    - commerce_pricelist.list_add
+    - entity.price_list.collection
+entity.price_list_type.add_form:
+  route_name: 'entity.price_list_type.add_form'
+  title: 'Add Price list type'
+  appears_on:
+    - entity.price_list_type.collection
+

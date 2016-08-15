@@ -1,13 +1,17 @@
-commerce_pricelist.list_view:
-  route_name: commerce_pricelist.list_view
-  title: View
-  weight: -10
-  base_route: commerce_pricelist.list_view
-commerce_pricelist.list_form:
-  route_name: commerce_pricelist.list_form
+# Price list routing definition
+entity.price_list.canonical:
+  route_name: entity.price_list.canonical
+  base_route: entity.price_list.canonical
+  title: 'View'
+
+entity.price_list.edit_form:
+  route_name: entity.price_list.edit_form
+  base_route: entity.price_list.canonical
   title: Edit
-  base_route: commerce_pricelist.list_view
-commerce_pricelist.item_form:
-  route_name: commerce_pricelist.item_form
-  title: 'Add price'
-  base_route: commerce_pricelist.list_view
+
+entity.price_list.delete_form:
+  route_name:  entity.price_list.delete_form
+  base_route:  entity.price_list.canonical
+  title: Delete
+  weight: 10
+

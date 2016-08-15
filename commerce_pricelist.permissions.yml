@@ -1,8 +1,19 @@
-'administer commerce_pricelist_list entities':
-  title: 'Administer commerce_pricelist_list entities'
-'view any commerce_pricelist_list entity':
-  title: 'View any Price list entity'
-'edit any commerce_pricelist_list entity':
-  title: 'Edit any Price list entity'
-'create commerce_pricelist_list entities':
-  title: 'Create Price list Entities'
+add price list entities:
+  title: 'Create new Price list entities'
+
+administer price list entities:
+  title: 'Administer Price list entities'
+  description: 'Allow to access the administration form to configure Price list entities.'
+  restrict access: true
+
+delete price list entities:
+  title: 'Delete Price list entities'
+
+edit price list entities:
+  title: 'Edit Price list entities'
+
+view published price list entities:
+  title: 'View published Price list entities'
+
+view unpublished price list entities:
+  title: 'View unpublished Price list entities'

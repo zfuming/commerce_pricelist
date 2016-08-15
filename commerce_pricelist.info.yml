@@ -1,11 +1,10 @@
-name: 'Commerce Pricelists'
-description: 'Set product prices through price lists'
+name: Commerce Pricelist
+type: module
+description: Set product prices through price lists
 core: 8.x
-package: 'Commerce (contrib)'
+package: Commerce (contrib)
 dependencies:
   - commerce
-  - commerce_line_item
   - commerce_price
   - commerce_product
-  - rules
-type: module
+  - commerce_order

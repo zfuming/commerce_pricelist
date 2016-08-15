@@ -1,0 +1,14 @@
+{
+  "name": "drupal/commerce_pricelist",
+  "type": "drupal-module",
+  "description": "Set product prices through price lists",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/commerce_pricelist",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "http://drupal.org/project/issues/commerce_pricelist",
+    "source": "http://cgit.drupalcode.org/commerce_pricelist"
+  },
+  "require": { }
+}

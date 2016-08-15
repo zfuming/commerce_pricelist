@@ -1,9 +1,16 @@
-commerce_pricelist.draggable_form:
-  route_name: commerce_pricelist.draggable_form
+# Price list menu items definition
+entity.price_list.collection:
   title: 'Price lists'
-commerce_pricelist.list_view:
-  route_name: commerce_pricelist.list_view
-  parent: commerce_pricelist.draggable_form
-commerce_pricelist.item_form:
-  route_name: commerce_pricelist.item_form
-  title: Edit
+  route_name: entity.price_list.collection
+  description: 'Manage your price lists'
+  parent: commerce.admin_commerce
+  weight: 0
+
+# Price list type menu items definition
+entity.price_list_type.collection:
+  title: 'Price list type'
+  route_name: entity.price_list_type.collection
+  description: 'Price list types'
+  parent: commerce.configuration
+  weight: 0
+
