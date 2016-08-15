@@ -93,34 +93,26 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
     return $this;
   }
 
+
   /**
    * {@inheritdoc}
    */
-  public function getOwner() {
-    return $this->get('user_id')->entity;
+  public function getPrice() {
+    return $this->get('price')->first()->toPrice();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getOwnerId() {
-    return $this->get('user_id')->target_id;
+  public function getProductVariation() {
+    return $this->get('product_variation_id')->entity;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setOwnerId($uid) {
-    $this->set('user_id', $uid);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setOwner(UserInterface $account) {
-    $this->set('user_id', $account->id());
-    return $this;
+  public function getProductVariationId() {
+    return $this->get('product_variation_id')->target_id;
   }
 
   /**
@@ -151,7 +143,6 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ->setDescription(t('The UUID of the Price list item entity.'))
       ->setReadOnly(TRUE);
 
-    // The order backreference, populated by Order::postSave().
     $fields['price_list_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Price list'))
       ->setDescription(t('The parent price list.'))
@@ -169,26 +160,26 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['sku'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('SKU'))
-      ->setDescription(t('The unique, machine-readable identifier for a product variation.'))
+    $fields['product_variation_id'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Product'))
+      ->setDescription(t('The parent product.'))
+      ->setSetting('target_type', 'commerce_product_variation')
       ->setRequired(TRUE)
-      ->setSetting('display_description', TRUE)
-      ->setDisplayOptions('view', [
-        'label' => 'hidden',
-        'type' => 'string',
-        'weight' => -4,
-      ])
       ->setDisplayOptions('form', [
-        'type' => 'string_textfield',
-        'weight' => -4,
+        'type' => 'entity_reference_autocomplete',
+        'weight' => -1,
+        'settings' => [
+          'match_operator' => 'CONTAINS',
+          'size' => '60',
+          'placeholder' => '',
+        ],
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
-      ->setDescription(t('The name of the Price list item entity.'))
+      ->setDescription(t('Optional label for this price list item.'))
       ->setSettings(array(
         'max_length' => 50,
         'text_processing' => 0,
@@ -218,6 +209,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
         'type' => 'commerce_price_default',
         'weight' => 0,
       ])
+      ->setRequired(TRUE)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 

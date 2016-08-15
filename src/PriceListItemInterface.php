@@ -11,7 +11,7 @@ use Drupal\user\EntityOwnerInterface;
  *
  * @ingroup commerce_pricelist
  */
-interface PriceListItemInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface {
+interface PriceListItemInterface extends ContentEntityInterface, EntityChangedInterface {
   // Add get/set methods for your configuration properties here.
   /**
    * Gets the Price list item name.
