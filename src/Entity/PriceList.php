@@ -47,9 +47,9 @@ use Drupal\user\UserInterface;
  *     "status" = "status",
  *   },
  *   links = {
- *     "canonical" = "/price_list/price_list/{price_list}",
- *     "add-form" = "/price_list/price_list/add/{price_list_type}",
- *     "edit-form" = "/price_list/price_list/{price_list}/edit",
+ *     "canonical" = "/price_list/{price_list}",
+ *     "add-form" = "/price_list/add/{price_list_type}",
+ *     "edit-form" = "/price_list/{price_list}/edit",
  *     "delete-form" = "/price_list/{price_list}/delete",
  *     "collection" = "/admin/commerce/price_lists",
  *   },
