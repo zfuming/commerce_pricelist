@@ -17,3 +17,22 @@ view published price list entities:
 
 view unpublished price list entities:
   title: 'View unpublished Price list entities'
+add price list item entities:
+  title: 'Create new Price list item entities'
+
+administer price list item entities:
+  title: 'Administer Price list item entities'
+  description: 'Allow to access the administration form to configure Price list item entities.'
+  restrict access: true
+
+delete price list item entities:
+  title: 'Delete Price list item entities'
+
+edit price list item entities:
+  title: 'Edit Price list item entities'
+
+view published price list item entities:
+  title: 'View published Price list item entities'
+
+view unpublished price list item entities:
+  title: 'View unpublished Price list item entities'

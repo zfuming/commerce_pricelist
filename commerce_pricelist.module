@@ -38,6 +38,11 @@ function commerce_pricelist_theme() {
     'variables' => ['content' => NULL],
     'file' => 'price_list.page.inc',
   ];
+  $theme['price_list_item'] = array(
+    'render element' => 'elements',
+    'file' => 'price_list_item.page.inc',
+    'template' => 'price_list_item',
+  );
   return $theme;
 }
 

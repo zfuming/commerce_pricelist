@@ -4,7 +4,6 @@ entity.price_list.collection:
   route_name: entity.price_list.collection
   description: 'Manage your price lists'
   parent: commerce.admin_commerce
-  weight: 0
 
 # Price list type menu items definition
 entity.price_list_type.collection:
@@ -12,5 +11,16 @@ entity.price_list_type.collection:
   route_name: entity.price_list_type.collection
   description: 'Price list types'
   parent: commerce.configuration
-  weight: 0
 
+# Price list item menu items definition
+entity.price_list_item.collection:
+  title: 'Price list item list'
+  route_name: entity.price_list_item.collection
+  description: 'List Price list item entities'
+  parent: commerce.admin_commerce
+
+price_list_item.admin.structure.settings:
+  title: Price list item settings
+  description: 'Configure Price list item entities'
+  route_name: price_list_item.settings
+  parent: commerce.configuration

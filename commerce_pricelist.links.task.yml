@@ -15,3 +15,24 @@ entity.price_list.delete_form:
   title: Delete
   weight: 10
 
+# Price list item routing definition
+price_list_item.settings_tab:
+  route_name: price_list_item.settings
+  title: 'Settings'
+  base_route: price_list_item.settings
+entity.price_list_item.canonical:
+  route_name: entity.price_list_item.canonical
+  base_route: entity.price_list_item.canonical
+  title: 'View'
+
+entity.price_list_item.edit_form:
+  route_name: entity.price_list_item.edit_form
+  base_route: entity.price_list_item.canonical
+  title: Edit
+
+entity.price_list_item.delete_form:
+  route_name:  entity.price_list_item.delete_form
+  base_route:  entity.price_list_item.canonical
+  title: Delete
+  weight: 10
+
