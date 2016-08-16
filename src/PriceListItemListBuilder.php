@@ -18,10 +18,10 @@ class PriceListItemListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['id'] = $this->t('Price list item ID');
+    $header['product'] = $this->t('Product');
+    $header['sku'] = $this->t('SKU');
     $header['name'] = $this->t('Name');
     $header['price'] = $this->t('Price');
-    $header['product'] = $this->t('Product');
     return $header + parent::buildHeader();
   }
 
@@ -30,7 +30,8 @@ class PriceListItemListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\commerce_pricelist\Entity\PriceListItem */
-    $row['id'] = $entity->id();
+    $row['product'] = $entity->getProductVariation()->label();
+    $row['sku'] = $entity->getProductVariation()->getSku();
     $row['name'] = $this->l(
       $entity->label(),
       new Url(
@@ -40,7 +41,6 @@ class PriceListItemListBuilder extends EntityListBuilder {
       )
     );
     $row['price'] = $entity->getPrice();
-    $row['product'] = $entity->getProductVariation()->label();
     return $row + parent::buildRow($entity);
   }
 
