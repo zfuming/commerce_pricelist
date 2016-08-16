@@ -1,0 +1,6 @@
+services:
+  commerce_pricelist.default_base_price_resolver:
+    class: Drupal\commerce_pricelist\Resolver\PriceListDefaultBasePriceResolver
+    tags:
+      - { name: commerce_pricing.base_price_resolver, priority: 0 }
+
