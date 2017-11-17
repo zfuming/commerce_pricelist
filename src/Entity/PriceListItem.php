@@ -7,7 +7,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\commerce_pricelist\PriceListItemInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -81,6 +80,21 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
   /**
    * {@inheritdoc}
    */
+  public function getQuantity() {
+    return $this->get('quantity')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setQuantity($name) {
+    $this->set('quantity', $name);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getCreatedTime() {
     return $this->get('created')->value;
   }
@@ -100,6 +114,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
   public function getPrice() {
     return $this->get('price')->first()->toPrice();
   }
+
 
   /**
    * {@inheritdoc}
@@ -184,6 +199,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
         'max_length' => 50,
         'text_processing' => 0,
       ))
+      ->setRequired(TRUE)
       ->setDefaultValue('')
       ->setDisplayOptions('view', array(
         'label' => 'above',
@@ -192,6 +208,27 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ))
       ->setDisplayOptions('form', array(
         'type' => 'string_textfield',
+        'weight' => -4,
+      ))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['quantity'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Quantity'))
+      ->setDescription(t('Optional label for this price list item.'))
+      ->setSettings(array(
+        'max_length' => 50,
+        'text_processing' => 0,
+      ))
+      ->setRequired(TRUE)
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', array(
+        'label' => 'above',
+        'type' => 'integer',
+        'weight' => -4,
+      ))
+      ->setDisplayOptions('form', array(
+        'type' => 'integer',
         'weight' => -4,
       ))
       ->setDisplayConfigurable('form', TRUE)

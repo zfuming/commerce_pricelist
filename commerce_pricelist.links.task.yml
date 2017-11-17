@@ -1,38 +1,49 @@
 # Price list routing definition
 entity.price_list.canonical:
-  route_name: entity.price_list.canonical
-  base_route: entity.price_list.canonical
+  route_name: 'entity.price_list.canonical'
+  base_route: 'entity.price_list.canonical'
   title: 'View'
 
 entity.price_list.edit_form:
-  route_name: entity.price_list.edit_form
-  base_route: entity.price_list.canonical
-  title: Edit
+  route_name: 'entity.price_list.edit_form'
+  base_route: 'entity.price_list.canonical'
+  title: 'Edit'
 
 entity.price_list.delete_form:
-  route_name:  entity.price_list.delete_form
-  base_route:  entity.price_list.canonical
-  title: Delete
+  route_name:  'entity.price_list.delete_form'
+  base_route:  'entity.price_list.canonical'
+  title: 'Delete'
   weight: 10
 
 # Price list item routing definition
 price_list_item.settings_tab:
-  route_name: price_list_item.settings
+  route_name: 'price_list_item.settings'
+  base_route: 'price_list_item.settings'
   title: 'Settings'
-  base_route: price_list_item.settings
+
 entity.price_list_item.canonical:
-  route_name: entity.price_list_item.canonical
-  base_route: entity.price_list_item.canonical
+  route_name: 'entity.price_list_item.canonical'
+  base_route: 'entity.price_list_item.canonical'
   title: 'View'
 
 entity.price_list_item.edit_form:
-  route_name: entity.price_list_item.edit_form
-  base_route: entity.price_list_item.canonical
-  title: Edit
+  route_name: 'entity.price_list_item.edit_form'
+  base_route: 'entity.price_list_item.canonical'
+  title: 'Edit'
 
 entity.price_list_item.delete_form:
-  route_name:  entity.price_list_item.delete_form
-  base_route:  entity.price_list_item.canonical
-  title: Delete
+  route_name:  'entity.price_list_item.delete_form'
+  base_route:  'entity.price_list_item.canonical'
+  title: 'Delete'
   weight: 10
+
+entity.price_list_type.collection:
+  route_name: 'entity.price_list_type.collection'
+  base_route: 'entity.price_list_type.collection'
+  title: 'List'
+
+entity.price_list_type.edit_form:
+  route_name: 'entity.price_list_type.edit_form'
+  base_route: 'entity.price_list_type.edit_form'
+  title: 'Edit'
 

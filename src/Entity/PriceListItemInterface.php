@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\commerce_pricelist;
+namespace Drupal\commerce_pricelist\Entity;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
@@ -27,10 +27,29 @@ interface PriceListItemInterface extends ContentEntityInterface, EntityChangedIn
    * @param string $name
    *   The Price list item name.
    *
-   * @return \Drupal\commerce_pricelist\PriceListItemInterface
+   * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
    *   The called Price list item entity.
    */
   public function setName($name);
+
+  /**
+   * Gets the Price list item quantity.
+   *
+   * @return string
+   *   Quantity of the Price list item.
+   */
+  public function getQuantity();
+
+  /**
+   * Sets the Price list item quantity.
+   *
+   * @param string $quantity
+   *   The Price list item quantity.
+   *
+   * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
+   *   The called Price list item entity.
+   */
+  public function setQuantity($quantity);
 
   /**
    * Gets the Price list item creation timestamp.
@@ -46,7 +65,7 @@ interface PriceListItemInterface extends ContentEntityInterface, EntityChangedIn
    * @param int $timestamp
    *   The Price list item creation timestamp.
    *
-   * @return \Drupal\commerce_pricelist\PriceListItemInterface
+   * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
    *   The called Price list item entity.
    */
   public function setCreatedTime($timestamp);
@@ -67,7 +86,7 @@ interface PriceListItemInterface extends ContentEntityInterface, EntityChangedIn
    * @param bool $published
    *   TRUE to set this Price list item to published, FALSE to set it to unpublished.
    *
-   * @return \Drupal\commerce_pricelist\PriceListItemInterface
+   * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
    *   The called Price list item entity.
    */
   public function setPublished($published);

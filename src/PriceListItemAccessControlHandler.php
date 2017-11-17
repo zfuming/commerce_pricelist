@@ -17,7 +17,7 @@ class PriceListItemAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, AccountInterface $account) {
-    /** @var \Drupal\commerce_pricelist\PriceListItemInterface $entity */
+    /** @var \Drupal\commerce_pricelist\Entity\PriceListItemInterface $entity */
     switch ($operation) {
       case 'view':
         if (!$entity->isPublished()) {

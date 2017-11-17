@@ -3,6 +3,7 @@ entity.price_list.add_form:
   title: 'Add Price list'
   appears_on:
     - entity.price_list.collection
+
 entity.price_list_type.add_form:
   route_name: 'entity.price_list_type.add_form'
   title: 'Add Price list type'
@@ -10,7 +11,7 @@ entity.price_list_type.add_form:
     - entity.price_list_type.collection
 
 entity.price_list_item.add_form:
-  route_name: entity.price_list_item.add_form
+  route_name: 'entity.price_list_item.add_form'
   title: 'Add Price list item'
   appears_on:
     - entity.price_list_item.collection

@@ -22,6 +22,7 @@ class PriceListItemListBuilder extends EntityListBuilder {
     $header['sku'] = $this->t('SKU');
     $header['name'] = $this->t('Name');
     $header['price'] = $this->t('Price');
+    $header['quantity'] = $this->t('Quantity');
     return $header + parent::buildHeader();
   }
 
@@ -41,6 +42,7 @@ class PriceListItemListBuilder extends EntityListBuilder {
       )
     );
     $row['price'] = $entity->getPrice();
+    $row['quantity'] = $entity->getQuantity();
     return $row + parent::buildRow($entity);
   }
 

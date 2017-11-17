@@ -1,26 +1,32 @@
 # Price list menu items definition
 entity.price_list.collection:
   title: 'Price lists'
-  route_name: entity.price_list.collection
+  route_name: 'entity.price_list.collection'
   description: 'Manage your price lists'
-  parent: commerce.admin_commerce
+  parent: 'commerce.admin_commerce'
+
+commerce_pricelist.configuration:
+  title: 'Price List'
+  route_name: 'commerce_pricelist.configuration'
+  description: 'Price List'
+  parent: 'commerce.configuration'
 
 # Price list type menu items definition
 entity.price_list_type.collection:
   title: 'Price list types'
-  route_name: entity.price_list_type.collection
+  route_name: 'entity.price_list_type.collection'
   description: 'Price list types'
-  parent: commerce.configuration
+  parent: 'commerce_pricelist.configuration'
 
 # Price list item menu items definition
 entity.price_list_item.collection:
   title: 'Price list item list'
-  route_name: entity.price_list_item.collection
+  route_name: 'entity.price_list_item.collection'
   description: 'List Price list item entities'
-  parent: commerce.admin_commerce
+  parent: 'commerce.admin_commerce'
 
 price_list_item.admin.structure.settings:
-  title: Price list item settings
+  title: 'Price list item settings'
   description: 'Configure Price list item entities'
-  route_name: price_list_item.settings
-  parent: commerce.configuration
+  route_name: 'price_list_item.settings'
+  parent: 'commerce.configuration'

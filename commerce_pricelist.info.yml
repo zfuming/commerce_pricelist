@@ -5,6 +5,6 @@ core: 8.x
 package: Commerce (contrib)
 dependencies:
   - commerce
-  - commerce_pricing
+  - commerce_price
   - commerce_product
   - commerce_order

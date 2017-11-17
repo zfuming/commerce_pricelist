@@ -2,8 +2,7 @@
 
 namespace Drupal\commerce_pricelist\Entity;
 
-use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
-use Drupal\commerce_pricelist\PriceListTypeInterface;
+use Drupal\commerce\Entity\CommerceBundleEntityBase;
 
 /**
  * Defines the Price list type entity.
@@ -39,19 +38,27 @@ use Drupal\commerce_pricelist\PriceListTypeInterface;
  *   }
  * )
  */
-class PriceListType extends ConfigEntityBundleBase implements PriceListTypeInterface {
+class PriceListType extends CommerceBundleEntityBase implements PriceListTypeInterface {
   /**
-   * The Price list type ID.
+   * A brief description of this store type.
    *
    * @var string
    */
-  protected $id;
+  protected $description;
 
   /**
-   * The Price list type label.
-   *
-   * @var string
+   * {@inheritdoc}
    */
-  protected $label;
+  public function getDescription() {
+    return $this->description;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setDescription($description) {
+    $this->description = $description;
+    return $this;
+  }
 
 }
