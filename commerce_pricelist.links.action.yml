@@ -15,3 +15,4 @@ entity.price_list_item.add_form:
   title: 'Add Price list item'
   appears_on:
     - entity.price_list_item.collection
+    - view.price_list_item.collection

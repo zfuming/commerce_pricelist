@@ -41,7 +41,7 @@ class PriceListListBuilder extends EntityListBuilder {
     $row['item'] = $this->l(
       'Item',
       new Url(
-        'commerce_pricelist.price_list_item.collection', array(
+        'view.price_list_item.collection', array(
           'price_list_id' => $entity->id(),
         )
       )

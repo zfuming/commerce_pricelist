@@ -5,10 +5,3 @@ commerce_pricelist.configuration:
     _title: 'Price List'
   requirements:
     _permission: 'access commerce administration pages'
-
-commerce_pricelist.price_list_item.collection:
-  path: '/admin/commerce/config/price_list_item/{price_list_id}'
-  defaults:
-    _title: 'Price List Items'
-  requirements:
-    _permission: 'access commerce administration pages'

@@ -564,14 +564,14 @@ display:
         - url
         - url.query_args
       tags: {  }
-  page_1:
+  collection:
     display_plugin: page
-    id: page_1
+    id: collection
     display_title: Page
     position: 1
     display_options:
       display_extenders: {  }
-      path: admin/commerce/config/price_list_item/%price_list_id
+      path: admin/commerce/config/pricelist_item/%price_list_id
     cache_metadata:
       max-age: 0
       contexts:
