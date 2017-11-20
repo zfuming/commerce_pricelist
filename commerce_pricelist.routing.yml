@@ -5,3 +5,11 @@ commerce_pricelist.configuration:
     _title: 'Price List'
   requirements:
     _permission: 'access commerce administration pages'
+
+view.price_list_item.add_from:
+  path: '/admin/commerce/config/pricelist_item_add/{price_list_id}'
+  defaults:
+    _form: '\Drupal\commerce_pricelist\Form\PriceListItemAddForm'
+    _title: 'Create Price List Item'
+  requirements:
+    _permission: 'access commerce administration pages'

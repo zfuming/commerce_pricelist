@@ -30,3 +30,5 @@ function template_preprocess_price_list_item(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
 }
+
+
