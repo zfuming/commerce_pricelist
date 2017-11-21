@@ -73,11 +73,13 @@ class PriceListItemAddForm extends FormBase implements ContainerInjectionInterfa
       '#size' => 60,
       '#maxlength' => 128,
       '#required' => TRUE,
+      '#description' => 'Optional label for this price list item.',
     );
 
     $form['quantity'] = array(
       '#type' => 'number',
       '#title' => $this->t('Quantity'),
+      '#description' => 'The product quantity number.',
     );
 
     $form['product'] = [
@@ -85,12 +87,14 @@ class PriceListItemAddForm extends FormBase implements ContainerInjectionInterfa
       '#title' => $this->t('Product'),
       '#target_type' => 'commerce_product',
       '#required' => TRUE,
+      '#description' => 'The parent product.',
     ];
 
     $form['price'] = [
       '#type' => 'commerce_price',
       '#title' => $this->t('price'),
       '#required' => TRUE,
+      '#description' => 'The list price',
     ];
 
     $form['actions']['#type'] = 'actions';

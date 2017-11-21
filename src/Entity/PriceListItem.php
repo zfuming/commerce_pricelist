@@ -65,6 +65,20 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
   /**
    * {@inheritdoc}
    */
+  public function getPriceList() {
+    return $this->get('price_list_id')->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPriceListId() {
+    return $this->get('price_list_id')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getName() {
     return $this->get('name')->value;
   }
@@ -215,7 +229,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
 
     $fields['quantity'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Quantity'))
-      ->setDescription(t('Optional label for this price list item.'))
+      ->setDescription(t('The product quantity number.'))
       ->setSettings(array(
         'max_length' => 50,
         'text_processing' => 0,
