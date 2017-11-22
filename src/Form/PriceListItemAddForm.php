@@ -42,7 +42,7 @@ class PriceListItemAddForm extends FormBase implements ContainerInjectionInterfa
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, RouteMatchInterface $route_match) {
     $this->priceListItemStorage = $entity_type_manager->getStorage('price_list_item');
-    $this->priceList = $route_match->getParameter('price_list_id');
+    $this->priceList = $route_match->getParameter('price_list');
   }
 
   /**
@@ -123,7 +123,7 @@ class PriceListItemAddForm extends FormBase implements ContainerInjectionInterfa
     $priceListItem = $this->priceListItemStorage->create($item_data);
     $priceListItem->save();
     // Redirect to the price list item collection.
-    $form_state->setRedirect('view.price_list_item.collection', ['price_list_id' => $this->priceList]);
+    $form_state->setRedirect('entity.price_list.canonical', ['price_list' => $this->priceList]);
   }
 
 }

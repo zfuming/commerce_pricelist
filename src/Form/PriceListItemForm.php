@@ -20,7 +20,7 @@ class PriceListItemForm extends ContentEntityForm {
     $form = parent::buildForm($form, $form_state);
 //    $entity = $this->entity;
     $lastRoute = $this->getLastRouteName();
-    if ($lastRoute == 'view.price_list_item.collection') {unset($form['price_list_id']);}
+    if ($lastRoute == 'entity.price_list.canonical') {unset($form['price_list_id']);}
     return $form;
   }
 

@@ -16,8 +16,8 @@ entity.price_list_item.add_form:
   appears_on:
     - entity.price_list_item.collection
 
-view.price_list_item.add_from:
-  route_name: 'view.price_list_item.add_from'
+custom.price_list_item.add_from:
+  route_name: 'custom.price_list_item.add_from'
   title: 'Add Price list item'
   appears_on:
-    - view.price_list_item.collection
+    - entity.price_list.canonical

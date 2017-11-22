@@ -582,7 +582,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: admin/commerce/config/pricelist_item/%price_list_id
+      path: admin/commerce/config/pricelist_item/%price_list
     cache_metadata:
       max-age: 0
       contexts:
