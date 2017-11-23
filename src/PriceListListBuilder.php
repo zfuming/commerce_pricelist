@@ -2,10 +2,10 @@
 
 namespace Drupal\commerce_pricelist;
 
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\Routing\LinkGeneratorTrait;
-use Drupal\Core\Url;
 
 /**
  * Defines a class to build a listing of Price list entities.
@@ -13,7 +13,6 @@ use Drupal\Core\Url;
  * @ingroup commerce_pricelist
  */
 class PriceListListBuilder extends EntityListBuilder {
-  use LinkGeneratorTrait;
   /**
    * {@inheritdoc}
    */
@@ -28,15 +27,10 @@ class PriceListListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\commerce_pricelist\Entity\PriceList */
+    $name_url = Url::fromRoute('entity.price_list.edit_form', array('price_list' => $entity->id()));
+    $name = Link::fromTextAndUrl($entity->label(), $name_url);
     $row['id'] = $entity->id();
-    $row['name'] = $this->l(
-      $entity->label(),
-      new Url(
-        'entity.price_list.edit_form', array(
-          'price_list' => $entity->id(),
-        )
-      )
-    );
+    $row['name'] = $name;
     return $row + parent::buildRow($entity);
   }
 

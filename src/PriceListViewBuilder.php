@@ -2,8 +2,8 @@
 
 namespace Drupal\commerce_pricelist;
 
-use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\commerce_pricelist\Entity\PriceListItem;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -58,20 +58,51 @@ class PriceListViewBuilder extends EntityViewBuilder {
   protected function alterBuild(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
     $query = $this->entityQuery->get('price_list_item');
     $query->condition('price_list_id', $entity->id());
+    $query->sort('created', 'DESC');
+    $query->pager(50);
     $entity_ids = $query->execute();
     $items = PriceListItem::loadMultiple($entity_ids);
-    $build['#theme'] = 'table';
-    $build['#header'] = array(t('ID'), t('Price'), t('Product'), t('Name'), t('Quantity'), t('opt'));
-    $build['#rows'] = array();
+    $header = array(
+      t('Id'),
+      t('Name'),
+      t('Product'),
+      t('SKU'),
+      t('Price'),
+      t('Quantity'),
+      t('Created'),
+      t('Operations')
+    );
+    $build['table'] = array(
+      '#type' => 'table',
+      '#header' => $header,
+      '#title' => 'item list',
+      '#rows' => $this->buildItemRows($items),
+      '#empty' => $this->t('There is no item yet.'),
+    );
+    $build['pager'] = array(
+      '#type' => 'pager',
+    );
+  }
+
+  /**
+   * @param $items
+   * @return array
+   */
+  public function buildItemRows($items) {
+    $rows = [];
     foreach ($items as $key => $item) {
+      $product_url = Url::fromRoute('entity.commerce_product.canonical', array('commerce_product' => $item->getProductVariation()->id()));
+      $product = Link::fromTextAndUrl($item->getProductVariation()->label(), $product_url);
+      $rows[$key]['id']       = $item->id();
+      $rows[$key]['name']     = $item->getName();
+      $rows[$key]['product']  = $product;
+      $rows[$key]['sku']      = $item->getProductVariation()->getSku();
+      $rows[$key]['price']    = $item->getPrice();
+      $rows[$key]['quantity'] = $item->getQuantity();
+      $rows[$key]['created']  = \Drupal::service('date.formatter')->format($item->getCreatedTime(), 'date_text');
       $editLink = $item->toUrl('edit-form');
       $deleteLink = $item->toUrl('delete-form');
-      $build['#rows'][$key]['id'] = $item->id();
-      $build['#rows'][$key]['price'] = $item->getPrice();
-      $build['#rows'][$key]['product'] = $item->getProductVariation()->label();
-      $build['#rows'][$key]['name'] = $item->getName();
-      $build['#rows'][$key]['quantity'] = $item->getQuantity();
-      $opt = array(
+      $operations = array(
         '#type'  => 'dropbutton',
         '#links' => array(
           'edit' => array(
@@ -88,8 +119,10 @@ class PriceListViewBuilder extends EntityViewBuilder {
           ),
         ),
       );
-      $build['#rows'][$key]['opt'] = render($opt);
+      $rows[$key]['operations'] = render($operations);
     }
+
+    return $rows;
   }
 
 }

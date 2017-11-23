@@ -2,10 +2,10 @@
 
 namespace Drupal\commerce_pricelist;
 
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
-use Drupal\Core\Routing\LinkGeneratorTrait;
-use Drupal\Core\Url;
 
 /**
  * Defines a class to build a listing of Price list item entities.
@@ -13,7 +13,6 @@ use Drupal\Core\Url;
  * @ingroup commerce_pricelist
  */
 class PriceListItemListBuilder extends EntityListBuilder {
-  use LinkGeneratorTrait;
   /**
    * {@inheritdoc}
    */
@@ -32,26 +31,16 @@ class PriceListItemListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\commerce_pricelist\Entity\PriceListItem */
+    $name_url = Url::fromRoute('entity.price_list_item.edit_form', array('price_list_item' => $entity->id()));
+    $price_list_url = Url::fromRoute('entity.price_list.edit_form', array('price_list' => $entity->getPriceListId()));
+    $name = Link::fromTextAndUrl($entity->label(), $name_url);
+    $price_list = Link::fromTextAndUrl($entity->getPriceList()->label(), $price_list_url);
     $row['product'] = $entity->getProductVariation()->label();
     $row['sku'] = $entity->getProductVariation()->getSku();
-    $row['name'] = $this->l(
-      $entity->label(),
-      new Url(
-        'entity.price_list_item.edit_form', array(
-          'price_list_item' => $entity->id(),
-        )
-      )
-    );
+    $row['name'] = $name;
     $row['price'] = $entity->getPrice();
     $row['quantity'] = $entity->getQuantity();
-    $row['price_list'] = $this->l(
-      $entity->getPriceList()->label(),
-      new Url(
-        'entity.price_list.edit_form', array(
-          'price_list' => $entity->getPriceListId(),
-        )
-      )
-    );
+    $row['price_list'] = $price_list;
     return $row + parent::buildRow($entity);
   }
 
