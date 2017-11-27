@@ -21,6 +21,7 @@ use Drupal\user\UserInterface;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\commerce_pricelist\PriceListItemListBuilder",
  *     "views_data" = "Drupal\commerce_pricelist\Entity\PriceListItemViewsData",
+ *     "access" = "Drupal\commerce\EntityAccessControlHandler",
  *     "permission_provider" = "Drupal\commerce\EntityPermissionProvider",
  *     "form" = {
  *       "default" = "Drupal\commerce_pricelist\Form\PriceListItemForm",
@@ -28,7 +29,6 @@ use Drupal\user\UserInterface;
  *       "edit" = "Drupal\commerce_pricelist\Form\PriceListItemForm",
  *       "delete" = "Drupal\commerce_pricelist\Form\PriceListItemDeleteForm",
  *     },
- *     "access" = "Drupal\commerce_pricelist\PriceListItemAccessControlHandler",
  *     "route_provider" = {
  *       "html" = "Drupal\commerce_pricelist\PriceListItemHtmlRouteProvider",
  *     },
