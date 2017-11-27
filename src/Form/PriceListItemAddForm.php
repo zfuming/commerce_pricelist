@@ -79,6 +79,7 @@ class PriceListItemAddForm extends FormBase implements ContainerInjectionInterfa
     $form['quantity'] = array(
       '#type' => 'number',
       '#title' => $this->t('Quantity'),
+      '#required' => TRUE,
       '#description' => 'The product quantity number.',
     );
 
