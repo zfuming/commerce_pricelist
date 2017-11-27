@@ -21,7 +21,7 @@ use Drupal\user\UserInterface;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\commerce_pricelist\PriceListItemListBuilder",
  *     "views_data" = "Drupal\commerce_pricelist\Entity\PriceListItemViewsData",
- *
+ *     "permission_provider" = "Drupal\commerce\EntityPermissionProvider",
  *     "form" = {
  *       "default" = "Drupal\commerce_pricelist\Form\PriceListItemForm",
  *       "add" = "Drupal\commerce_pricelist\Form\PriceListItemForm",

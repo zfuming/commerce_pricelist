@@ -22,7 +22,7 @@ use Drupal\user\UserInterface;
  *     "view_builder" = "Drupal\commerce_pricelist\PriceListViewBuilder",
  *     "list_builder" = "Drupal\commerce_pricelist\PriceListListBuilder",
  *     "views_data" = "Drupal\commerce_pricelist\Entity\PriceListViewsData",
- *
+ *     "permission_provider" = "Drupal\commerce\EntityPermissionProvider",
  *     "form" = {
  *       "default" = "Drupal\commerce_pricelist\Form\PriceListForm",
  *       "add" = "Drupal\commerce_pricelist\Form\PriceListForm",
