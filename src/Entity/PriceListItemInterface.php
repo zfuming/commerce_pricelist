@@ -91,4 +91,45 @@ interface PriceListItemInterface extends ContentEntityInterface, EntityChangedIn
    */
   public function setPublished($published);
 
+  /**
+   * Gets the Price list item weight.
+   *
+   * @return string
+   *   Weight of the Price list item.
+   */
+  public function getWeight();
+
+  /**
+   * Sets the Price list item weight.
+   *
+   * @param string $weight
+   *   The Price list item weight.
+   *
+   * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
+   *   The called Price list item entity.
+   */
+  public function setWeight($weight);
+
+  /**
+   * Sets the Price list item price_list_id.
+   *
+   * @param string $priceListId
+   *   The Price list item price_list_id.
+   *
+   * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
+   *   The called Price list item entity.
+   */
+  public function setPriceListId($priceListId);
+
+  /**
+   * Sets the Price list item name.
+   *
+   * @param string $productVariationId
+   *   The Price list item product_variation_id.
+   *
+   * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
+   *   The called Price list item entity.
+   */
+  public function setProductVariationId($productVariationId);
+
 }

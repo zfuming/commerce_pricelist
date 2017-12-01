@@ -80,4 +80,12 @@ interface PriceListInterface extends ContentEntityInterface, EntityChangedInterf
    */
   public function setPublished($published);
 
+  /**
+   * Gets the Price list's item list
+   *
+   * @return PriceListItem
+   *   items of the Price list.
+   */
+  public function getItems();
+
 }

@@ -46,6 +46,38 @@ function commerce_pricelist_theme() {
   return $theme;
 }
 
+function commerce_pricelist_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if ( $form_id == 'commerce_product_variation_default_edit_form'
+    || $form_id == 'commerce_product_variation_default_add_form'
+    || $form_id == 'commerce_product_default_edit_form'
+    || $form_id == 'commerce_product_default_add_form'
+  ) {
+    $form['actions']['submit']['#submit'][] = 'update_price_list_item';
+  }
+}
+
+function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
+  $entity = $form_state->getFormObject()->getEntity();
+  $entityId = $entity->id();
+  $entity_type_id = $entity->getEntityType()->id();
+  if ($entity_type_id == 'commerce_product_variation') {
+    foreach ($entity->field_price_list_item as $item) {
+      $itemEntity = $item->get('entity')->getTarget()->getValue();
+      $itemEntity->setProductVariationId($entityId);
+      $itemEntity->save();
+    }
+  } elseif ($entity_type_id == 'commerce_product') {
+    foreach ($entity->variations as $variation) {
+      $itemEntity = $variation->get('entity')->getTarget()->getValue();
+      foreach ($itemEntity->field_price_list_item as $item) {
+        $itemEntity = $item->get('entity')->getTarget()->getValue();
+        $itemEntity->setProductVariationId($entityId);
+        $itemEntity->save();
+      }
+    }
+  }
+}
+
 /**
 * Implements hook_theme_suggestions_HOOK().
 */

@@ -149,6 +149,13 @@ class PriceList extends ContentEntityBase implements PriceListInterface {
     return $this;
   }
 
+  public function getItems()
+  {
+    // TODO: Implement getItems() method.
+    $storage = $this->entityTypeManager()->getStorage('price_list_item');
+    return $storage->loadMultipleByPriceList($this->id());
+  }
+
   /**
    * {@inheritdoc}
    */

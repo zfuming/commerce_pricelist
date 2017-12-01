@@ -3,9 +3,10 @@ status: true
 dependencies:
   config:
     - commerce_pricelist.price_list_type.default
-    - field.storage.commerce_pricelist.stores
-id: commerce_pricelist.default.stores
-field_name: stores
+    - commerce_store.commerce_store_type.online
+    - field.storage.price_list.field_stores
+id: price_list.default.field_stores
+field_name: field_stores
 entity_type: price_list
 bundle: default
 label: Stores
@@ -16,5 +17,11 @@ default_value: {  }
 default_value_callback: ''
 settings:
   handler: 'default:commerce_store'
-  handler_settings: {  }
+  handler_settings:
+    target_bundles:
+      online: online
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
 field_type: entity_reference

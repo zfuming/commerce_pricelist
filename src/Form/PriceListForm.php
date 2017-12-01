@@ -3,8 +3,11 @@
 namespace Drupal\commerce_pricelist\Form;
 
 use Drupal\Core\Link;
+use Drupal\commerce\EntityHelper;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Entity\ContentEntityForm;
+use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -101,15 +104,15 @@ class PriceListForm extends ContentEntityForm {
       '#title' => t('Price List Store'),
       '#open' => TRUE,
       '#group' => 'advanced',
-      '#access' => !empty($form['stores']['#access']),
+      '#access' => !empty($form['field_stores']['#access']),
       '#attributes' => [
         'class' => ['product-visibility-settings'],
       ],
       '#weight' => 30,
     ];
 
-    if (isset($form['stores'])) {
-      $form['stores']['#group'] = 'price_list_store';
+    if (isset($form['field_stores'])) {
+      $form['field_stores']['#group'] = 'price_list_store';
       $form['#after_build'][] = [get_class($this), 'hideEmptyVisibilitySettings'];
     }
 
@@ -146,6 +149,12 @@ class PriceListForm extends ContentEntityForm {
     $entity = $this->entity;
     $status = parent::save($form, $form_state);
 
+    foreach ($entity->field_price_list_item as $item) {
+      $itemEntity = $item->get('entity')->getTarget()->getValue();
+      $itemEntity->setPriceListId($this->entity->id());
+      $itemEntity->save();
+    }
+
     switch ($status) {
       case SAVED_NEW:
         drupal_set_message($this->t('Created the %label Price list.', [
@@ -158,6 +167,7 @@ class PriceListForm extends ContentEntityForm {
           '%label' => $entity->label(),
         ]));
     }
+
     $form_state->setRedirect('entity.price_list.collection');
   }
 

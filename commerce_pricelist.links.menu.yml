@@ -18,12 +18,12 @@ entity.price_list_type.collection:
   description: 'Price list types'
   parent: 'commerce_pricelist.configuration'
 
-# Price list item menu items definition
-entity.price_list_item.collection:
-  title: 'Price list item list'
-  route_name: 'entity.price_list_item.collection'
-  description: 'List Price list item entities'
-  parent: 'commerce.admin_commerce'
+## Price list item menu items definition
+#entity.price_list_item.collection:
+#  title: 'Price list item list'
+#  route_name: 'entity.price_list_item.collection'
+#  description: 'List Price list item entities'
+#  parent: 'commerce.admin_commerce'
 
 price_list_item.admin.structure.settings:
   title: 'Price list item settings'

@@ -21,6 +21,7 @@ use Drupal\user\UserInterface;
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\commerce_pricelist\PriceListItemListBuilder",
  *     "views_data" = "Drupal\commerce_pricelist\Entity\PriceListItemViewsData",
+ *     "storage" = "Drupal\commerce_pricelist\PriceListItemStorage",
  *     "access" = "Drupal\commerce\EntityAccessControlHandler",
  *     "permission_provider" = "Drupal\commerce\EntityPermissionProvider",
  *     "form" = {
@@ -29,6 +30,7 @@ use Drupal\user\UserInterface;
  *       "edit" = "Drupal\commerce_pricelist\Form\PriceListItemForm",
  *       "delete" = "Drupal\commerce_pricelist\Form\PriceListItemDeleteForm",
  *     },
+ *     "inline_form" = "Drupal\commerce_pricelist\Form\PriceListItemInlineForm",
  *     "route_provider" = {
  *       "html" = "Drupal\commerce_pricelist\PriceListItemHtmlRouteProvider",
  *     },
@@ -79,6 +81,13 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
   /**
    * {@inheritdoc}
    */
+  public function setPriceListId($target_id) {
+    return $this->set('price_list_id', $target_id);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getName() {
     return $this->get('name')->value;
   }
@@ -121,6 +130,21 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getWeight() {
+    return $this->get('weight')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setWeight($weight) {
+    $this->set('weight', $weight);
+    return $this;
+  }
+
 
   /**
    * {@inheritdoc}
@@ -142,6 +166,13 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
    */
   public function getProductVariationId() {
     return $this->get('product_variation_id')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setProductVariationId($target_id) {
+    return $this->set('product_variation_id', $target_id);
   }
 
   /**
@@ -171,6 +202,10 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ->setLabel(t('UUID'))
       ->setDescription(t('The UUID of the Price list item entity.'))
       ->setReadOnly(TRUE);
+    $fields['weight'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Weight'))
+      ->setDescription(t('The weight of this attribute value in relation to others.'))
+      ->setDefaultValue(0);
 
     $fields['price_list_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Price list'))
@@ -179,7 +214,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
-        'weight' => -1,
+        'weight' => 0,
         'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => '60',
@@ -196,7 +231,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
-        'weight' => -1,
+        'weight' => 1,
         'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => '60',
@@ -213,16 +248,15 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
         'max_length' => 50,
         'text_processing' => 0,
       ))
-      ->setRequired(TRUE)
       ->setDefaultValue('')
       ->setDisplayOptions('view', array(
         'label' => 'above',
         'type' => 'string',
-        'weight' => -4,
+        'weight' => 2,
       ))
       ->setDisplayOptions('form', array(
         'type' => 'string_textfield',
-        'weight' => -4,
+        'weight' => 2,
       ))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -234,16 +268,15 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
         'max_length' => 50,
         'text_processing' => 0,
       ))
-      ->setRequired(TRUE)
       ->setDefaultValue('')
       ->setDisplayOptions('view', array(
         'label' => 'above',
         'type' => 'integer',
-        'weight' => -4,
+        'weight' => 3,
       ))
       ->setDisplayOptions('form', array(
         'type' => 'integer',
-        'weight' => -4,
+        'weight' => 3,
       ))
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -254,13 +287,58 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'commerce_price_default',
-        'weight' => 0,
+        'weight' => 4,
       ])
       ->setDisplayOptions('form', [
         'type' => 'commerce_price_default',
-        'weight' => 0,
+        'weight' => 4,
       ])
-      ->setRequired(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['start_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Start date'))
+      ->setDescription(t('Start date'))
+      ->setRevisionable(TRUE)
+      ->setSettings([
+        'datetime_type' => 'datetime'
+      ])
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'datetime_default',
+        'settings' => [
+          'format_type' => 'medium',
+        ],
+        'weight' => 5,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'datetime_default',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+    $fields['end_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('End date'))
+      ->setDescription(t('End date'))
+      ->setRevisionable(TRUE)
+      ->setSettings([
+        'datetime_type' => 'datetime'
+      ])
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'datetime_default',
+        'settings' => [
+          'format_type' => 'medium',
+        ],
+        'weight' => 6,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'datetime_default',
+        'weight' => 6,
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 

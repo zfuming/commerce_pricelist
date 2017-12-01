@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_pricelist
+id: price_list.field_price_list_item
+field_name: field_price_list_item
+entity_type: price_list
+type: entity_reference
+settings:
+  target_type: price_list_item
+module: core
+locked: true
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

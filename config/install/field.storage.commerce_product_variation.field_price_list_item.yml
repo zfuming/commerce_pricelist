@@ -3,17 +3,17 @@ status: true
 dependencies:
   module:
     - commerce_pricelist
-    - commerce_store
-id: commerce_pricelist.stores
-field_name: stores
-entity_type: price_list
+    - commerce_product
+id: commerce_product_variation.field_price_list_item
+field_name: field_price_list_item
+entity_type: commerce_product_variation
 type: entity_reference
 settings:
-  target_type: commerce_store
+  target_type: price_list_item
 module: core
 locked: true
 cardinality: -1
-translatable: false
+translatable: true
 indexes: {  }
 persist_with_no_fields: false
 custom_storage: false
