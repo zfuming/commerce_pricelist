@@ -204,12 +204,12 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ->setReadOnly(TRUE);
     $fields['weight'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Weight'))
-      ->setDescription(t('The weight of this attribute value in relation to others.'))
+      ->setDescription(t('The Weight of the Price list item entity.'))
       ->setDefaultValue(0);
 
     $fields['price_list_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Price list'))
-      ->setDescription(t('The parent price list.'))
+      ->setDescription(t('The parent price list of the Price list item entity.'))
       ->setSetting('target_type', 'price_list')
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
@@ -226,7 +226,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
 
     $fields['product_variation_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Product'))
-      ->setDescription(t('The parent product.'))
+      ->setDescription(t('The parent product variation of the Price list item entity.'))
       ->setSetting('target_type', 'commerce_product_variation')
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
@@ -263,7 +263,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
 
     $fields['quantity'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Quantity'))
-      ->setDescription(t('The product quantity number.'))
+      ->setDescription(t('The product quantity number of the Price list item entity.'))
       ->setSettings(array(
         'max_length' => 50,
         'text_processing' => 0,
@@ -283,7 +283,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
 
     $fields['price'] = BaseFieldDefinition::create('commerce_price')
       ->setLabel(t('Price'))
-      ->setDescription(t('The list price'))
+      ->setDescription(t('The price of the Price list item entity.'))
       ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'commerce_price_default',
@@ -298,7 +298,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
 
     $fields['start_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('Start date'))
-      ->setDescription(t('Start date'))
+      ->setDescription(t('The start date of the Price list item entity.'))
       ->setRevisionable(TRUE)
       ->setSettings([
         'datetime_type' => 'datetime'
@@ -321,7 +321,7 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
 
     $fields['end_date'] = BaseFieldDefinition::create('datetime')
       ->setLabel(t('End date'))
-      ->setDescription(t('End date'))
+      ->setDescription(t('The end date of the Price list item entity.'))
       ->setRevisionable(TRUE)
       ->setSettings([
         'datetime_type' => 'datetime'
