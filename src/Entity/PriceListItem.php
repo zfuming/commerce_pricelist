@@ -2,12 +2,12 @@
 
 namespace Drupal\commerce_pricelist\Entity;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\user\UserInterface;
 
 /**
  * Defines the Price list item entity.
@@ -149,8 +149,18 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
   /**
    * {@inheritdoc}
    */
+  public function setPrice(Price $price) {
+    return $this->set('price', $price);
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPrice() {
-    return $this->get('price')->first()->toPrice();
+    if (!$this->get('price')->isEmpty()) {
+      return $this->get('price')->first()->toPrice();
+    }
   }
 
 

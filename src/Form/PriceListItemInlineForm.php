@@ -2,11 +2,9 @@
 
 namespace Drupal\commerce_pricelist\Form;
 
-use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\inline_entity_form\Form\EntityInlineForm;
-use Drupal\views\Plugin\views\row\EntityReference;
 
 /**
  * Defines the inline form for product variations.
@@ -36,16 +34,20 @@ class PriceListItemInlineForm extends EntityInlineForm {
    */
   public function getTableFields($bundles) {
     $fields = parent::getTableFields($bundles);
-    $fields['name']['name'] = t('Name');
+    $fields['price_list_id'] = [
+      'type' => 'field',
+      'label' => t('Price List'),
+      'weight' => 2,
+    ];
     $fields['price'] = [
       'type' => 'field',
       'label' => t('Price'),
-      'weight' => 10,
+      'weight' => 3,
     ];
     $fields['quantity'] = [
       'type' => 'field',
       'label' => t('Quantity'),
-      'weight' => 100,
+      'weight' => 4,
     ];
 
     return $fields;
@@ -74,17 +76,34 @@ class PriceListItemInlineForm extends EntityInlineForm {
    */
   public function save(EntityInterface $entity)
   {
-    $entity->save();
-    $entity_id = $entity->id();
     $productVariation = $entity->getProductVariation();
     $priceList = $entity->getPriceList();
 
-    if ($productVariation) {
+    // set name if name is null
+    if ($productVariation && !$entity->getName()) {
+      $entity->setName($productVariation->getTitle());
+    }
+
+    // set quantity if quantity is null
+    if (!$entity->getQuantity()) {
+      $entity->setQuantity(1);
+    }
+
+    // set price if price is null
+    if ($productVariation && !$entity->getPrice()) {
+      $entity->setPrice($productVariation->getPrice());
+    }
+
+    $isNew = $entity->isNew();
+    $entity->save();
+    $entity_id = $entity->id();
+
+    if ($productVariation && $isNew) {
       $productVariation->field_price_list_item[] = ['target_id' => $entity_id];
       $productVariation->save();
     }
 
-    if ($priceList) {
+    if ($priceList && $isNew) {
       $priceList->field_price_list_item[] = ['target_id' => $entity_id];
       $priceList->save();
     }

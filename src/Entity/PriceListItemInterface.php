@@ -2,9 +2,9 @@
 
 namespace Drupal\commerce_pricelist\Entity;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
-use Drupal\user\EntityOwnerInterface;
 
 /**
  * Provides an interface for defining Price list item entities.
@@ -131,5 +131,24 @@ interface PriceListItemInterface extends ContentEntityInterface, EntityChangedIn
    *   The called Price list item entity.
    */
   public function setProductVariationId($productVariationId);
+
+  /**
+   * Gets the Price list item price.
+   *
+   * @return string
+   *   Price of the Price list item.
+   */
+  public function getPrice();
+
+  /**
+   * Sets the Price list item price.
+   *
+   * @param Price $price
+   *   The Price list item Price.
+   *
+   * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
+   *   The called Price list item entity.
+   */
+  public function setPrice(Price $price);
 
 }

@@ -64,6 +64,12 @@ function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterfac
     foreach ($entity->field_price_list_item as $item) {
       $itemEntity = $item->get('entity')->getTarget()->getValue();
       $itemEntity->setProductVariationId($entityId);
+      if (!$itemEntity->getName()) {
+        $itemEntity->setName($entity->getTitle());
+      }
+      if (!$itemEntity->getPrice()) {
+        $itemEntity->setPrice($entity->getPrice());
+      }
       $itemEntity->save();
     }
   } elseif ($entity_type_id == 'commerce_product') {
@@ -72,6 +78,12 @@ function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterfac
       foreach ($itemEntity->field_price_list_item as $item) {
         $itemEntity = $item->get('entity')->getTarget()->getValue();
         $itemEntity->setProductVariationId($entityId);
+        if ($itemEntity->getName() && $entity->getTitle()) {
+          $itemEntity->setName($entity->getTitle());
+        }
+        if (!$itemEntity->getPrice() && $entity->getPrice()) {
+          $itemEntity->setPrice($entity->getPrice());
+        }
         $itemEntity->save();
       }
     }
