@@ -19,7 +19,7 @@ use Drupal\user\UserInterface;
  *   label = @Translation("Price list"),
  *   bundle_label = @Translation("Price list type"),
  *   handlers = {
- *     "view_builder" = "Drupal\commerce_pricelist\PriceListViewBuilder",
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\commerce_pricelist\PriceListListBuilder",
  *     "views_data" = "Drupal\commerce_pricelist\Entity\PriceListViewsData",
  *     "access" = "Drupal\commerce\EntityAccessControlHandler",

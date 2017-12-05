@@ -7,58 +7,61 @@ dependencies:
     - field.field.price_list.default.field_stores
   module:
     - datetime
-    - inline_entity_form
+    - user
 id: price_list.default.default
 targetEntityType: price_list
 bundle: default
 mode: default
 content:
   end_date:
+    label: above
     type: datetime_default
-    weight: 4
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_price_list_item:
-    weight: 7
     settings:
-      match_operator: CONTAINS
-      form_mode: default
-      override_labels: false
-      label_singular: ''
-      label_plural: ''
-      allow_new: true
-      allow_existing: false
-    third_party_settings: {  }
-    type: inline_entity_form_complex
-    region: content
-  field_stores:
-    weight: 6
-    settings: {  }
-    third_party_settings: {  }
-    type: options_buttons
-    region: content
-  name:
-    type: string_textfield
-    weight: -4
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  start_date:
-    type: datetime_default
+      format_type: medium
+      timezone_override: ''
     weight: 3
     region: content
-    settings: {  }
+    third_party_settings: {  }
+  field_price_list_item:
+    type: entity_reference_entity_view
+    weight: 5
+    region: content
+    label: above
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+  field_stores:
+    type: entity_reference_entity_view
+    weight: 4
+    region: content
+    label: above
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+  name:
+    label: above
+    type: string
+    weight: 0
+    region: content
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  start_date:
+    label: above
+    type: datetime_default
+    settings:
+      format_type: medium
+      timezone_override: ''
+    weight: 2
+    region: content
     third_party_settings: {  }
   user_id:
-    type: entity_reference_autocomplete
-    weight: 5
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
+    label: hidden
+    type: author
+    weight: 1
     region: content
+    settings: {  }
     third_party_settings: {  }
 hidden: {  }
