@@ -23,8 +23,8 @@ class PriceListItemInlineForm extends EntityInlineForm {
    */
   public function getEntityTypeLabels() {
     $labels = [
-      'singular' => t('price_list'),
-      'plural' => t('price_lists'),
+      'singular' => t('price list item'),
+      'plural' => t('price list items'),
     ];
     return $labels;
   }
