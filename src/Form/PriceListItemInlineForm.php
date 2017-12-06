@@ -94,18 +94,31 @@ class PriceListItemInlineForm extends EntityInlineForm {
       $entity->setPrice($productVariation->getPrice());
     }
 
-    $isNew = $entity->isNew();
     $entity->save();
     $entity_id = $entity->id();
 
-    if ($productVariation && $isNew) {
-      $productVariation->field_price_list_item[] = ['target_id' => $entity_id];
-      $productVariation->save();
+    if ($productVariation) {
+      $target_id = [];
+      $field_price_list_item = $productVariation->field_price_list_item->getValue();
+      foreach ($field_price_list_item as $item) {
+        $target_id[] = $item['target_id'];
+      }
+      if (!in_array($entity_id, $target_id)) {
+        $productVariation->field_price_list_item[] = ['target_id' => $entity_id];
+        $productVariation->save();
+      }
     }
 
-    if ($priceList && $isNew) {
-      $priceList->field_price_list_item[] = ['target_id' => $entity_id];
-      $priceList->save();
+    if ($priceList) {
+      $target_id = [];
+      $field_price_list_item = $priceList->field_price_list_item->getValue();
+      foreach ($field_price_list_item as $item) {
+        $target_id[] = $item['target_id'];
+      }
+      if (!in_array($entity_id, $target_id)) {
+        $priceList->field_price_list_item[] = ['target_id' => $entity_id];
+        $priceList->save();
+      }
     }
 
   }

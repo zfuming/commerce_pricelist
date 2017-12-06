@@ -74,15 +74,15 @@ function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterfac
     }
   } elseif ($entity_type_id == 'commerce_product') {
     foreach ($entity->variations as $variation) {
-      $itemEntity = $variation->get('entity')->getTarget()->getValue();
-      foreach ($itemEntity->field_price_list_item as $item) {
+      $productVariation = $variation->get('entity')->getTarget()->getValue();
+      foreach ($productVariation->field_price_list_item as $item) {
         $itemEntity = $item->get('entity')->getTarget()->getValue();
         $itemEntity->setProductVariationId($entityId);
-        if ($itemEntity->getName() && $entity->getTitle()) {
-          $itemEntity->setName($entity->getTitle());
+        if (!$itemEntity->getName() && $productVariation->getTitle()) {
+          $itemEntity->setName($productVariation->getTitle());
         }
-        if (!$itemEntity->getPrice() && $entity->getPrice()) {
-          $itemEntity->setPrice($entity->getPrice());
+        if (!$itemEntity->getPrice() && $productVariation->getPrice()) {
+          $itemEntity->setPrice($productVariation->getPrice());
         }
         $itemEntity->save();
       }
@@ -91,8 +91,8 @@ function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterfac
 }
 
 /**
-* Implements hook_theme_suggestions_HOOK().
-*/
+ * Implements hook_theme_suggestions_HOOK().
+ */
 function commerce_pricelist_theme_suggestions_price_list(array $variables) {
   $suggestions = array();
   $entity = $variables['elements']['#price_list'];
