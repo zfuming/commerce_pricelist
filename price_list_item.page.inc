@@ -22,8 +22,6 @@ use Drupal\Core\Url;
  *   - attributes: HTML attributes for the containing element.
  */
 function template_preprocess_price_list_item(array &$variables) {
-  // Fetch PriceListItem Entity Object.
-  $price_list_item = $variables['elements']['#price_list_item'];
 
   // Helpful $content variable for templates.
   foreach (Element::children($variables['elements']) as $key) {
