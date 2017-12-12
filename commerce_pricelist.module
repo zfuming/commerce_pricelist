@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_help().
@@ -46,6 +47,35 @@ function commerce_pricelist_theme() {
   return $theme;
 }
 
+/**
+ * Implements hook_field_widget_form_alter().
+ *
+ * - Changes the label of the purchased_entity field to the label of the
+ *   target type (e.g. 'Product variation').
+ * - Forbids editing the purchased_entity once the order item is no longer new.
+ */
+function commerce_pricelist_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $field_definition = $context['items']->getFieldDefinition();
+  $field_name = $field_definition->getName();
+  $entity_type = $field_definition->getTargetEntityTypeId();
+  if ($field_name == 'purchased_entity' && $entity_type == 'price_list_item') {
+    if (!empty($element['target_id']['#target_type'])) {
+      $target_type = \Drupal::service('entity_type.manager')->getDefinition($element['target_id']['#target_type']);
+      $element['target_id']['#title'] = $target_type->getLabel();
+      if (!$context['items']->getEntity()->isNew()) {
+        $element['#disabled'] = TRUE;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $form_id
+ */
 function commerce_pricelist_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   if ( $form_id == 'commerce_product_variation_default_edit_form'
     || $form_id == 'commerce_product_variation_default_add_form'
@@ -58,6 +88,12 @@ function commerce_pricelist_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
   }
 }
 
+/**
+ * Submit update price list item.
+ *
+ * @param array $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
 function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
   $entityId = $entity->id();
