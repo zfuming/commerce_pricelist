@@ -35,8 +35,8 @@ class PriceListItemListBuilder extends EntityListBuilder {
     $price_list_url = Url::fromRoute('entity.price_list.edit_form', array('price_list' => $entity->getPriceListId()));
     $name = Link::fromTextAndUrl($entity->label(), $name_url);
     $price_list = Link::fromTextAndUrl($entity->getPriceList()->label(), $price_list_url);
-    $row['product'] = $entity->getProductVariation()->label();
-    $row['sku'] = $entity->getProductVariation()->getSku();
+    $row['product'] = $entity->getPurchasedEntity()->label();
+    $row['sku'] = $entity->getPurchasedEntity()->getSku();
     $row['name'] = $name;
     $row['price'] = $entity->getPrice();
     $row['quantity'] = $entity->getQuantity();

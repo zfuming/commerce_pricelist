@@ -16,9 +16,5 @@ default_value: {  }
 default_value_callback: ''
 settings:
   handler: 'default:price_list_item'
-  handler_settings:
-    target_bundles: null
-    sort:
-      field: _none
-    auto_create: false
+  handler_settings: { }
 field_type: entity_reference

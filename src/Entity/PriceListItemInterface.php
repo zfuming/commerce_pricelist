@@ -122,15 +122,39 @@ interface PriceListItemInterface extends ContentEntityInterface, EntityChangedIn
   public function setPriceListId($priceListId);
 
   /**
-   * Sets the Price list item name.
+   * Gets whether the price list item has a purchased entity.
    *
-   * @param string $productVariationId
-   *   The Price list item product_variation_id.
+   * @return bool
+   *   TRUE if the price list item has a purchased entity, FALSE otherwise.
+   */
+  public function hasPurchasedEntity();
+
+  /**
+   * Gets the purchased entity.
+   *
+   * @return \Drupal\commerce\PurchasableEntityInterface|null
+   *   The purchased entity, or NULL.
+   */
+  public function getPurchasedEntity();
+
+  /**
+   * Gets the purchased entity ID.
+   *
+   * @return int
+   *   The purchased entity ID.
+   */
+  public function getPurchasedEntityId();
+
+  /**
+   * Sets the Price list item purchased entity.
+   *
+   * @param string $target_id
+   *   The Price list item purchased_entity_id.
    *
    * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface
    *   The called Price list item entity.
    */
-  public function setProductVariationId($productVariationId);
+  public function setPurchasedEntityId($target_id);
 
   /**
    * Gets the Price list item price.

@@ -8,4 +8,3 @@ dependencies:
   - commerce_store
   - commerce_price
   - commerce_product
-  - commerce_order

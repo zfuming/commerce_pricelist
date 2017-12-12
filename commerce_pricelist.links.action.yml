@@ -9,3 +9,9 @@ entity.price_list_type.add_form:
   title: 'Add Price list type'
   appears_on:
     - entity.price_list_type.collection
+
+entity.price_list_item_type.add_form:
+  route_name: entity.price_list_item_type.add_form
+  title: 'Add Price list item type'
+  appears_on:
+    - entity.price_list_item_type.collection

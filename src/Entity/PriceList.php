@@ -4,7 +4,7 @@ namespace Drupal\commerce_pricelist\Entity;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\commerce\Entity\CommerceContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\UserInterface;
@@ -21,7 +21,7 @@ use Drupal\user\UserInterface;
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\commerce_pricelist\PriceListListBuilder",
- *     "views_data" = "Drupal\commerce_pricelist\Entity\PriceListViewsData",
+ *     "views_data" = "Drupal\commerce_pricelist\PriceListViewsData",
  *     "access" = "Drupal\commerce\EntityAccessControlHandler",
  *     "permission_provider" = "Drupal\commerce\EntityPermissionProvider",
  *     "form" = {
@@ -55,7 +55,7 @@ use Drupal\user\UserInterface;
  *   field_ui_base_route = "entity.price_list_type.edit_form"
  * )
  */
-class PriceList extends ContentEntityBase implements PriceListInterface {
+class PriceList extends CommerceContentEntityBase implements PriceListInterface {
   use EntityChangedTrait;
   /**
    * {@inheritdoc}
@@ -160,19 +160,8 @@ class PriceList extends ContentEntityBase implements PriceListInterface {
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
-    $fields['id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('ID'))
-      ->setDescription(t('The ID of the Price list entity.'))
-      ->setReadOnly(TRUE);
-    $fields['type'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Type'))
-      ->setDescription(t('The Price list type/bundle.'))
-      ->setSetting('target_type', 'price_list_type')
-      ->setRequired(TRUE);
-    $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(t('UUID'))
-      ->setDescription(t('The UUID of the Price list entity.'))
-      ->setReadOnly(TRUE);
+    $fields = parent::baseFieldDefinitions($entity_type);
+
     $fields['weight'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Weight'))
       ->setDescription(t('The weight of this pricelist in relation to other pricelists.'))

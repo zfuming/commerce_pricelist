@@ -3,9 +3,9 @@
 namespace Drupal\commerce_pricelist\Entity;
 
 use Drupal\commerce_price\Price;
+use Drupal\commerce\Entity\CommerceContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
 
@@ -17,10 +17,11 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * @ContentEntityType(
  *   id = "price_list_item",
  *   label = @Translation("Price list item"),
+ *   bundle_label = @Translation("price list item type"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\commerce_pricelist\PriceListItemListBuilder",
- *     "views_data" = "Drupal\commerce_pricelist\Entity\PriceListItemViewsData",
+ *     "views_data" = "Drupal\commerce_pricelist\PriceListItemViewsData",
  *     "storage" = "Drupal\commerce_pricelist\PriceListItemStorage",
  *     "access" = "Drupal\commerce\EntityAccessControlHandler",
  *     "permission_provider" = "Drupal\commerce\EntityPermissionProvider",
@@ -39,6 +40,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   admin_permission = "administer price list item entities",
  *   entity_keys = {
  *     "id" = "id",
+ *     "bundle" = "type",
  *     "label" = "name",
  *     "uuid" = "uuid",
  *   },
@@ -49,10 +51,11 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "delete-form" = "/admin/commerce/config/price_list_item/{price_list_item}/delete",
  *     "collection" = "/admin/commerce/config/price_list_item",
  *   },
- *   field_ui_base_route = "price_list_item.settings"
+ *   bundle_entity_type = "price_list_item_type",
+ *   field_ui_base_route = "entity.price_list_item_type.edit_form"
  * )
  */
-class PriceListItem extends ContentEntityBase implements PriceListItemInterface {
+class PriceListItem extends CommerceContentEntityBase implements PriceListItemInterface {
   use EntityChangedTrait;
   /**
    * {@inheritdoc}
@@ -163,26 +166,32 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
     }
   }
 
-
   /**
    * {@inheritdoc}
    */
-  public function getProductVariation() {
-    return $this->get('product_variation_id')->entity;
+  public function hasPurchasedEntity() {
+    return !$this->get('purchased_entity')->isEmpty();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getProductVariationId() {
-    return $this->get('product_variation_id')->target_id;
+  public function getPurchasedEntity() {
+    return $this->getTranslatedReferencedEntity('purchased_entity');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setProductVariationId($target_id) {
-    return $this->set('product_variation_id', $target_id);
+  public function getPurchasedEntityId() {
+    return $this->get('purchased_entity')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPurchasedEntityId($target_id) {
+    return $this->set('purchased_entity', $target_id);
   }
 
   /**
@@ -204,14 +213,8 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
-    $fields['id'] = BaseFieldDefinition::create('integer')
-      ->setLabel(t('ID'))
-      ->setDescription(t('The ID of the Price list item entity.'))
-      ->setReadOnly(TRUE);
-    $fields['uuid'] = BaseFieldDefinition::create('uuid')
-      ->setLabel(t('UUID'))
-      ->setDescription(t('The UUID of the Price list item entity.'))
-      ->setReadOnly(TRUE);
+    $fields = parent::baseFieldDefinitions($entity_type);
+
     $fields['weight'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Weight'))
       ->setDescription(t('The Weight of the Price list item entity.'))
@@ -234,14 +237,13 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-    $fields['product_variation_id'] = BaseFieldDefinition::create('entity_reference')
-      ->setLabel(t('Product'))
-      ->setDescription(t('The parent product variation of the Price list item entity.'))
-      ->setSetting('target_type', 'commerce_product_variation')
+    $fields['purchased_entity'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Purchased entity'))
+      ->setDescription(t('The Product of the Price list item entity.'))
       ->setRequired(TRUE)
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
-        'weight' => 1,
+        'weight' => -1,
         'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => '60',
@@ -359,6 +361,34 @@ class PriceListItem extends ContentEntityBase implements PriceListItemInterface 
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Changed'))
       ->setDescription(t('The time that the entity was last edited.'));
+
+    return $fields;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+    /** @var \Drupal\commerce_pricelist\Entity\PriceListItemTypeInterface $price_list_item_type */
+    $price_list_item_type = PriceListItemType::load($bundle);
+    $purchasable_entity_type = $price_list_item_type->getPurchasableEntityTypeId();
+    $fields = [];
+    $fields['purchased_entity'] = clone $base_field_definitions['purchased_entity'];
+    if ($purchasable_entity_type) {
+      $fields['purchased_entity']->setSetting('target_type', $purchasable_entity_type);
+    }
+    else {
+      // This order item type won't reference a purchasable entity. The field
+      // can't be removed here, or converted to a configurable one, so it's
+      // hidden instead. https://www.drupal.org/node/2346347#comment-10254087.
+      $fields['purchased_entity']->setRequired(FALSE);
+      $fields['purchased_entity']->setDisplayOptions('form', [
+        'type' => 'hidden',
+      ]);
+      $fields['purchased_entity']->setDisplayConfigurable('form', FALSE);
+      $fields['purchased_entity']->setDisplayConfigurable('view', FALSE);
+      $fields['purchased_entity']->setReadOnly(TRUE);
+    }
 
     return $fields;
   }

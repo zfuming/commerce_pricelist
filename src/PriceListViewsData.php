@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\commerce_pricelist\Entity;
+namespace Drupal\commerce_pricelist;
 
 use Drupal\views\EntityViewsData;
 use Drupal\views\EntityViewsDataInterface;

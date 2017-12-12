@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_pricelist\Form;
 
+use Drupal\commerce_pricelist\Entity\PriceListItemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\inline_entity_form\Form\EntityInlineForm;
@@ -62,10 +63,12 @@ class PriceListItemInlineForm extends EntityInlineForm {
     switch ($routeName) {
       case 'entity.price_list.add_page':unset($entity_form['price_list_id']);break;
       case 'entity.price_list.edit_form':unset($entity_form['price_list_id']);break;
-      case 'entity.commerce_product.add_form':unset($entity_form['product_variation_id']);break;
-      case 'entity.commerce_product.edit_form':unset($entity_form['product_variation_id']);break;
-      case 'entity.commerce_product_variation.add_form':unset($entity_form['product_variation_id']);break;
-      case 'entity.commerce_product_variation.edit_form':unset($entity_form['product_variation_id']);break;
+      case 'entity.commerce_product.add_form':unset($entity_form['purchased_entity']);break;
+      case 'entity.commerce_product.edit_form':unset($entity_form['purchased_entity']);break;
+      case 'entity.commerce_product_bundle.add_form':unset($entity_form['purchased_entity']);break;
+      case 'entity.commerce_product_bundle.edit_form':unset($entity_form['purchased_entity']);break;
+      case 'entity.commerce_product_variation.add_form':unset($entity_form['purchased_entity']);break;
+      case 'entity.commerce_product_variation.edit_form':unset($entity_form['purchased_entity']);break;
     }
 
     return $entity_form;
@@ -76,12 +79,12 @@ class PriceListItemInlineForm extends EntityInlineForm {
    */
   public function save(EntityInterface $entity)
   {
-    $productVariation = $entity->getProductVariation();
+    $product   = $entity->getPurchasedEntity();
     $priceList = $entity->getPriceList();
 
     // set name if name is null
-    if ($productVariation && !$entity->getName()) {
-      $entity->setName($productVariation->getTitle());
+    if ($product && !$entity->getName()) {
+      $entity->setName($product->getTitle());
     }
 
     // set quantity if quantity is null
@@ -90,22 +93,22 @@ class PriceListItemInlineForm extends EntityInlineForm {
     }
 
     // set price if price is null
-    if ($productVariation && !$entity->getPrice()) {
-      $entity->setPrice($productVariation->getPrice());
+    if ($product && !$entity->getPrice()) {
+      $entity->setPrice($product->getPrice());
     }
 
     $entity->save();
     $entity_id = $entity->id();
 
-    if ($productVariation) {
+    if ($product) {
       $target_id = [];
-      $field_price_list_item = $productVariation->field_price_list_item->getValue();
+      $field_price_list_item = $product->field_price_list_item->getValue();
       foreach ($field_price_list_item as $item) {
         $target_id[] = $item['target_id'];
       }
       if (!in_array($entity_id, $target_id)) {
-        $productVariation->field_price_list_item[] = ['target_id' => $entity_id];
-        $productVariation->save();
+        $product->field_price_list_item[] = ['target_id' => $entity_id];
+        $product->save();
       }
     }
 

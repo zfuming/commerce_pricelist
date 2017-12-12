@@ -18,8 +18,8 @@ entity.price_list_type.collection:
   description: 'Price list types'
   parent: 'commerce_pricelist.configuration'
 
-price_list_item.admin.structure.settings:
-  title: 'Price list item settings'
-  description: 'Configure Price list item entities'
-  route_name: 'price_list_item.settings'
-  parent: 'commerce.configuration'
+entity.price_list_item_type.collection:
+  title: 'Price list item types'
+  route_name: 'entity.price_list_item_type.collection'
+  description: 'Manage fields, form and display settings for your price list items.'
+  parent: 'commerce_pricelist.configuration'
