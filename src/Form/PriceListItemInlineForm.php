@@ -2,7 +2,6 @@
 
 namespace Drupal\commerce_pricelist\Form;
 
-use Drupal\commerce_pricelist\Entity\PriceListItemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\inline_entity_form\Form\EntityInlineForm;
