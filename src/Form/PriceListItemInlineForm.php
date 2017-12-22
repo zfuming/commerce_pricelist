@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_pricelist\Form;
 
+use Drupal\commerce_price\Price;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\inline_entity_form\Form\EntityInlineForm;
@@ -93,7 +94,9 @@ class PriceListItemInlineForm extends EntityInlineForm {
 
     // set price if price is null
     if ($product && !$entity->getPrice()) {
-      $entity->setPrice($product->getPrice());
+      if ($product->getPrice()) {
+        $entity->setPrice($product->getPrice());
+      }
     }
 
     $entity->save();

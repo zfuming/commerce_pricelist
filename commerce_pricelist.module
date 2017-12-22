@@ -107,7 +107,9 @@ function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterfac
         $itemEntity->setName($entity->getTitle());
       }
       if (!$itemEntity->getPrice()) {
-        $itemEntity->setPrice($entity->getPrice());
+        if ($entity->getPrice()) {
+          $itemEntity->setPrice($entity->getPrice());
+        }
       }
       $itemEntity->save();
     }
