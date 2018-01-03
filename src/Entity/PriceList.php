@@ -174,6 +174,7 @@ class PriceList extends CommerceContentEntityBase implements PriceListInterface 
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('The name of the Price list entity.'))
+      ->setRequired(TRUE)
       ->setSettings(array(
         'max_length' => 50,
         'text_processing' => 0,
