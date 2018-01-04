@@ -12,7 +12,7 @@ bundle: default
 label: 'Price List Item'
 description: ''
 required: false
-translatable: false
+translatable: true
 default_value: {  }
 default_value_callback: ''
 settings:

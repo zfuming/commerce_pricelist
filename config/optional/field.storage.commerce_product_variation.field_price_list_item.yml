@@ -11,7 +11,7 @@ type: entity_reference
 settings:
   target_type: price_list_item
 module: core
-locked: false
+locked: true
 cardinality: -1
 translatable: true
 indexes: {  }

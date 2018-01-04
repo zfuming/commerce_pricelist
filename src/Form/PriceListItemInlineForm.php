@@ -73,13 +73,9 @@ class PriceListItemInlineForm extends EntityInlineForm {
     if ($inline_entity_form) $target_id = $inline_entity_form['purchased_entity'][0]['target_id'];
     if ($target_id) {
       $entity_storage = \Drupal::entityManager()->getStorage($target_type);
-      $purchased_entity = $entity_storage->load($target_id);
-      if ($target_type == 'commerce_product_bundle') {
-        $price = $purchased_entity->get('bundle_price')->getValue()[0]['number'];
-      } else {
-        $price = $purchased_entity->get('price')->getValue()[0]['number'];
-      }
-      if (!$price) {
+      $entity_service = \Drupal::service('commerce_pricelist.default_base_price_resolver');
+      $price = $entity_service->getPrice($entity_storage->load($target_id));
+      if ($price->getNumber() == '0.00') {
         $entity_form['price']['#disabled'] = true;
       }
     }
@@ -140,7 +136,7 @@ class PriceListItemInlineForm extends EntityInlineForm {
     $entity->save();
     $entity_id = $entity->id();
 
-    if ($product) {
+    if ($product && $product->field_price_list_item) {
       $target_id = [];
       $field_price_list_item = $product->field_price_list_item->getValue();
       foreach ($field_price_list_item as $item) {
@@ -152,7 +148,7 @@ class PriceListItemInlineForm extends EntityInlineForm {
       }
     }
 
-    if ($priceList) {
+    if ($priceList && $priceList->field_price_list_item) {
       $target_id = [];
       $field_price_list_item = $priceList->field_price_list_item->getValue();
       foreach ($field_price_list_item as $item) {
