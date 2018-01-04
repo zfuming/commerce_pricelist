@@ -102,9 +102,9 @@ class PriceListItemInlineForm extends EntityInlineForm {
     }
     if ($target_id) {
       $entity_storage = \Drupal::entityManager()->getStorage($target_type);
-      $entity_service = \Drupal::service('commerce_pricelist.default_base_price_resolver');
-      $price = $entity_service->getPrice($entity_storage->load($target_id));
-      if ($price->getNumber() == '0.00') {
+      $purchased_entity = $entity_storage->load($target_id);
+      $price = $purchased_entity->getPrice();
+      if (!$price) {
         $entity_form['price']['#disabled'] = true;
       }
     }
@@ -150,10 +150,8 @@ class PriceListItemInlineForm extends EntityInlineForm {
 
     // set price if price is null
     if ($product && !$entity->getPrice()) {
-      $entity_service = \Drupal::service('commerce_pricelist.default_base_price_resolver');
-      $price = $entity_service->getPrice($product);
-      if ($price->getNumber() != '0.00') {
-        $entity->setPrice($price);
+      if ($product->getPrice()) {
+        $entity->setPrice($product->getPrice());
       }
     }
 
