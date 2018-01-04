@@ -27,16 +27,16 @@ class PriceListDefaultBasePriceResolver implements PriceListPriceResolverInterfa
       return;
     }
 
-    /** @var \Drupal\commerce_price\Price $sale_price */
-    $sale_price = $entity->get('bundle_price')->first()->toPrice();
-    $sale_price_number = $sale_price->getNumber();
-    $sale_price_currency_code = $sale_price->getCurrencyCode();
+    /** @var \Drupal\commerce_price\Price $bundle_price */
+    $bundle_price = $entity->get('bundle_price')->first()->toPrice();
+    $bundle_price_number = $bundle_price->getNumber();
+    $bundle_price_currency_code = $bundle_price->getCurrencyCode();
 
-    if (!$sale_price_number || $sale_price_number == 0) {
+    if (!$bundle_price_number || $bundle_price_currency_code == 0) {
       return;
     }
 
-    return new Price($sale_price_number, $sale_price_currency_code);
+    return new Price($bundle_price_number, $bundle_price_currency_code);
   }
 
   /**
