@@ -65,20 +65,7 @@ class PriceListItemInlineForm extends EntityInlineForm {
       'event' => 'autocompleteclose',
       'wrapper' => 'purchased_entity_refresh',
     ];
-    $entity_form['price']['#disabled'] = false;
-    $target_type = $entity_form['purchased_entity']['widget'][0]['target_id']['#target_type'];
-    $values = $form_state->getValues();
-    $target_id = null;
-    $inline_entity_form = $values['field_price_list_item']['form']['inline_entity_form'];
-    if ($inline_entity_form) $target_id = $inline_entity_form['purchased_entity'][0]['target_id'];
-    if ($target_id) {
-      $entity_storage = \Drupal::entityManager()->getStorage($target_type);
-      $entity_service = \Drupal::service('commerce_pricelist.default_base_price_resolver');
-      $price = $entity_service->getPrice($entity_storage->load($target_id));
-      if ($price->getNumber() == '0.00') {
-        $entity_form['price']['#disabled'] = true;
-      }
-    }
+    $entity_form = $this->priceForm($entity_form, $form_state);
     $entity_form['price']['#attributes']['id'] = 'purchased_entity_refresh';
     $routeName = \Drupal::routeMatch()->getRouteName();
     switch ($routeName) {
@@ -94,6 +81,41 @@ class PriceListItemInlineForm extends EntityInlineForm {
     return $entity_form;
   }
 
+  /**
+   * @param array $entity_form
+   * @param FormStateInterface $form_state
+   * @return array
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   */
+  public function priceForm(array $entity_form, FormStateInterface $form_state)
+  {
+    $entity = $entity_form['#entity'];
+    $entity_form['price']['#disabled'] = false;
+    $target_id = null;
+    $target_type = $entity_form['purchased_entity']['widget'][0]['target_id']['#target_type'];
+    if ($entity->hasPurchasedEntity()) {
+      $target_id = $entity->getPurchasedEntityId();
+    } else {
+      $values = $form_state->getValues();
+      $inline_entity_form = $values['field_price_list_item']['form']['inline_entity_form'];
+      if ($inline_entity_form) $target_id = $inline_entity_form['purchased_entity'][0]['target_id'];
+    }
+    if ($target_id) {
+      $entity_storage = \Drupal::entityManager()->getStorage($target_type);
+      $entity_service = \Drupal::service('commerce_pricelist.default_base_price_resolver');
+      $price = $entity_service->getPrice($entity_storage->load($target_id));
+      if ($price->getNumber() == '0.00') {
+        $entity_form['price']['#disabled'] = true;
+      }
+    }
+    return $entity_form;
+  }
+
+  /**
+   * @param array $form
+   * @param FormStateInterface $form_state
+   * @return mixed
+   */
   public function purchasedRefresh(array $form, FormStateInterface $form_state)
   {
     $element = [];
@@ -128,8 +150,10 @@ class PriceListItemInlineForm extends EntityInlineForm {
 
     // set price if price is null
     if ($product && !$entity->getPrice()) {
-      if ($product->getPrice()) {
-        $entity->setPrice($product->getPrice());
+      $entity_service = \Drupal::service('commerce_pricelist.default_base_price_resolver');
+      $price = $entity_service->getPrice($product);
+      if ($price->getNumber() != '0.00') {
+        $entity->setPrice($price);
       }
     }
 
