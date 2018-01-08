@@ -52,6 +52,12 @@ class PriceListItemInlineForm extends EntityInlineForm {
       'weight' => 4,
     ];
 
+    $routeName = \Drupal::routeMatch()->getRouteName();
+    switch ($routeName) {
+      case 'entity.price_list.add_page':unset($fields['price_list_id']);break;
+      case 'entity.price_list.edit_form':unset($fields['price_list_id']);break;
+    }
+
     return $fields;
   }
 
