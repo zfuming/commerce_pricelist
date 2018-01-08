@@ -101,11 +101,12 @@ class PriceListItemInlineForm extends EntityInlineForm {
       if ($inline_entity_form) $target_id = $inline_entity_form['purchased_entity'][0]['target_id'];
     }
     if ($target_id) {
-      $entity_storage = \Drupal::entityManager()->getStorage($target_type);
-      $purchased_entity = $entity_storage->load($target_id);
+      $purchased_entity = $this->entityTypeManager->getStorage($target_type)->load($target_id);
       $price = $purchased_entity->getPrice();
       if (!$price) {
         $entity_form['price']['#disabled'] = true;
+      } else {
+        $entity_form['price']['#default_value'] = $price->toArray();
       }
     }
     return $entity_form;
@@ -126,6 +127,9 @@ class PriceListItemInlineForm extends EntityInlineForm {
     while (!(isset($element['#type']) && ($element['#type'] == 'inline_entity_form'))) {
       $element = NestedArray::getValue($form, $array_parents);
       array_pop($array_parents);
+    }
+    if ($number = $element['price']['#default_value']['number']) {
+      $element['price']['widget'][0]['number']['#value'] = sprintf("%.2f", $number);
     }
     return $element['price'];
   }
