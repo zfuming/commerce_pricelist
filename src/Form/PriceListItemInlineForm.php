@@ -3,6 +3,12 @@
 namespace Drupal\commerce_pricelist\Form;
 
 use Drupal\commerce_price\Price;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -19,6 +25,46 @@ class PriceListItemInlineForm extends EntityInlineForm {
    * @var \Drupal\commerce_pricelist\Entity\PriceListItemInterface[]
    */
   protected $variationTypes;
+
+  /**
+   * The route match.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface[]
+   */
+  protected $routeMatch;
+
+  /**
+   * Constructs the inline entity form controller.
+   *
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+   *   The entity type.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The entity type.
+   */
+  public function __construct(EntityFieldManagerInterface $entity_field_manager, EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EntityTypeInterface $entity_type, RouteMatchInterface $route_match)
+  {
+    parent::__construct($entity_field_manager, $entity_type_manager, $module_handler, $entity_type);
+    $this->routeMatch = $route_match;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    return new static(
+      $container->get('entity_field.manager'),
+      $container->get('entity_type.manager'),
+      $container->get('module_handler'),
+      $entity_type,
+      $container->get('current_route_match')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -52,7 +98,7 @@ class PriceListItemInlineForm extends EntityInlineForm {
       'weight' => 4,
     ];
 
-    $routeName = \Drupal::routeMatch()->getRouteName();
+    $routeName = $this->routeMatch->getRouteName();
     switch ($routeName) {
       case 'entity.price_list.add_page':unset($fields['price_list_id']);break;
       case 'entity.price_list.edit_form':unset($fields['price_list_id']);break;
@@ -73,7 +119,7 @@ class PriceListItemInlineForm extends EntityInlineForm {
     ];
     $entity_form = $this->priceForm($entity_form, $form_state);
     $entity_form['price']['#attributes']['id'] = 'purchased_entity_refresh';
-    $routeName = \Drupal::routeMatch()->getRouteName();
+    $routeName = $this->routeMatch->getRouteName();
     switch ($routeName) {
       case 'entity.price_list.add_page':unset($entity_form['price_list_id']);break;
       case 'entity.price_list.edit_form':unset($entity_form['price_list_id']);break;
