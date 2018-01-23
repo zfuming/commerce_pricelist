@@ -4,4 +4,3 @@ services:
     arguments: ['@request_stack']
     tags:
       - { name: commerce_price.base_price_resolver, priority: 600 }
-

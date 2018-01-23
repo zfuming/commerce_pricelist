@@ -8,8 +8,6 @@
  */
 
 use Drupal\Core\Render\Element;
-use Drupal\Core\Link;
-use Drupal\Core\Url;
 
 /**
  * Prepares variables for Price list item templates.
@@ -28,5 +26,3 @@ function template_preprocess_price_list_item(array &$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
 }
-
-

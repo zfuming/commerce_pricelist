@@ -6,7 +6,6 @@ use Drupal\commerce\Context;
 use Drupal\commerce\PurchasableEntityInterface;
 use Drupal\commerce_price\Price;
 
-
 /**
  * Class PriceListDefaultBasePriceResolver.
  *
@@ -40,7 +39,7 @@ class PriceListDefaultBasePriceResolver implements PriceListPriceResolverInterfa
   }
 
   /**
-   * @param PurchasableEntityInterface $entity
+   * @param \Drupal\commerce\PurchasableEntityInterface $entity
    * @return bool
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
@@ -52,7 +51,8 @@ class PriceListDefaultBasePriceResolver implements PriceListPriceResolverInterfa
       if (!$entity->get('bundle_price')->isEmpty() && !$entity->get('bundle_price')->first()->toPrice()->isZero()) {
         $price = $entity->get('bundle_price')->first()->toPrice();
       }
-    } else {
+    }
+    else {
       if (!$entity->getPrice()->isZero()) {
         $price = $entity->getPrice();
       }

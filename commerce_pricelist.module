@@ -39,11 +39,11 @@ function commerce_pricelist_theme() {
     'variables' => ['content' => NULL],
     'file' => 'price_list.page.inc',
   ];
-  $theme['price_list_item'] = array(
+  $theme['price_list_item'] = [
     'render element' => 'elements',
     'file' => 'price_list_item.page.inc',
     'template' => 'price_list_item',
-  );
+  ];
   return $theme;
 }
 
@@ -76,8 +76,8 @@ function commerce_pricelist_field_widget_form_alter(&$element, FormStateInterfac
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  * @param $form_id
  */
-function commerce_pricelist_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-  if ( $form_id == 'commerce_product_variation_default_edit_form'
+function commerce_pricelist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'commerce_product_variation_default_edit_form'
     || $form_id == 'commerce_product_variation_default_add_form'
     || $form_id == 'commerce_product_bundle_default_edit_form'
     || $form_id == 'commerce_product_bundle_default_add_form'
@@ -94,7 +94,7 @@ function commerce_pricelist_form_alter(&$form, \Drupal\Core\Form\FormStateInterf
  * @param array $form
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  */
-function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterface $form_state) {
+function update_price_list_item(array $form, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
   $entityId = $entity->id();
   $entity_type_id = $entity->getEntityType()->id();
@@ -113,7 +113,8 @@ function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterfac
       }
       $itemEntity->save();
     }
-  } elseif ($entity_type_id == 'commerce_product') {
+  }
+  elseif ($entity_type_id == 'commerce_product') {
     foreach ($entity->variations as $variation) {
       $productVariation = $variation->get('entity')->getTarget()->getValue();
       foreach ($productVariation->field_price_list_item as $item) {
@@ -135,7 +136,7 @@ function update_price_list_item(array $form, \Drupal\Core\Form\FormStateInterfac
  * Implements hook_theme_suggestions_HOOK().
  */
 function commerce_pricelist_theme_suggestions_price_list(array $variables) {
-  $suggestions = array();
+  $suggestions = [];
   $entity = $variables['elements']['#price_list'];
   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
 

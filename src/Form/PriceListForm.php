@@ -3,11 +3,8 @@
 namespace Drupal\commerce_pricelist\Form;
 
 use Drupal\Core\Link;
-use Drupal\commerce\EntityHelper;
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Entity\ContentEntityForm;
-use Drupal\Core\Entity\BundleEntityFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -16,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @ingroup commerce_pricelist
  */
 class PriceListForm extends ContentEntityForm {
+
   /**
    * {@inheritdoc}
    */
@@ -32,7 +30,6 @@ class PriceListForm extends ContentEntityForm {
 
     return parent::buildForm($form, $form_state);
   }
-
 
   /**
    * {@inheritdoc}

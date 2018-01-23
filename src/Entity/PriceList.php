@@ -57,14 +57,15 @@ use Drupal\user\UserInterface;
  */
 class PriceList extends CommerceContentEntityBase implements PriceListInterface {
   use EntityChangedTrait;
+
   /**
    * {@inheritdoc}
    */
   public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
     parent::preCreate($storage_controller, $values);
-    $values += array(
+    $values += [
       'user_id' => \Drupal::currentUser()->id(),
-    );
+    ];
   }
 
   /**
@@ -149,8 +150,10 @@ class PriceList extends CommerceContentEntityBase implements PriceListInterface 
     return $this;
   }
 
-  public function getItems()
-  {
+  /**
+   *
+   */
+  public function getItems() {
     // TODO: Implement getItems() method.
     $storage = $this->entityTypeManager()->getStorage('price_list_item');
     return $storage->loadMultipleByPriceList($this->id());
@@ -175,20 +178,20 @@ class PriceList extends CommerceContentEntityBase implements PriceListInterface 
       ->setLabel(t('Name'))
       ->setDescription(t('The name of the Price list entity.'))
       ->setRequired(TRUE)
-      ->setSettings(array(
+      ->setSettings([
         'max_length' => 50,
         'text_processing' => 0,
-      ))
+      ])
       ->setDefaultValue('')
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => 1,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => 1,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -200,21 +203,21 @@ class PriceList extends CommerceContentEntityBase implements PriceListInterface 
       ->setSetting('handler', 'default')
       ->setDefaultValueCallback('Drupal\node\Entity\Node::getCurrentUserId')
       ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'author',
         'weight' => 2,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
         'weight' => 2,
-        'settings' => array(
+        'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => '60',
           'autocomplete_type' => 'tags',
           'placeholder' => '',
-        ),
-      ))
+        ],
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -223,7 +226,7 @@ class PriceList extends CommerceContentEntityBase implements PriceListInterface 
       ->setDescription(t('The start date of the Price list entity.'))
       ->setRevisionable(TRUE)
       ->setSettings([
-        'datetime_type' => 'datetime'
+        'datetime_type' => 'datetime',
       ])
       ->setDefaultValue('')
       ->setDisplayOptions('view', [
@@ -246,7 +249,7 @@ class PriceList extends CommerceContentEntityBase implements PriceListInterface 
       ->setDescription(t('The end date of the Price list entity.'))
       ->setRevisionable(TRUE)
       ->setSettings([
-        'datetime_type' => 'datetime'
+        'datetime_type' => 'datetime',
       ])
       ->setDefaultValue('')
       ->setDisplayOptions('view', [

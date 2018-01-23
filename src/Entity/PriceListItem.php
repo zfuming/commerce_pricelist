@@ -57,14 +57,15 @@ use Drupal\Core\Entity\EntityTypeInterface;
  */
 class PriceListItem extends CommerceContentEntityBase implements PriceListItemInterface {
   use EntityChangedTrait;
+
   /**
    * {@inheritdoc}
    */
   public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
     parent::preCreate($storage_controller, $values);
-    $values += array(
+    $values += [
       'user_id' => \Drupal::currentUser()->id(),
-    );
+    ];
   }
 
   /**
@@ -148,14 +149,12 @@ class PriceListItem extends CommerceContentEntityBase implements PriceListItemIn
     return $this;
   }
 
-
   /**
    * {@inheritdoc}
    */
   public function setPrice(Price $price) {
     return $this->set('price', $price);
   }
-
 
   /**
    * {@inheritdoc}
@@ -256,40 +255,40 @@ class PriceListItem extends CommerceContentEntityBase implements PriceListItemIn
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('Optional label for this price list item.'))
-      ->setSettings(array(
+      ->setSettings([
         'max_length' => 50,
         'text_processing' => 0,
-      ))
+      ])
       ->setDefaultValue('')
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => 2,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => 2,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['quantity'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Quantity'))
       ->setDescription(t('The product quantity number of the Price list item entity.'))
-      ->setSettings(array(
+      ->setSettings([
         'max_length' => 50,
         'text_processing' => 0,
-      ))
+      ])
       ->setDefaultValue('')
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'integer',
         'weight' => 3,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'integer',
         'weight' => 3,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -313,7 +312,7 @@ class PriceListItem extends CommerceContentEntityBase implements PriceListItemIn
       ->setDescription(t('The start date of the Price list item entity.'))
       ->setRevisionable(TRUE)
       ->setSettings([
-        'datetime_type' => 'datetime'
+        'datetime_type' => 'datetime',
       ])
       ->setDefaultValue('')
       ->setDisplayOptions('view', [
@@ -336,7 +335,7 @@ class PriceListItem extends CommerceContentEntityBase implements PriceListItemIn
       ->setDescription(t('The end date of the Price list item entity.'))
       ->setRevisionable(TRUE)
       ->setSettings([
-        'datetime_type' => 'datetime'
+        'datetime_type' => 'datetime',
       ])
       ->setDefaultValue('')
       ->setDisplayOptions('view', [

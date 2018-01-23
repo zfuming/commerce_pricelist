@@ -13,6 +13,7 @@ use Drupal\Core\Entity\EntityListBuilder;
  * @ingroup commerce_pricelist
  */
 class PriceListItemListBuilder extends EntityListBuilder {
+
   /**
    * {@inheritdoc}
    */
@@ -31,8 +32,8 @@ class PriceListItemListBuilder extends EntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     /* @var $entity \Drupal\commerce_pricelist\Entity\PriceListItem */
-    $name_url = Url::fromRoute('entity.price_list_item.edit_form', array('price_list_item' => $entity->id()));
-    $price_list_url = Url::fromRoute('entity.price_list.edit_form', array('price_list' => $entity->getPriceListId()));
+    $name_url = Url::fromRoute('entity.price_list_item.edit_form', ['price_list_item' => $entity->id()]);
+    $price_list_url = Url::fromRoute('entity.price_list.edit_form', ['price_list' => $entity->getPriceListId()]);
     $name = Link::fromTextAndUrl($entity->label(), $name_url);
     $price_list = Link::fromTextAndUrl($entity->getPriceList()->label(), $price_list_url);
     $row['product'] = $entity->getPurchasedEntity()->label();

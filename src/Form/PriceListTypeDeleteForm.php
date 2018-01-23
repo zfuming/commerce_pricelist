@@ -10,11 +10,12 @@ use Drupal\Core\Url;
  * Builds the form to delete Price list type entities.
  */
 class PriceListTypeDeleteForm extends EntityConfirmFormBase {
+
   /**
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return $this->t('Are you sure you want to delete %name?', array('%name' => $this->entity->label()));
+    return $this->t('Are you sure you want to delete %name?', ['%name' => $this->entity->label()]);
   }
 
   /**

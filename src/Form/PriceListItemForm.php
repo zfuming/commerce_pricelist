@@ -40,7 +40,7 @@ class PriceListItemForm extends ContentEntityForm {
           '%label' => $entity->label(),
         ]));
     }
-    $form_state->setRedirect('entity.price_list.canonical', ['price_list'=>$entity->getPriceListId()]);
+    $form_state->setRedirect('entity.price_list.canonical', ['price_list' => $entity->getPriceListId()]);
   }
 
 }
