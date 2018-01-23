@@ -40,7 +40,9 @@ class PriceListDefaultBasePriceResolver implements PriceListPriceResolverInterfa
 
   /**
    * @param \Drupal\commerce\PurchasableEntityInterface $entity
-   * @return bool
+   *   The purchasable entity.
+   * @return \Drupal\commerce_price\Price
+   *   The purchasable price.
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function getPrice(PurchasableEntityInterface $entity) {

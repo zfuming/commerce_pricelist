@@ -151,8 +151,11 @@ class PriceListItemInlineForm extends EntityInlineForm {
 
   /**
    * @param array $entity_form
+   *   The entity form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state of the parent form.
    * @return array
+   *   The entity form.
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
   public function priceForm(array $entity_form, FormStateInterface $form_state) {
@@ -185,8 +188,11 @@ class PriceListItemInlineForm extends EntityInlineForm {
 
   /**
    * @param array $form
+   *   The form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
-   * @return mixed
+   *   The form state of the parent form.
+   * @return array
+   *   The price element.
    */
   public function purchasedRefresh(array $form, FormStateInterface $form_state) {
     $element = [];

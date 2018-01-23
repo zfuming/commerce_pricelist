@@ -17,7 +17,12 @@ use Symfony\Component\HttpFoundation\Request;
 class PriceListAddController extends ControllerBase {
 
   /**
+   * PriceListAddController constructor.
    *
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The storage.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $type_storage
+   *   The storage type.
    */
   public function __construct(EntityStorageInterface $storage, EntityStorageInterface $type_storage) {
     $this->storage = $storage;

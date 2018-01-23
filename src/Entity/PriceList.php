@@ -151,7 +151,7 @@ class PriceList extends CommerceContentEntityBase implements PriceListInterface 
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function getItems() {
     // TODO: Implement getItems() method.

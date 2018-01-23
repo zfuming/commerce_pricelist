@@ -167,7 +167,7 @@ interface PriceListItemInterface extends ContentEntityInterface, EntityChangedIn
   /**
    * Sets the Price list item price.
    *
-   * @param Price $price
+   * @param \Drupal\commerce_price\Price $price
    *   The Price list item Price.
    *
    * @return \Drupal\commerce_pricelist\Entity\PriceListItemInterface

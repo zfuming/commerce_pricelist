@@ -71,10 +71,6 @@ function commerce_pricelist_field_widget_form_alter(&$element, FormStateInterfac
 
 /**
  * Implements hook_form_alter().
- *
- * @param $form
- * @param \Drupal\Core\Form\FormStateInterface $form_state
- * @param $form_id
  */
 function commerce_pricelist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id == 'commerce_product_variation_default_edit_form'
@@ -90,9 +86,6 @@ function commerce_pricelist_form_alter(&$form, FormStateInterface $form_state, $
 
 /**
  * Submit update price list item.
- *
- * @param array $form
- * @param \Drupal\Core\Form\FormStateInterface $form_state
  */
 function update_price_list_item(array $form, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
